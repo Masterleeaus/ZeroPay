@@ -1,0 +1,19 @@
+.fi-btn,
+.fi-btn-label,
+.fi-btn span,
+.fi-ac-btn,
+.fi-ac-btn-label {
+    color: #ffffff !important;
+}
+
+.fi-btn-color-gray,
+.fi-btn-color-gray .fi-btn-label,
+.fi-btn-color-gray span {
+    color: #111827 !important;
+}
+
+.fi-btn-color-white,
+.fi-btn-color-white .fi-btn-label,
+.fi-btn-color-white span {
+    color: #111827 !important;
+}

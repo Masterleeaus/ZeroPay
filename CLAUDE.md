@@ -101,14 +101,70 @@ Channels: email, push, portal, omni, Titan Go.
 - Laravel module namespace: `Modules\ZeroPayModule`
 - Module alias: `zeropay-module`
 
-## Missing: latest-site.zip
+## Target Site — `Site/` (Laravel 12 + Filament 4)
 
-The user referenced `latest-site.zip` (the target Filament v4 Laravel site). This file is NOT in the repository. The ZeroPayModule and PWA modules should be built to the module skeleton standard so they can be dropped into any Filament v4 Laravel installation. When the site zip is uploaded, install the modules per `Modules/ExampleModule/module.json` → update `requires` and `optional_requires`.
+The Filament v4 Laravel site is extracted at `Site/`. Build ZeroPayModule to install here.
+
+### Site Stack
+- **Laravel**: 12.57.0 (`^12.0`)
+- **PHP**: 8.4
+- **Filament**: 4.11.1 (`^4.0`)
+- **Module system**: `nwidart/laravel-modules` 12.0.5
+- **Filament module panel**: `savannabits/filament-modules` 5.1.0
+- **Permissions**: `spatie/laravel-permission` 7.3 + `bezhansalleh/filament-shield` 4.2
+- **Settings**: `spatie/laravel-settings` via `filament/spatie-laravel-settings-plugin`
+- **Activity log**: `spatie/laravel-activitylog`
+- **Charts**: `leandrocfe/filament-apex-charts` (already installed)
+- **Excel export**: `pxlrbt/filament-excel` (already installed)
+- **Stripe**: `stripe/stripe-php` 20.1.0 (already installed — reuse in StripeGateway)
+- **Real-time**: `laravel/reverb` (WebSocket)
+- **Inertia/Vue**: `inertiajs/inertia-laravel`
+
+### Existing Module to Follow: `Site/Modules/CRMCore/`
+CRMCore is the canonical reference module. Key patterns:
+- `module.json` has a **single** provider entry: `Modules\\CRMCore\\Providers\\ModuleServiceProvider`
+- `ModuleServiceProvider::register()` bootstraps all sub-providers via `$this->app->register()`
+- `ModuleServiceProvider::boot()` loads migrations, views, translations
+- Sub-providers: RouteServiceProvider, EventServiceProvider, PolicyServiceProvider,
+  RepositoryServiceProvider, AutomationServiceProvider, WorkflowServiceProvider,
+  TenancyServiceProvider, BillingServiceProvider, SearchServiceProvider, FilamentServiceProvider
+
+### Filament Admin Panel
+`Site/app/Providers/Filament/AdminPanelProvider.php`
+- Panel ID: `admin`, path: `/admin`
+- Brand: `TITAN ZERO — Admin`
+- CRMCorePlugin already registered
+- **Add ZeroPayModulePlugin** here when module is ready:
+  ```php
+  ->plugin(ZeroPayModulePlugin::make())
+  ```
+
+### Installing ZeroPayModule
+```bash
+# Migrations
+php artisan migrate --path=Modules/ZeroPayModule/Database/Migrations
+
+# Permissions
+php artisan db:seed --class="Modules\ZeroPayModule\Database\Seeders\ZeroPayModulePermissionSeeder"
+php artisan shield:generate --resource=ZeroPaySessionResource
+
+# Enable in nwidart config
+# (auto-detected if module.json is valid)
+php artisan module:list
+```
+
+### Unapplied Delta Zips in Site/
+Three delta zips still need applying — see issue #53:
+- `crmcore_customer_panel_delta.zip` — CRMCore resource updates
+- `dashboard_delta.zip` — TitanOverviewWidget
+- `fieldops-hub-filament4-esoft-distinct-template-routing-delta-v13.zip` — CMS templates
 
 ## GitHub Agent Notes
 
 - All issues are in `masterleeaus/zeropay`
 - Feature branch: `claude/restructure-modules-filament-VrcWJ`
-- Use the ExampleModule as the canonical scaffold — copy it, rename, adapt
+- **Reference module**: `Site/Modules/CRMCore/` — follow this exact pattern
+- Use the ExampleModule skeleton (`Modules/ExampleModule/`) for the full file list
 - Do not modify `Web/` donor code — read only, extract patterns into Modules/
 - Mobile renaming is bulk: use `sed` + `change_app_package_name` dart tool
+- ZeroPayModule `module.json` must have single provider entry (CRMCore pattern)
