@@ -1,5 +1,5 @@
-import 'package:qrpay/backend/local_storage/local_storage.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/backend/local_storage/local_storage.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/basic_screen_imports.dart';

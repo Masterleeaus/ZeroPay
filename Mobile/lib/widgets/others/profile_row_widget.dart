@@ -1,6 +1,6 @@
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/size.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/size.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../text_labels/title_heading3_widget.dart';

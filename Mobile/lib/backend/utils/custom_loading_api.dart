@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/dimensions.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/dimensions.dart';
 
 class CustomLoadingAPI extends StatelessWidget {
   const CustomLoadingAPI({

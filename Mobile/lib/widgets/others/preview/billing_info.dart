@@ -1,4 +1,4 @@
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 extension PreviewRecipient on Widget {
   Widget billingInfo({

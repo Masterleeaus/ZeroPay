@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';
 import '../../../controller/categories/withdraw_controller/withdraw_controller.dart';

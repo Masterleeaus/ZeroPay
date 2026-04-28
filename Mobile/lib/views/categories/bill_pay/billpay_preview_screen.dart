@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/others/preview/amount_preview_widget.dart';
-import 'package:qrpay/widgets/others/preview/billing_info.dart';
-import 'package:qrpay/widgets/others/preview/billing_info_amount.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/others/preview/amount_preview_widget.dart';
+import 'package:zeropay/widgets/others/preview/billing_info.dart';
+import 'package:zeropay/widgets/others/preview/billing_info_amount.dart';
 
 import '../../../controller/categories/bill_pay/bill_pay_controller.dart';
 import '../../../language/english.dart';

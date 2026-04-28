@@ -1,5 +1,5 @@
 
-import 'package:qrpay/widgets/payment_link/custom_drop_down.dart';
+import 'package:zeropay/widgets/payment_link/custom_drop_down.dart';
 
 
 class WithdrawFlutterWaveInsertModel {

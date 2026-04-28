@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
 
 import '../../data/recent_transaction_data.dart';
 import '../../language/english.dart';

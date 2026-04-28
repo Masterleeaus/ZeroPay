@@ -1,4 +1,4 @@
-import 'package:qrpay/routes/route_pages.dart';
+import 'package:zeropay/routes/route_pages.dart';
 
 class Routes {
   // Page List

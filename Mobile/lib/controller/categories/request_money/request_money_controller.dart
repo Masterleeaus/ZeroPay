@@ -1,5 +1,5 @@
-import 'package:qrpay/backend/services/request_money_api_services.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/backend/services/request_money_api_services.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../../backend/model/common/common_success_model.dart';
 import '../../../backend/model/request_money/check_user_qr_scan.dart';

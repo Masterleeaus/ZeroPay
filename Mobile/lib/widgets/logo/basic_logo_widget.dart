@@ -1,4 +1,4 @@
-import 'package:qrpay/controller/app_settings/app_settings_controller.dart';
+import 'package:zeropay/controller/app_settings/app_settings_controller.dart';
 
 import '../../utils/basic_screen_imports.dart';
 

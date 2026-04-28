@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:qrpay/backend/model/common/common_success_model.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/backend/model/common/common_success_model.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../../../backend/local_storage/local_storage.dart';
 import '../../../../backend/model/categories/virtual_card/virtual_card_flutter_wave/card_transaction_model.dart';

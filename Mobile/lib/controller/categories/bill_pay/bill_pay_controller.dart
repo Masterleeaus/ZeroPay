@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/routes/routes.dart';
+import 'package:zeropay/routes/routes.dart';
 
 import '../../../backend/model/categories/bill_pay_model/bill_pay_model.dart';
 import '../../../backend/model/common/common_success_model.dart';

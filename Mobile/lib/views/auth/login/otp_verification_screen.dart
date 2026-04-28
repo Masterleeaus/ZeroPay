@@ -1,6 +1,6 @@
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:qrpay/controller/auth/login/signin_controller.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/controller/auth/login/signin_controller.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';
 import '../../../controller/auth/login/otp_reset_controller.dart';

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:qrpay/controller/profile/update_profile_controller.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/controller/profile/update_profile_controller.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 
 import '../../../backend/services/api_endpoint.dart';
 import '../../../backend/utils/custom_snackbar.dart';

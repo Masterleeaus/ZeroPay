@@ -1,6 +1,6 @@
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/language/language_controller.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/language/language_controller.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 class PasswordInputWidget extends StatefulWidget {
   final String hint, icon, label;

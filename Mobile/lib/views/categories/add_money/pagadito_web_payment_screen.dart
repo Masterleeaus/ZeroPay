@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/widgets/others/congratulation_widget.dart';
+import 'package:zeropay/widgets/others/congratulation_widget.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';
 import '../../../controller/categories/deposit/deposti_controller.dart';

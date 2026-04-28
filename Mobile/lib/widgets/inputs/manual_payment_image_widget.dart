@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:qrpay/controller/categories/deposit/deposti_controller.dart';
+import 'package:zeropay/controller/categories/deposit/deposti_controller.dart';
 
 import '../../backend/utils/custom_snackbar.dart';
 import '../../utils/custom_color.dart';

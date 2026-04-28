@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:intl/intl.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
 
 import '../../../backend/model/categories/virtual_card/virtual_card_sudo/identiti_type.dart';
 import '../../../controller/categories/virtual_card/sudo_virtual_card/sudo_adfund_controller.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/controller/auth/registration/registration_controller.dart';
+import 'package:zeropay/controller/auth/registration/registration_controller.dart';
 
 import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/model/auth/registation/basic_data_model.dart';

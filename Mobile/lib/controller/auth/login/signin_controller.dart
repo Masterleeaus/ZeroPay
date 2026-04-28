@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/model/common/common_success_model.dart';
+import 'package:zeropay/backend/model/common/common_success_model.dart';
 
 import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/model/auth/login/login_model.dart';

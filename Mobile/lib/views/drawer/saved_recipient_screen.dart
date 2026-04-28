@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/drawer/save_recipients_widget.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/drawer/save_recipients_widget.dart';
 
 import '../../backend/utils/custom_loading_api.dart';
 import '../../backend/utils/status_data_widget.dart';

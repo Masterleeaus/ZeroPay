@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/controller/profile/update_profile_controller.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/utils/size.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/controller/profile/update_profile_controller.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/utils/size.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
 
 import '../../backend/services/api_endpoint.dart';
 import '../../custom_assets/assets.gen.dart';

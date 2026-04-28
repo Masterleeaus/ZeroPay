@@ -1,4 +1,4 @@
-import 'package:qrpay/controller/categories/virtual_card/sudo_virtual_card/virtual_card_sudo_controller.dart';
+import 'package:zeropay/controller/categories/virtual_card/sudo_virtual_card/virtual_card_sudo_controller.dart';
 
 import '../../../../backend/model/categories/virtual_card/virtual_card_sudo/identiti_type.dart';
 import '../../../../backend/model/common/common_success_model.dart';

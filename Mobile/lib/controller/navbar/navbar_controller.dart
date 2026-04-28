@@ -1,5 +1,5 @@
-import 'package:qrpay/views/navbar/dashboard_screen.dart';
-import 'package:qrpay/views/navbar/notification_screen.dart';
+import 'package:zeropay/views/navbar/dashboard_screen.dart';
+import 'package:zeropay/views/navbar/notification_screen.dart';
 import 'package:get/get.dart';
 
 class NavbarController extends GetxController {

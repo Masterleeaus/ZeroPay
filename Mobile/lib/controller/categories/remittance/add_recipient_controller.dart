@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/model/recipient_models/check_recipient_model.dart';
+import 'package:zeropay/backend/model/recipient_models/check_recipient_model.dart';
 
 import '../../../backend/model/common/common_success_model.dart';
 // import '../../../backend/model/recipient_models/recipient_dynamic_field_model.dart';

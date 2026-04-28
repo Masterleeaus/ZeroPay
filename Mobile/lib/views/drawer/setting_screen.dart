@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/local_storage/local_storage.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/backend/local_storage/local_storage.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
 
 import '../../controller/drawer/setting_controller.dart';
 import '../../language/english.dart';
