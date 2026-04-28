@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:qrpay/widgets/bottom_navbar/notification_widget.dart';
+import 'package:zeropay/widgets/bottom_navbar/notification_widget.dart';
 
 import '../../backend/utils/custom_loading_api.dart';
 import '../../backend/utils/no_data_widget.dart';

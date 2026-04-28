@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/back_button.dart';
-import 'package:qrpay/widgets/buttons/primary_button.dart';
-import 'package:qrpay/widgets/inputs/password_input_widget.dart';
-import 'package:qrpay/widgets/inputs/phone_number_with_contry_code_input.dart';
-import 'package:qrpay/widgets/inputs/primary_input_filed.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/back_button.dart';
+import 'package:zeropay/widgets/buttons/primary_button.dart';
+import 'package:zeropay/widgets/inputs/password_input_widget.dart';
+import 'package:zeropay/widgets/inputs/phone_number_with_contry_code_input.dart';
+import 'package:zeropay/widgets/inputs/primary_input_filed.dart';
 
 import '../../../controller/auth/registration/kyc_form_controller.dart';
 import '../../../controller/auth/registration/otp_email_controoler.dart';

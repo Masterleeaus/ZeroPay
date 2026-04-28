@@ -1,4 +1,4 @@
-import 'package:qrpay/backend/model/categories/receive_money/receive_money_model.dart';
+import 'package:zeropay/backend/model/categories/receive_money/receive_money_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

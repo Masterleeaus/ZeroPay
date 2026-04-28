@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/model/common/common_success_model.dart';
-import 'package:qrpay/backend/model/remittance/remittance_get_recipient_model.dart';
-import 'package:qrpay/routes/routes.dart';
+import 'package:zeropay/backend/model/common/common_success_model.dart';
+import 'package:zeropay/backend/model/remittance/remittance_get_recipient_model.dart';
+import 'package:zeropay/routes/routes.dart';
 
 import '../../../backend/model/remittance/remittance_info_model.dart';
 import '../../../backend/services/api_services.dart';

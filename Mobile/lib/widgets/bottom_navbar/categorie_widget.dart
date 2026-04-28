@@ -1,5 +1,5 @@
-import 'package:qrpay/utils/basic_screen_imports.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 
 class CategoriesWidget extends StatelessWidget {
   const CategoriesWidget({

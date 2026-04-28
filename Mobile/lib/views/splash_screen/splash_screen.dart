@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
 
 import '../../backend/utils/custom_loading_api.dart';
 import '../../controller/app_settings/app_settings_controller.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/custom_style.dart';
-import 'package:qrpay/widgets/text_labels/custom_title_heading_widget.dart';
-import 'package:qrpay/widgets/text_labels/title_heading3_widget.dart';
-import 'package:qrpay/widgets/text_labels/title_heading4_widget.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/custom_style.dart';
+import 'package:zeropay/widgets/text_labels/custom_title_heading_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading3_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading4_widget.dart';
 
 import '../../language/language_controller.dart';
 import '../../utils/dimensions.dart';

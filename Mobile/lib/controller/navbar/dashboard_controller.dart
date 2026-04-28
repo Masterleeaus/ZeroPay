@@ -1,10 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:pusher_beams/pusher_beams.dart';
-import 'package:qrpay/backend/local_storage/local_storage.dart';
-import 'package:qrpay/backend/model/pusher/pusher_beams_model.dart';
-import 'package:qrpay/backend/services/api_endpoint.dart';
-import 'package:qrpay/backend/services/pusher/pusher_api_services.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/backend/local_storage/local_storage.dart';
+import 'package:zeropay/backend/model/pusher/pusher_beams_model.dart';
+import 'package:zeropay/backend/services/api_endpoint.dart';
+import 'package:zeropay/backend/services/pusher/pusher_api_services.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../backend/model/bottom_navbar_model/dashboard_model.dart';
 import '../../backend/services/api_services.dart';

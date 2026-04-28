@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:qrpay/extentions/custom_extentions.dart';
+import 'package:zeropay/extentions/custom_extentions.dart';
 
 import '../../backend/model/app_settings/app_settings_model.dart';
 import '../../backend/services/api_endpoint.dart';

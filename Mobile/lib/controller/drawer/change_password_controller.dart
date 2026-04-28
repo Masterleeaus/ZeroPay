@@ -1,4 +1,4 @@
-import 'package:qrpay/routes/routes.dart';
+import 'package:zeropay/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

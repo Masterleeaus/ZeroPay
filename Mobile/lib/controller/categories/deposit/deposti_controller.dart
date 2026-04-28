@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/model/add_money/add_money_razorpay_insert_model.dart';
+import 'package:zeropay/backend/model/add_money/add_money_razorpay_insert_model.dart';
 
 import '../../../backend/model/add_money/add_model_bkash_model.dart';
 import '../../../backend/model/add_money/add_money_pagadito_insert_model.dart';

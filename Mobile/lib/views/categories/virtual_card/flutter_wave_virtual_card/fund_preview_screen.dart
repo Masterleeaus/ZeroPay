@@ -1,9 +1,9 @@
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/buttons/primary_button.dart';
-import 'package:qrpay/widgets/others/preview/amount_preview_widget.dart';
-import 'package:qrpay/widgets/others/preview/information_amount_widget.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/buttons/primary_button.dart';
+import 'package:zeropay/widgets/others/preview/amount_preview_widget.dart';
+import 'package:zeropay/widgets/others/preview/information_amount_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:qrpay/widgets/dropdown/custom_dropdown_menu.dart';
+import 'package:zeropay/widgets/dropdown/custom_dropdown_menu.dart';
 
 BillPayInfoModel billPayInfoModelFromJson(String str) =>
     BillPayInfoModel.fromJson(json.decode(str));

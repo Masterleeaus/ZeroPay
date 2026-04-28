@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/widgets/text_labels/title_heading4_widget.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/widgets/text_labels/title_heading4_widget.dart';
 
 import 'back_button.dart';
 

@@ -1,5 +1,5 @@
-import 'package:qrpay/utils/basic_screen_imports.dart';
-import 'package:qrpay/widgets/text_labels/title_heading5_widget.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
+import 'package:zeropay/widgets/text_labels/title_heading5_widget.dart';
 
 class LimitWidget extends StatelessWidget {
   const LimitWidget(

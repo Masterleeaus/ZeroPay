@@ -1,6 +1,6 @@
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
 
 import '../../../../controller/categories/virtual_card/sudo_virtual_card/virtual_card_sudo_controller.dart';
 import '../../../../utils/basic_screen_imports.dart';

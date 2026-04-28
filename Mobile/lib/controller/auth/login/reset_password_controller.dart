@@ -1,4 +1,4 @@
-import 'package:qrpay/controller/auth/login/signin_controller.dart';
+import 'package:zeropay/controller/auth/login/signin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

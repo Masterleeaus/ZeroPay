@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/buttons/primary_button.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/buttons/primary_button.dart';
 
 import '../../backend/utils/custom_loading_api.dart';
 import '../../backend/utils/status_data_widget.dart';

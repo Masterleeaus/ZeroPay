@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/controller/categories/deposit/deposti_controller.dart';
+import 'package:zeropay/controller/categories/deposit/deposti_controller.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';
 import '../../../language/english.dart';

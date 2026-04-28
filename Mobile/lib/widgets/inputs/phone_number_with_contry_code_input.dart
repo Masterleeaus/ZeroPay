@@ -1,5 +1,5 @@
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../language/language_controller.dart';
 

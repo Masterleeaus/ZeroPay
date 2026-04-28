@@ -1,5 +1,5 @@
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/widgets/others/glass_widget.dart';
+import 'package:zeropay/widgets/others/glass_widget.dart';
 
 import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/utils/custom_loading_api.dart';
