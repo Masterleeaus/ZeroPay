@@ -15,12 +15,10 @@ class ApiEndpoint {
   static String zeroPayCreateSessionURL =
       '/zeropay/sessions'.addBaseURl();
 
-  // GET  /api/zeropay/sessions/{id}    — poll session status (append ID at call-site)
+  // GET  /api/zeropay/sessions/{id}    — poll session status
+  // POST /api/zeropay/sessions/{id}/qr — get QR payload
+  // Append the session ID (and "/qr" for the QR endpoint) at the call-site.
   static String zeroPaySessionBaseURL =
-      '/zeropay/sessions/'.addDBaseURl();
-
-  // POST /api/zeropay/sessions/{id}/qr — get QR payload (append "{id}/qr" at call-site)
-  static String zeroPaySessionQrBaseURL =
       '/zeropay/sessions/'.addDBaseURl();
 
   // GET  /api/zeropay/transactions      — ZeroPay transaction history
