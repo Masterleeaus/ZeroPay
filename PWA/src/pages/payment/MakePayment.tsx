@@ -16,7 +16,7 @@ export default function MakePayment() {
 
     if (!videoRef.current) return
 
-    reader.decodeFromVideoDevice(undefined, videoRef.current, (result, err) => {
+    reader.decodeFromVideoDevice(undefined, videoRef.current, (result, _err) => {
       if (!result) return
       setScanning(false)
       try {
@@ -37,9 +37,6 @@ export default function MakePayment() {
           setError('Invalid QR code. Please scan a ZeroPay QR.')
           setScanning(true)
         }
-      }
-      if (err && !(err instanceof TypeError)) {
-        // ignore decode errors
       }
     }).catch((e: unknown) => {
       setError('Camera access denied. Please allow camera permissions.')
