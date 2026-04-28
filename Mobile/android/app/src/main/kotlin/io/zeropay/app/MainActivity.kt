@@ -1,4 +1,4 @@
-package net.appdevs.qrpayuser
+package io.zeropay.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
