@@ -502,7 +502,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:853399373310:android:a6bebba9b8132da09facaf",
         "android_client_info": {
-          "package_name": "net.appdevs.qrpayuser"
+          "package_name": "io.zeropay.app"
         }
       },
       "oauth_client": [
