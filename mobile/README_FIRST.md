@@ -1,6 +1,6 @@
-# QRPay Mobile Full Clean Base v1
+# ZeroPay Mobile App
 
-This is the full clean editable QRPay mobile app base.
+This is the full clean editable ZeroPay mobile app base.
 
 What was done:
 - removed Mac junk files (`__MACOSX`, `._*`)
