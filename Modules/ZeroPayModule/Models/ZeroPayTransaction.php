@@ -4,31 +4,35 @@ namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
-class ZeroPaySession extends Model
+class ZeroPayTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'zeropay_sessions';
+    protected $table = 'zeropay_transactions';
 
     protected $fillable = [
         'company_id',
+        'session_id',
         'user_id',
-        'session_token',
         'gateway',
+        'gateway_reference',
         'amount',
         'currency',
         'status',
+        'fee',
+        'net_amount',
         'meta',
-        'expires_at',
     ];
 
     protected $casts = [
         'meta'       => 'array',
         'amount'     => 'decimal:2',
-        'expires_at' => 'datetime',
+        'fee'        => 'decimal:2',
+        'net_amount' => 'decimal:2',
     ];
 
     protected static function booted(): void
@@ -36,23 +40,13 @@ class ZeroPaySession extends Model
         static::addGlobalScope(new TenantScope());
     }
 
-    public function scopeForCompany($query, int $companyId)
+    public function session(): BelongsTo
     {
-        return $query->where('company_id', $companyId);
-    }
-
-    public function transactions(): HasMany
-    {
-        return $this->hasMany(ZeroPayTransaction::class, 'session_id');
-    }
-
-    public function qrCodes(): HasMany
-    {
-        return $this->hasMany(ZeroPayQrCode::class, 'session_id');
+        return $this->belongsTo(ZeroPaySession::class, 'session_id');
     }
 
     public function gatewayLogs(): HasMany
     {
-        return $this->hasMany(ZeroPayGatewayLog::class, 'session_id');
+        return $this->hasMany(ZeroPayGatewayLog::class, 'transaction_id');
     }
 }
