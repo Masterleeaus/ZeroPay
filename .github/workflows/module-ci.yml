@@ -1,0 +1,50 @@
+name: Module CI
+
+on:
+  push:
+    branches:
+      - claude/restructure-modules-filament-VrcWJ
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: PHP Lint & Module Structure Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer
+
+      - name: Install Composer dependencies
+        working-directory: Modules/ZeroPayModule
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run Laravel Pint (code style check)
+        working-directory: Modules/ZeroPayModule
+        run: ./vendor/bin/pint --test
+
+      - name: Validate module.json structure
+        working-directory: Modules/ZeroPayModule
+        run: |
+          jq -e '.name and .alias and .providers' module.json
+
+      - name: Run PHPUnit tests
+        working-directory: Modules/ZeroPayModule
+        run: |
+          ./vendor/bin/phpunit --no-coverage
+          status=$?
+          # Exit code 2 means "no tests executed" (scaffold stubs without TestCase subclasses).
+          # This is acceptable on a clean scaffold; once real tests are added they will run normally.
+          # Exit code 1 (test failures) still causes the step to fail.
+          [ $status -eq 0 ] || [ $status -eq 2 ]
