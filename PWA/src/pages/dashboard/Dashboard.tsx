@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { walletApi, type WalletBalance } from '../../api/wallet'
 import { transactionsApi, type Transaction } from '../../api/transactions'
-import { usePushNotifications } from '../../hooks/usePushNotifications'
 
 const quickActions = [
   { label: '📷 Make Payment', to: '/pay/scan' },
@@ -22,7 +21,6 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const { permission, subscribe } = usePushNotifications()
 
   const load = async () => {
     try {
@@ -41,9 +39,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     void load()
-    if (permission === 'default') {
-      setTimeout(() => void subscribe(), 3000)
-    }
+    // Push notification opt-in is handled explicitly in the Notifications screen
   }, [])
 
   const user = (() => {

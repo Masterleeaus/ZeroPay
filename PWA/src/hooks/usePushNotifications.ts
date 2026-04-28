@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { pushApi } from '../api/push'
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY ?? ''
+const VAPID_PUBLIC_KEY: string = import.meta.env.VITE_VAPID_PUBLIC_KEY ?? ''
+
+if (!VAPID_PUBLIC_KEY) {
+  console.warn('[ZeroPay] VITE_VAPID_PUBLIC_KEY is not set — push subscriptions will fail.')
+}
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
