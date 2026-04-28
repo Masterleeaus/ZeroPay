@@ -2,23 +2,36 @@
 
 namespace Modules\ZeroPayModule\Providers;
 
-use Filament\Contracts\Plugin;
-use Filament\Panel;
-use Filament\PanelProvider;
+use Filament\Facades\Filament;
+use Illuminate\Support\ServiceProvider;
 use Modules\ZeroPayModule\ZeroPayModulePlugin;
 
-class FilamentServiceProvider extends PanelProvider
+class FilamentServiceProvider extends ServiceProvider
 {
     /**
-     * Configure the Filament panel and register the ZeroPayModulePlugin.
+     * Register any application services.
      */
-    public function panel(Panel $panel): Panel
+    public function register(): void
     {
-        return $panel
-            ->plugin(ZeroPayModulePlugin::make())
-            ->resources($this->resources())
-            ->pages($this->pages())
-            ->widgets($this->widgets());
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * Registers ZeroPayModulePlugin with every Filament panel that is
+     * discovered, and declares the module's Filament resources, pages,
+     * and widgets.
+     */
+    public function boot(): void
+    {
+        Filament::serving(function () {
+            Filament::registerPlugin(ZeroPayModulePlugin::make());
+
+            Filament::registerResources($this->resources());
+            Filament::registerPages($this->pages());
+            Filament::registerWidgets($this->widgets());
+        });
     }
 
     /**
