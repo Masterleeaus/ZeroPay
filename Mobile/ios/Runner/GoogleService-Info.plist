@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>net.appdevs.qrpayuser</string>
+	<string>io.zeropay.app</string>
 	<key>PROJECT_ID</key>
 	<string>njangi-6e1ea</string>
 	<key>STORAGE_BUCKET</key>

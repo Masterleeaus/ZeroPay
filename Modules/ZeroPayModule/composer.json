@@ -1,0 +1,37 @@
+{
+    "name": "modules/zeropay-module",
+    "description": "ZeroPay payment processing module — sessions, gateways, QR, bank matching, API",
+    "license": "MIT",
+    "type": "laravel-module",
+    "authors": [
+        {
+            "name": "ZeroPay",
+            "email": "dev@zeropay.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "filament/filament": "^3.0|^4.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ZeroPayModule\\": "./"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\ZeroPayModule\\Providers\\ZeroPayModuleServiceProvider",
+                "Modules\\ZeroPayModule\\Providers\\RouteServiceProvider",
+                "Modules\\ZeroPayModule\\Providers\\EventServiceProvider",
+                "Modules\\ZeroPayModule\\Providers\\FilamentServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
