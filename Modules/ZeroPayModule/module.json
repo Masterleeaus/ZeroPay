@@ -1,7 +1,7 @@
 {
   "name": "ZeroPayModule",
   "alias": "zeropay-module",
-  "description": "Titan AI-native full module blueprint skeleton with one-page Filament command center and AI-controllable PWA/channel surface",
+  "description": "ZeroPay payment processing module — sessions, gateways, QR, bank matching, API",
   "priority": 0,
   "providers": [
     "Modules\\ZeroPayModule\\Providers\\ZeroPayModuleServiceProvider",

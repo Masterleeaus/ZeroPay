@@ -1,3 +1,17 @@
 <?php
-use Illuminate\Support\Facades\Route;use Modules\ZeroPayModule\Http\Controllers\ExampleController;
-Route::get('/',[ExampleController::class,'index'])->name('index');Route::post('/',[ExampleController::class,'store'])->name('store');
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| ZeroPayModule Web Routes
+|--------------------------------------------------------------------------
+|
+| These routes are loaded by the RouteServiceProvider and use the "web"
+| middleware group. Add module-specific web routes here.
+|
+*/
+
+Route::get('/', function () {
+    return view('zeropay-module::index');
+})->name('index');

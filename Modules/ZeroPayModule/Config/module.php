@@ -1,24 +1,35 @@
 <?php
+
 return [
-    'name' => 'ZeroPayModule',
-    'alias' => 'zeropay-module',
-    'table_prefix' => 'example_',
-    'tenant_column' => 'company_id',
-    'features' => [
-        'api' => true,
-        'filament' => true,
-        'imports' => true,
-        'exports' => true,
-        'signals' => true,
-        'ai_native' => true,
-        'module_agent' => true,
-        'knowledge_pack' => true,
-    ],
-    'ai' => [
-        'core_runtime' => 'TitanCore',
-        'system_supervisor' => 'TitanZero',
-        'agent_owner' => 'TitanAgents',
-        'agent_manifest' => base_path('Modules/ZeroPayModule/Agents/ModuleAgent/agent.manifest.json'),
-        'indexing_manifest' => base_path('Modules/ZeroPayModule/AI/Indexing/indexing.manifest.json'),
-    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | ZeroPayModule Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Module-level configuration values for ZeroPay. Override these values
+    | in your application's config/zeropay-module.php after publishing.
+    |
+    */
+
+    'name'    => 'ZeroPayModule',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Gateway
+    |--------------------------------------------------------------------------
+    |
+    | The gateway adapter that will be resolved when GatewayContract is
+    | injected. Must implement Modules\ZeroPayModule\Contracts\GatewayContract.
+    |
+    */
+    'gateway' => \Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Rate Limiting
+    |--------------------------------------------------------------------------
+    */
+    'rate_limit' => 60,
+
 ];
