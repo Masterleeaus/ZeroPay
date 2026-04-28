@@ -1,4 +1,4 @@
-# qrpay
+# ZeroPay
 
 A new Flutter project.
 
