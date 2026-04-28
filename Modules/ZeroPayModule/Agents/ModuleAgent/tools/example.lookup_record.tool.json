@@ -1,0 +1,7 @@
+{
+  "name": "zeropay.lookup_record",
+  "type": "query",
+  "action": "Modules\\ZeroPayModule\\Actions\\LookupZeroPaySessionAction",
+  "requires_permission": "zeropay.view",
+  "tenant_scoped": true
+}

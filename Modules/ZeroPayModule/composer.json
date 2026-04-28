@@ -1,0 +1,9 @@
+{
+  "name": "titan/zeropay-module",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Modules\\ZeroPayModule\\": ""
+    }
+  }
+}
