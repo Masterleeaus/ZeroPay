@@ -1,9 +1,35 @@
 import 'package:zeropay/extentions/custom_extentions.dart';
 
 class ApiEndpoint {
-  static const String mainDomain = "PUT_YOUR_OWN_DOMAIN";
+  // ZeroPay backend host — set via environment or app config before release
+  static const String mainDomain = "https://api.zeropay.com.au";
 
   static const String baseUrl = "$mainDomain/api";
+
+  // -- ZeroPay session / QR endpoints --
+  // GET  /pay/session/{token}  — resolve a PayID QR token (unauthenticated)
+  static String paySessionURL(String token) =>
+      '$mainDomain/pay/session/$token';
+
+  // POST /api/zeropay/sessions         — create a payment session
+  static String zeroPayCreateSessionURL =
+      '/zeropay/sessions'.addBaseURl();
+
+  // GET  /api/zeropay/sessions/{id}    — poll session status (append ID at call-site)
+  static String zeroPaySessionBaseURL =
+      '/zeropay/sessions/'.addDBaseURl();
+
+  // POST /api/zeropay/sessions/{id}/qr — get QR payload (append "{id}/qr" at call-site)
+  static String zeroPaySessionQrBaseURL =
+      '/zeropay/sessions/'.addDBaseURl();
+
+  // GET  /api/zeropay/transactions      — ZeroPay transaction history
+  static String zeroPayTransactionsURL =
+      '/zeropay/transactions'.addBaseURl();
+
+  // POST /api/zeropay/webhooks          — webhook connectivity test
+  static String zeroPayWebhooksURL =
+      '/zeropay/webhooks'.addBaseURl();
 
   //! auth
   static String loginURL = '/user/login'.addBaseURl();
