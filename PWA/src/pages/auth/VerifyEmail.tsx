@@ -34,7 +34,7 @@ export default function VerifyEmail() {
     try {
       const raw = localStorage.getItem('user')
       const email: string = raw ? (JSON.parse(raw) as { email: string }).email : ''
-      await authApi.forgotPassword(email) // reuse forgot-password endpoint as resend
+      await authApi.resendVerification(email)
       setMessage('A new verification email has been sent.')
     } catch {
       setMessage('Failed to resend. Please try again later.')

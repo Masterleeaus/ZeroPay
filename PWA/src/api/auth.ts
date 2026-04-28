@@ -42,11 +42,19 @@ export const authApi = {
   submitKyc: (data: KycPayload) => {
     const form = new FormData()
     Object.entries(data).forEach(([k, v]) => {
-      if (v !== undefined) form.append(k, v as string | Blob)
+      if (v === undefined) return
+      if (typeof v === 'string') {
+        form.append(k, v)
+      } else {
+        // v is File (which extends Blob) — accepted by FormData.append
+        form.append(k, v)
+      }
     })
     return client.post('/auth/kyc', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
+  resendVerification: (email: string) =>
+    client.post('/auth/resend-verification', { email }),
   logout: () => client.post('/auth/logout'),
 }
