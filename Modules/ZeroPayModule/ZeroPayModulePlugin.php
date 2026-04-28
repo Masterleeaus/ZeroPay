@@ -4,36 +4,36 @@ namespace Modules\ZeroPayModule;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 
 class ZeroPayModulePlugin implements Plugin
 {
-    /**
-     * Create a new plugin instance.
-     */
     public static function make(): static
     {
         return app(static::class);
     }
 
-    /**
-     * Return the unique plugin identifier.
-     */
     public function getId(): string
     {
         return 'zeropay-module';
     }
 
-    /**
-     * Register any plugin services.
-     */
     public function register(Panel $panel): void
     {
-        //
+        $panel->resources([
+            ZeroPaySessionResource::class,
+            ZeroPayTransactionResource::class,
+            ZeroPayBankDepositResource::class,
+        ]);
+
+        $panel->pages([
+            ZeroPayDashboardPage::class,
+        ]);
     }
 
-    /**
-     * Bootstrap any plugin services.
-     */
     public function boot(Panel $panel): void
     {
         //

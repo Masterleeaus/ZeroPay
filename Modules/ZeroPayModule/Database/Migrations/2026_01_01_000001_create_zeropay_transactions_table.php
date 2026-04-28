@@ -8,17 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('zeropay_sessions', function (Blueprint $table) {
+        Schema::create('zeropay_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('company_id')->index();
+            $table->foreignId('session_id')->constrained('zeropay_sessions')->cascadeOnDelete();
             $table->unsignedBigInteger('user_id')->nullable()->index();
-            $table->string('session_token')->unique();
-            $table->string('gateway')->default('bank_transfer');
-            $table->decimal('amount', 12, 2)->nullable();
+            $table->string('gateway');
+            $table->string('gateway_reference')->nullable()->index();
+            $table->decimal('amount', 12, 2);
             $table->string('currency', 3)->default('AUD');
-            $table->string('status')->default('pending')->index();
+            $table->string('status')->index();
+            $table->decimal('fee', 8, 2)->default(0);
+            $table->decimal('net_amount', 12, 2)->nullable();
             $table->json('meta')->nullable();
-            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->index(['company_id', 'status']);
@@ -27,6 +29,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('zeropay_sessions');
+        Schema::dropIfExists('zeropay_transactions');
     }
 };

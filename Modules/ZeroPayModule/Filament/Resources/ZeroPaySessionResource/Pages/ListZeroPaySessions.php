@@ -2,7 +2,10 @@
 
 namespace Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource\Pages;
 
-class ListZeroPaySessions
+use Filament\Resources\Pages\ListRecords;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
+
+class ListZeroPaySessions extends ListRecords
 {
-    protected static string $resource = \Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource::class;
+    protected static string $resource = ZeroPaySessionResource::class;
 }

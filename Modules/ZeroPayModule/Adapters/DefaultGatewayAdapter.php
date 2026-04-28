@@ -6,48 +6,45 @@ use Modules\ZeroPayModule\Contracts\GatewayContract;
 
 class DefaultGatewayAdapter implements GatewayContract
 {
-    /**
-     * Initiate a payment session.
-     *
-     * @param array<string, mixed> $payload
-     * @return array<string, mixed>
-     */
-    public function initiate(array $payload): array
+    public function createPayment(array $session): array
     {
         return [
             'status'    => 'pending',
+            'gateway'   => 'default',
             'reference' => uniqid('zpay_', true),
+            'session'   => $session,
+        ];
+    }
+
+    public function verifyPayment(string $reference): array
+    {
+        return [
+            'status'    => 'pending',
+            'reference' => $reference,
+            'gateway'   => 'default',
+        ];
+    }
+
+    public function handleWebhook(array $payload): array
+    {
+        return [
+            'processed' => true,
+            'gateway'   => 'default',
             'payload'   => $payload,
         ];
     }
 
-    /**
-     * Verify the status of a payment.
-     *
-     * @param string $reference
-     * @return array<string, mixed>
-     */
-    public function verify(string $reference): array
+    public function calculateFee(float $amount): float
     {
-        return [
-            'status'    => 'pending',
-            'reference' => $reference,
-        ];
+        return 0.0;
     }
 
-    /**
-     * Refund a completed payment.
-     *
-     * @param string $reference
-     * @param float  $amount
-     * @return array<string, mixed>
-     */
-    public function refund(string $reference, float $amount): array
+    public function refundPayment(string $transactionId): array
     {
         return [
-            'status'    => 'refunded',
-            'reference' => $reference,
-            'amount'    => $amount,
+            'status'         => 'refunded',
+            'transaction_id' => $transactionId,
+            'gateway'        => 'default',
         ];
     }
 }
