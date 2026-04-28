@@ -69,6 +69,6 @@ class DefaultFirebaseOptions {
         '853399373310-1fb536vu7jargtrv73tm13jste9bhr0p.apps.googleusercontent.com',
     iosClientId:
         '853399373310-slujki5ukibt11nij4ktj1cqs301sooa.apps.googleusercontent.com',
-    iosBundleId: 'com.zeropay.user',
+    iosBundleId: 'io.zeropay.app',
   );
 }
