@@ -1,4 +1,4 @@
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../../../backend/model/categories/virtual_card/strowallet_models/strowallet_card_create_info.dart';
 import '../../../../backend/model/common/common_success_model.dart';

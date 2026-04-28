@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/widgets/text_labels/title_heading2_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading2_widget.dart';
 
 import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/utils/custom_loading_api.dart';

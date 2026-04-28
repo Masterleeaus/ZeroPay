@@ -1,10 +1,10 @@
 import 'package:intl/intl.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/controller/navbar/dashboard_controller.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/bottom_navbar/categorie_widget.dart';
-import 'package:qrpay/widgets/others/custom_glass/custom_glass_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/controller/navbar/dashboard_controller.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/bottom_navbar/categorie_widget.dart';
+import 'package:zeropay/widgets/others/custom_glass/custom_glass_widget.dart';
 
 import '../../backend/model/bottom_navbar_model/dashboard_model.dart';
 import '../../backend/utils/no_data_widget.dart';

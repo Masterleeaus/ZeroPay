@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pusher_beams/pusher_beams.dart';
-import 'package:qrpay/routes/routes.dart';
+import 'package:zeropay/routes/routes.dart';
 
 import 'backend/services/notification_service.dart';
 import 'backend/utils/maintenance_dialog.dart';

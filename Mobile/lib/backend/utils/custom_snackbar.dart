@@ -1,5 +1,5 @@
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/dimensions.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

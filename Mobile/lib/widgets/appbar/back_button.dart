@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/custom_assets/assets.gen.dart';
+import 'package:zeropay/custom_assets/assets.gen.dart';
 
 import '../../utils/custom_color.dart';
 import '../../utils/dimensions.dart';

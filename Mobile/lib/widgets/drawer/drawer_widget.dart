@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../backend/services/api_endpoint.dart';
 import '../../controller/others/log_out_controller.dart';

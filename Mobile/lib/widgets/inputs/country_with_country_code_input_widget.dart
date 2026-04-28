@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/backend/local_storage/local_storage.dart';
-import 'package:qrpay/utils/size.dart';
+import 'package:zeropay/backend/local_storage/local_storage.dart';
+import 'package:zeropay/utils/size.dart';
 
 import '../../controller/auth/registration/kyc_form_controller.dart';
 import '../../language/english.dart';

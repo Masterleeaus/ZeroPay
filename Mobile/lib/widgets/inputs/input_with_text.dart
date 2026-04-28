@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/utils/size.dart';
+import 'package:zeropay/utils/size.dart';
 
 import '../../language/english.dart';
 import '../../utils/custom_color.dart';

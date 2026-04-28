@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/language/language_controller.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/utils/size.dart';
-import 'package:qrpay/widgets/buttons/custom_text_button.dart';
-import 'package:qrpay/widgets/buttons/primary_button.dart';
-import 'package:qrpay/widgets/text_labels/title_heading2_widget.dart';
-import 'package:qrpay/widgets/text_labels/title_heading4_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/language/language_controller.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/utils/size.dart';
+import 'package:zeropay/widgets/buttons/custom_text_button.dart';
+import 'package:zeropay/widgets/buttons/primary_button.dart';
+import 'package:zeropay/widgets/text_labels/title_heading2_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading4_widget.dart';
 
 import '../../../controller/auth/registration/registration_controller.dart';
 import '../../../language/english.dart';

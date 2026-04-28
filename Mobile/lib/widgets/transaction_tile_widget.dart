@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_null_aware_operators
 
 import 'package:flutter/material.dart';
-import 'package:qrpay/widgets/text_labels/custom_title_heading_widget.dart';
+import 'package:zeropay/widgets/text_labels/custom_title_heading_widget.dart';
 
 import '../../utils/custom_color.dart';
 import '../../utils/custom_style.dart';

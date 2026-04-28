@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/custom_assets/assets.gen.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/custom_assets/assets.gen.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 
 import '../../backend/local_storage/local_storage.dart';
 import '../app_settings/app_settings_controller.dart';

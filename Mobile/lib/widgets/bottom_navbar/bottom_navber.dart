@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 
 import '../../custom_assets/assets.gen.dart';
 import '../../utils/custom_color.dart';

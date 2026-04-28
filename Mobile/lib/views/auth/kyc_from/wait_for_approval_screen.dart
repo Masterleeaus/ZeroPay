@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/utils/size.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/utils/size.dart';
 
 import '../../../custom_assets/assets.gen.dart';
 import '../../../language/english.dart';

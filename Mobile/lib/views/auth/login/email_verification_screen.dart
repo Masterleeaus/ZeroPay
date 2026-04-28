@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/controller/auth/login/signin_controller.dart';
-import 'package:qrpay/utils/custom_color.dart';
-import 'package:qrpay/utils/custom_style.dart';
-import 'package:qrpay/widgets/text_labels/custom_title_heading_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/controller/auth/login/signin_controller.dart';
+import 'package:zeropay/utils/custom_color.dart';
+import 'package:zeropay/utils/custom_style.dart';
+import 'package:zeropay/widgets/text_labels/custom_title_heading_widget.dart';
 
 import '../../../controller/auth/login/sms_verification_controller.dart';
 import '../../../language/english.dart';

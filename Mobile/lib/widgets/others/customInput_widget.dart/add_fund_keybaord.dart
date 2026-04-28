@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/controller/categories/virtual_card/flutter_wave_virtual_card/adfund_controller.dart';
-import 'package:qrpay/utils/size.dart';
-import 'package:qrpay/widgets/text_labels/custom_title_heading_widget.dart';
-import 'package:qrpay/widgets/text_labels/title_heading4_widget.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/controller/categories/virtual_card/flutter_wave_virtual_card/adfund_controller.dart';
+import 'package:zeropay/utils/size.dart';
+import 'package:zeropay/widgets/text_labels/custom_title_heading_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading4_widget.dart';
 
 import '../../../language/english.dart';
 import '../../../utils/custom_color.dart';

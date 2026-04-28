@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/backend/model/categories/withdraw/flutterwave_account_cheack_model.dart';
-import 'package:qrpay/backend/utils/custom_snackbar.dart';
+import 'package:zeropay/backend/model/categories/withdraw/flutterwave_account_cheack_model.dart';
+import 'package:zeropay/backend/utils/custom_snackbar.dart';
 
 import '../../../backend/model/categories/withdraw/bank_account_check_model.dart';
 import '../../../backend/model/categories/withdraw/flutter_wave_banks_branch_model.dart';

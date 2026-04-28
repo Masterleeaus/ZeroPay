@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qrpay/language/language_controller.dart';
-import 'package:qrpay/utils/size.dart';
+import 'package:zeropay/language/language_controller.dart';
+import 'package:zeropay/utils/size.dart';
 
 import '../../../controller/categories/make_payment/make_payment_controller.dart';
 import '../../../language/english.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:qrpay/widgets/dropdown/custom_dropdown_menu.dart';
+import 'package:zeropay/widgets/dropdown/custom_dropdown_menu.dart';
 
 AddMoneyPaymentGatewayModel addMoneyPaymentGatewayModelFromJson(String str) =>
     AddMoneyPaymentGatewayModel.fromJson(json.decode(str));

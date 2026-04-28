@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/controller/navbar/navbar_controller.dart';
-import 'package:qrpay/custom_assets/assets.gen.dart';
-import 'package:qrpay/routes/routes.dart';
-import 'package:qrpay/views/others/custom_image_widget.dart';
+import 'package:zeropay/controller/navbar/navbar_controller.dart';
+import 'package:zeropay/custom_assets/assets.gen.dart';
+import 'package:zeropay/routes/routes.dart';
+import 'package:zeropay/views/others/custom_image_widget.dart';
 
 import '../../language/english.dart';
 import '../../utils/custom_color.dart';

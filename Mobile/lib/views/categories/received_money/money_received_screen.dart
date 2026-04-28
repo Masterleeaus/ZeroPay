@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/inputs/copy_with_input.dart';
-import 'package:qrpay/widgets/text_labels/title_heading5_widget.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/inputs/copy_with_input.dart';
+import 'package:zeropay/widgets/text_labels/title_heading5_widget.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';

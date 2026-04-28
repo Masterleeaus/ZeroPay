@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qrpay/widgets/transaction_tile_widget.dart';
+import 'package:zeropay/widgets/transaction_tile_widget.dart';
 
 import '../../../utils/custom_color.dart';
 import '../../../utils/dimensions.dart';

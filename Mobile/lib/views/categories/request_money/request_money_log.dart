@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
-import 'package:qrpay/controller/categories/request_money/request_money_logs_controller.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/controller/categories/request_money/request_money_logs_controller.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
 
 import '../../../backend/model/request_money/request_money_log_model.dart';
 import '../../../backend/utils/custom_loading_api.dart';

@@ -1,4 +1,4 @@
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 import 'package:restart_app/restart_app.dart';
 
 import '../model/common/maintenance_model.dart';
