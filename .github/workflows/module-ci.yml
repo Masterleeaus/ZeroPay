@@ -1,20 +1,26 @@
-name: Module CI
+name: ZeroPayModule CI
 
 on:
   push:
-    branches:
-      - claude/restructure-modules-filament-VrcWJ
+    paths:
+      - 'Modules/ZeroPayModule/**'
+      - '.github/workflows/module-ci.yml'
   pull_request:
-    branches:
-      - main
+    paths:
+      - 'Modules/ZeroPayModule/**'
+      - '.github/workflows/module-ci.yml'
 
 permissions:
   contents: read
 
 jobs:
-  lint:
-    name: PHP Lint & Module Structure Check
+  lint-and-validate:
+    name: PHP Lint & Module Structure
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Modules/ZeroPayModule
 
     steps:
       - name: Checkout repository
@@ -23,28 +29,36 @@ jobs:
       - name: Set up PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
-          tools: composer
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: Modules/ZeroPayModule/vendor
+          key: composer-${{ hashFiles('Modules/ZeroPayModule/composer.json', 'Modules/ZeroPayModule/composer.lock') }}
+          restore-keys: composer-
 
       - name: Install Composer dependencies
-        working-directory: Modules/ZeroPayModule
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run Laravel Pint (code style check)
-        working-directory: Modules/ZeroPayModule
+      - name: Check code style with Laravel Pint
         run: ./vendor/bin/pint --test
 
       - name: Validate module.json structure
-        working-directory: Modules/ZeroPayModule
         run: |
-          jq -e '.name and .alias and .providers' module.json
+          echo "Checking module.json exists..."
+          test -f module.json || (echo "module.json not found" && exit 1)
+
+          echo "Validating required fields in module.json..."
+          jq -e '.name' module.json > /dev/null || (echo "Missing: .name" && exit 1)
+          jq -e '.alias' module.json > /dev/null || (echo "Missing: .alias" && exit 1)
+          jq -e '.providers | length > 0' module.json > /dev/null || (echo "Missing or empty: .providers" && exit 1)
+          jq -e '.permissions | length > 0' module.json > /dev/null || (echo "Missing or empty: .permissions" && exit 1)
+          jq -e '.manifest' module.json > /dev/null || (echo "Missing: .manifest" && exit 1)
+          echo "module.json structure is valid."
 
       - name: Run PHPUnit tests
-        working-directory: Modules/ZeroPayModule
-        run: |
-          ./vendor/bin/phpunit --no-coverage
-          status=$?
-          # Exit code 2 means "no tests executed" (scaffold stubs without TestCase subclasses).
-          # This is acceptable on a clean scaffold; once real tests are added they will run normally.
-          # Exit code 1 (test failures) still causes the step to fail.
-          [ $status -eq 0 ] || [ $status -eq 2 ]
+        run: ./vendor/bin/phpunit --testdox Tests/
+

@@ -41,24 +41,20 @@ class FilamentServiceProvider extends ServiceProvider
      */
     protected function resources(): array
     {
-        return [];
+        return [
+            \Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource::class,
+            \Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource::class,
+            \Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource::class,
+        ];
     }
 
-    /**
-     * Filament pages provided by this module.
-     *
-     * @return array<int, class-string>
-     */
     protected function pages(): array
     {
-        return [];
+        return [
+            \Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage::class,
+        ];
     }
 
-    /**
-     * Filament widgets provided by this module.
-     *
-     * @return array<int, class-string>
-     */
     protected function widgets(): array
     {
         return [];
