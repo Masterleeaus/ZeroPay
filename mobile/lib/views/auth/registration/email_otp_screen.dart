@@ -1,7 +1,7 @@
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/backend/utils/custom_snackbar.dart';
-import 'package:qrpay/utils/basic_screen_imports.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/backend/utils/custom_snackbar.dart';
+import 'package:zeropay/utils/basic_screen_imports.dart';
 
 import '../../../controller/auth/registration/otp_email_controoler.dart';
 import '../../../controller/auth/registration/registration_controller.dart';

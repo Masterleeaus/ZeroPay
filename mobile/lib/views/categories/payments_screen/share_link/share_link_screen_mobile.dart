@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter_svg/svg.dart';
-import 'package:qrpay/widgets/payment_link/primary_input_widget.dart';
+import 'package:zeropay/widgets/payment_link/primary_input_widget.dart';
 
 import '../../../../custom_assets/assets.gen.dart';
 import '../../../../routes/routes.dart';

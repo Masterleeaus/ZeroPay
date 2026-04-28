@@ -1,4 +1,4 @@
-import 'package:qrpay/backend/model/pusher/pusher_beams_model.dart';
+import 'package:zeropay/backend/model/pusher/pusher_beams_model.dart';
 
 import '../../utils/api_method.dart';
 import '../../utils/custom_snackbar.dart';

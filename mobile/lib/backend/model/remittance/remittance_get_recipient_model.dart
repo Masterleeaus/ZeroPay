@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:qrpay/widgets/dropdown/custom_dropdown_menu.dart';
+import 'package:zeropay/widgets/dropdown/custom_dropdown_menu.dart';
 
 RemittanceGetRecipientModel remittanceGetRecipientModelFromJson(String str) =>
     RemittanceGetRecipientModel.fromJson(json.decode(str));

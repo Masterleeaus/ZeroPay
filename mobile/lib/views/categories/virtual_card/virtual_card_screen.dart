@@ -1,7 +1,7 @@
-import 'package:qrpay/backend/local_storage/local_storage.dart';
-import 'package:qrpay/controller/categories/virtual_card/flutter_wave_virtual_card/virtual_card_controller.dart';
-import 'package:qrpay/controller/categories/virtual_card/strowallet_card/strowallelt_info_controller.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
+import 'package:zeropay/backend/local_storage/local_storage.dart';
+import 'package:zeropay/controller/categories/virtual_card/flutter_wave_virtual_card/virtual_card_controller.dart';
+import 'package:zeropay/controller/categories/virtual_card/strowallet_card/strowallelt_info_controller.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
 
 import '../../../controller/categories/virtual_card/stripe_card/stripe_card_controller.dart';
 import '../../../controller/categories/virtual_card/sudo_virtual_card/virtual_card_sudo_controller.dart';

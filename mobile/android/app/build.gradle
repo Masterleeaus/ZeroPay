@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
-    namespace "net.appdevs.qrpayuser"
+    namespace "com.zeropay.user"
     compileSdk 34
 
     compileOptions {
@@ -48,7 +48,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "net.appdevs.qrpayuser"
+        applicationId "com.zeropay.user"
         minSdkVersion 21
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()

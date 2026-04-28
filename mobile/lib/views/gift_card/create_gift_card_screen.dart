@@ -1,6 +1,6 @@
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/dropdown/custom_dropdown_menu.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/dropdown/custom_dropdown_menu.dart';
 
 import '../../../utils/basic_screen_imports.dart';
 import '../../backend/model/gift_card/gift_details_model.dart';

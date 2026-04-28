@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/utils/dimensions.dart';
-import 'package:qrpay/utils/responsive_layout.dart';
-import 'package:qrpay/views/categories/remittance/recipient_email_input_widget.dart';
-import 'package:qrpay/views/categories/remittance/recipient_phone_number_widget.dart';
-import 'package:qrpay/widgets/appbar/appbar_widget.dart';
-import 'package:qrpay/widgets/buttons/primary_button.dart';
+import 'package:zeropay/utils/dimensions.dart';
+import 'package:zeropay/utils/responsive_layout.dart';
+import 'package:zeropay/views/categories/remittance/recipient_email_input_widget.dart';
+import 'package:zeropay/views/categories/remittance/recipient_phone_number_widget.dart';
+import 'package:zeropay/widgets/appbar/appbar_widget.dart';
+import 'package:zeropay/widgets/buttons/primary_button.dart';
 
 import '../../../backend/model/recipient_models/recipient_save_info_model.dart';
 import '../../../backend/utils/custom_loading_api.dart';

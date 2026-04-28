@@ -1,12 +1,12 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:qrpay/backend/model/add_money/add_money_ssl_insert_model.dart';
-import 'package:qrpay/backend/model/auth/login/reset_password.dart';
-import 'package:qrpay/backend/model/auth/registation/basic_data_model.dart';
-import 'package:qrpay/backend/model/categories/receive_money/receive_money_model.dart';
-import 'package:qrpay/backend/model/categories/send_money/send_money_info_model.dart';
-import 'package:qrpay/backend/model/categories/virtual_card/virtual_card_flutter_wave/card_info_model.dart';
-import 'package:qrpay/backend/model/recipient_models/check_recipient_model.dart';
+import 'package:zeropay/backend/model/add_money/add_money_ssl_insert_model.dart';
+import 'package:zeropay/backend/model/auth/login/reset_password.dart';
+import 'package:zeropay/backend/model/auth/registation/basic_data_model.dart';
+import 'package:zeropay/backend/model/categories/receive_money/receive_money_model.dart';
+import 'package:zeropay/backend/model/categories/send_money/send_money_info_model.dart';
+import 'package:zeropay/backend/model/categories/virtual_card/virtual_card_flutter_wave/card_info_model.dart';
+import 'package:zeropay/backend/model/recipient_models/check_recipient_model.dart';
 
 import '../model/add_money/add_model_bkash_model.dart';
 import '../model/add_money/add_money_pagadito_insert_model.dart';

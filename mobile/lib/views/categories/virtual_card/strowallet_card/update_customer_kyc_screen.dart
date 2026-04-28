@@ -1,4 +1,4 @@
-import 'package:qrpay/backend/utils/custom_loading_api.dart';
+import 'package:zeropay/backend/utils/custom_loading_api.dart';
 
 import '../../../../controller/categories/virtual_card/strowallet_card/update_customer_kyc_controller.dart';
 import '../../../../utils/basic_screen_imports.dart';

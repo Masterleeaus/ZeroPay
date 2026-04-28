@@ -1,4 +1,4 @@
-import 'package:qrpay/model/recent_transaction_model.dart';
+import 'package:zeropay/model/recent_transaction_model.dart';
 
 import '../language/english.dart';
 

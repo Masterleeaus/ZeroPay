@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrpay/widgets/inputs/password_input_widget.dart';
-import 'package:qrpay/widgets/text_labels/title_heading2_widget.dart';
+import 'package:zeropay/widgets/inputs/password_input_widget.dart';
+import 'package:zeropay/widgets/text_labels/title_heading2_widget.dart';
 
 import '../../../backend/utils/custom_loading_api.dart';
 import '../../../controller/auth/login/reset_password_controller.dart';

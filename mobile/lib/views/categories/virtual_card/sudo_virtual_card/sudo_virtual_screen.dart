@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:qrpay/backend/model/categories/virtual_card/virtual_card_sudo/virtual_card_sudo_info_model.dart';
-import 'package:qrpay/extentions/custom_extentions.dart';
-import 'package:qrpay/widgets/others/custom_glass/custom_glass_widget.dart';
+import 'package:zeropay/backend/model/categories/virtual_card/virtual_card_sudo/virtual_card_sudo_info_model.dart';
+import 'package:zeropay/extentions/custom_extentions.dart';
+import 'package:zeropay/widgets/others/custom_glass/custom_glass_widget.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../backend/utils/custom_loading_api.dart';
