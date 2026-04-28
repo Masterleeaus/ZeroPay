@@ -22,18 +22,21 @@ class BankTransferMatchingService
         }
 
         // 2. Amount + approximate timestamp match
-        $transactions = ZeroPayTransaction::query()
-            ->where('company_id', $deposit->company_id)
-            ->where('amount', $deposit->amount)
-            ->where('status', 'pending')
-            ->when($deposit->deposited_at, fn ($q) => $q->whereBetween('created_at', [
-                $deposit->deposited_at->copy()->subHours(48),
-                $deposit->deposited_at->copy()->addHours(48),
-            ]))
-            ->get();
+        // Only attempt this strategy when we have a timestamp for reliable windowing
+        if ($deposit->deposited_at) {
+            $transactions = ZeroPayTransaction::query()
+                ->where('company_id', $deposit->company_id)
+                ->where('amount', $deposit->amount)
+                ->where('status', 'pending')
+                ->whereBetween('created_at', [
+                    $deposit->deposited_at->copy()->subHours(48),
+                    $deposit->deposited_at->copy()->addHours(48),
+                ])
+                ->get();
 
-        if ($transactions->count() === 1) {
-            return $this->applyMatch($deposit, $transactions->first(), 80, 'amount_timestamp');
+            if ($transactions->count() === 1) {
+                return $this->applyMatch($deposit, $transactions->first(), 80, 'amount_timestamp');
+            }
         }
 
         // No match — flag for manual review

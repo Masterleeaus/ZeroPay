@@ -2,6 +2,7 @@
 
 namespace Modules\ZeroPayModule\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\ZeroPayModule\Actions\CreateZeroPaySessionAction;
 use Modules\ZeroPayModule\Data\ZeroPaySessionData;
@@ -18,22 +19,24 @@ class PaymentSessionService
 
     public function initiate(array $data): ZeroPaySession
     {
-        $sessionData = ZeroPaySessionData::fromArray(array_merge($data, [
-            'session_token' => $data['session_token'] ?? Str::uuid()->toString(),
-            'status'        => 'pending',
-        ]));
+        return DB::transaction(function () use ($data) {
+            $sessionData = ZeroPaySessionData::fromArray(array_merge($data, [
+                'session_token' => $data['session_token'] ?? Str::uuid()->toString(),
+                'status'        => 'pending',
+            ]));
 
-        $session = $this->createAction->execute($sessionData);
+            $session = $this->createAction->execute($sessionData);
 
-        $gateway = $this->gatewayFactory->make($session->gateway);
-        $result  = $gateway->createPayment($session->toArray());
+            $gateway = $this->gatewayFactory->make($session->gateway);
+            $result  = $gateway->createPayment($session->toArray());
 
-        $session->update([
-            'status' => 'open',
-            'meta'   => array_merge($session->meta ?? [], ['gateway_response' => $result]),
-        ]);
+            $session->update([
+                'status' => 'open',
+                'meta'   => array_merge($session->meta ?? [], ['gateway_response' => $result]),
+            ]);
 
-        return $session->refresh();
+            return $session->refresh();
+        });
     }
 
     public function complete(ZeroPaySession $session, string $reference): ZeroPayTransaction

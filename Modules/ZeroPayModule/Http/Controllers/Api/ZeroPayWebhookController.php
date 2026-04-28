@@ -21,24 +21,28 @@ class ZeroPayWebhookController extends Controller
         }
 
         $payload   = $request->all();
-        $companyId = isset($payload['company_id']) ? (int) $payload['company_id'] : null;
+        $signature = $request->header('X-Signature');
 
-        if (!$companyId) {
-            return response()->json(['error' => 'Missing required company_id in webhook payload'], 422);
-        }
-
-        ZeroPayWebhookEvent::create([
-            'company_id'      => $companyId,
+        // Always record the raw event before any processing so it is auditable.
+        // The company_id from the payload is untrusted at this stage; it is
+        // stored as-is for later reconciliation once the signature is verified.
+        $event = ZeroPayWebhookEvent::create([
+            'company_id'      => isset($payload['company_id']) ? (int) $payload['company_id'] : 0,
             'gateway'         => $gateway,
             'event_type'      => $payload['event'] ?? 'unknown',
             'payload'         => $payload,
-            'signature'       => $request->header('X-Signature'),
+            'signature'       => $signature,
             'idempotency_key' => $payload['idempotency_key'] ?? null,
             'status'          => 'received',
         ]);
 
+        // Delegate the actual payload processing to the gateway adapter.
+        // Each adapter is responsible for verifying the signature before
+        // trusting any payload values (e.g. amount, company_id).
         $adapter = $this->gatewayFactory->make($gateway);
         $result  = $adapter->handleWebhook($payload);
+
+        $event->update(['status' => 'processed', 'processed_at' => now()]);
 
         return response()->json(['processed' => true, 'result' => $result]);
     }

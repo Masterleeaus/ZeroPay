@@ -18,7 +18,7 @@ class CreateZeroPaySession extends CreateRecord
         $user = auth()->user();
 
         abort_if(!$user, 401, 'Unauthenticated.');
-        abort_if(empty($user->company_id), 422, 'No company context for authenticated user.');
+        abort_if(empty($user->company_id), 422, 'User must be assigned to a company before creating payment sessions.');
 
         $data['session_token'] = $data['session_token'] ?? Str::uuid()->toString();
         $data['company_id']    = $user->company_id;

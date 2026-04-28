@@ -12,7 +12,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('company_id')->index();
             $table->foreignId('bank_account_id')->nullable()->constrained('zeropay_bank_accounts')->nullOnDelete();
-            $table->foreignId('transaction_id')->nullable()->constrained('zeropay_transactions')->nullOnDelete();
+            $table->foreignId('transaction_id')->nullable()->constrained('zeropay_transactions')->cascadeOnDelete();
             $table->decimal('amount', 12, 2);
             $table->string('currency', 3)->default('AUD');
             $table->string('depositor_name')->nullable();

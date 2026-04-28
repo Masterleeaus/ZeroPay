@@ -11,6 +11,7 @@ use Modules\ZeroPayModule\Actions\DeleteZeroPaySessionAction;
 use Modules\ZeroPayModule\Actions\UpdateZeroPaySessionAction;
 use Modules\ZeroPayModule\Data\ZeroPaySessionData;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
+use Modules\ZeroPayModule\Services\GatewayFactory;
 use Modules\ZeroPayModule\Services\PaymentSessionService;
 
 class ZeroPaySessionController extends Controller
@@ -20,6 +21,7 @@ class ZeroPaySessionController extends Controller
         protected UpdateZeroPaySessionAction $updateAction,
         protected DeleteZeroPaySessionAction $deleteAction,
         protected PaymentSessionService      $sessionService,
+        protected GatewayFactory             $gatewayFactory,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -46,8 +48,9 @@ class ZeroPaySessionController extends Controller
             return response()->json(['error' => 'No company context for authenticated user'], 422);
         }
 
+        $supportedGateways = $this->gatewayFactory->supported();
         $validated = $request->validate([
-            'gateway'  => 'required|string|in:payid,bank_transfer,cash,stripe,paypal,cryptomus',
+            'gateway'  => ['required', 'string', \Illuminate\Validation\Rule::in($supportedGateways)],
             'amount'   => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|size:3',
         ]);
