@@ -1,14 +1,16 @@
 import '../../language/english.dart';
 import '../custom_assets/assets.gen.dart';
 import '../routes/routes.dart';
+import 'feature_flags.dart';
 
 class DrawerUtils {
   static List items = [
-    {
-      'title': Strings.giftCard,
-      'icon': Assets.icon.giftLog,
-      'route': Routes.giftCardScreen,
-    },
+    if (FeatureFlags.giftCards)
+      {
+        'title': Strings.giftCard,
+        'icon': Assets.icon.giftLog,
+        'route': Routes.giftCardScreen,
+      },
     {
       'title': Strings.transactionLog,
       'icon': Assets.icon.tLog,
