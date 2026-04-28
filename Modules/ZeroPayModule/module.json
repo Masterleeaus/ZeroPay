@@ -1,0 +1,14 @@
+{
+  "name": "ZeroPayModule",
+  "alias": "zeropay-module",
+  "description": "ZeroPay payment processing module — sessions, gateways, QR, bank matching, API",
+  "priority": 0,
+  "providers": [
+    "Modules\\ZeroPayModule\\Providers\\ZeroPayModuleServiceProvider",
+    "Modules\\ZeroPayModule\\Providers\\RouteServiceProvider",
+    "Modules\\ZeroPayModule\\Providers\\EventServiceProvider",
+    "Modules\\ZeroPayModule\\Providers\\FilamentServiceProvider"
+  ],
+  "requires": ["TitanCore", "TitanAgents"],
+  "optional_requires": ["TitanZero", "TitanDocs", "TitanChannels", "TitanPwa"]
+}
