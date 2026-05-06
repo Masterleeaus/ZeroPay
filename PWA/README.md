@@ -1,77 +1,57 @@
 # ZeroPay PWA
 
-Progressive Web App for ZeroPay — built with **Vite + React + TypeScript**.
+Progressive Web App for ZeroPay — mirrors the mobile MVP feature set.
 
-## Quick start
+## Tech Stack
+- React 18 + Vite + TypeScript
+- vite-plugin-pwa (Workbox service worker)
+- react-router-dom v6
+- idb (IndexedDB)
+- @zxing/browser (QR scanner)
+- qrcode (QR generation)
+- axios (API)
+
+## Setup
 
 ```bash
-cd PWA
-cp .env.example .env        # set VITE_API_BASE_URL
 npm install
-npm run dev                 # http://localhost:3000
+cp .env.example .env
+# Edit .env with your API base URL and VAPID public key
+npm run dev
 ```
 
-## Build for production
+## Build
 
 ```bash
-npm run build               # output → PWA/dist/
+npm run build
+# Output: dist/
 ```
 
 ## Screens
-
 | Route | Screen |
 |-------|--------|
 | `/splash` | Splash / loading |
 | `/onboard` | Onboarding carousel |
-| `/auth/login` | Sign in |
-| `/auth/register` | Create account |
+| `/auth/login` | Login |
+| `/auth/register` | Register |
 | `/auth/forgot-password` | Forgot password |
 | `/auth/verify-email` | Email verification |
 | `/auth/otp` | OTP verification |
-| `/auth/kyc` | KYC / identity upload |
 | `/dashboard` | Dashboard (balance + quick actions) |
+| `/pay/scan` | Make Payment — QR scanner |
+| `/pay/summary` | Payment summary + rail selection |
+| `/pay/session/:token` | Pay via session link |
+| `/request` | Request Money / Get Paid |
+| `/receive` | Receive Money (static PayID QR) |
+| `/receive/confirm/:id` | Payment confirmation |
+| `/transactions` | Transaction history |
+| `/transactions/:id` | Transaction detail |
+| `/notifications` | Notifications |
 
-## Auth flow
+## Offline Mode
+- IndexedDB stores: `pending_payments`, `cached_transactions`, `cached_sessions`
+- Background sync via service worker `sync` event (`sync-payments` tag)
+- Offline payment submissions queued and retried on reconnect
 
-```
-/splash
-  ├─ token exists  → /dashboard
-  └─ no token
-       ├─ first visit → /onboard → /auth/login
-       └─ returning   → /auth/login
-                           ↓
-                     /auth/register (new user)
-                           ↓
-                     /auth/verify-email
-                           ↓
-                     /auth/otp  (if SMS 2FA enabled)
-                           ↓
-                     /auth/kyc
-                           ↓
-                     /dashboard  ← protected by ProtectedRoute
-```
-
-## Environment variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_BASE_URL` | Base URL of the ZeroPay API server | `''` (same origin via Vite proxy) |
-
-## API endpoints consumed
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/auth/login` | Login — returns `{ token, user }` |
-| `POST` | `/api/auth/register` | Register — returns `{ token, user }` |
-| `POST` | `/api/auth/forgot-password` | Send reset email |
-| `POST` | `/api/auth/verify-email` | Verify email token |
-| `POST` | `/api/auth/verify-otp` | Verify OTP code |
-| `POST` | `/api/auth/kyc` | Submit KYC documents (multipart) |
-| `POST` | `/api/auth/logout` | Invalidate token |
-
-## Token storage
-
-- `auth_token` stored in `localStorage` (Bearer token added to all API requests)
-- `user` JSON stored in `localStorage`
-- On 401 response both keys are cleared and user is redirected to `/auth/login`
-- Unauthenticated access to any protected route (`/dashboard`, etc.) redirects to `/auth/login`
+## Push Notifications
+Set `VITE_VAPID_PUBLIC_KEY` and configure ZeroPayModule backend VAPID keys.

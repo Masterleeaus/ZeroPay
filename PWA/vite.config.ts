@@ -3,45 +3,52 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['icons/*.png', 'offline.html'],
       manifest: {
         name: 'ZeroPay',
         short_name: 'ZeroPay',
-        description: 'ZeroPay — fast, secure digital payments',
-        theme_color: '#1a1a2e',
-        background_color: '#1a1a2e',
+        description: 'Fast, secure mobile payments',
+        start_url: '/',
         display: 'standalone',
-        start_url: '/splash',
+        background_color: '#ffffff',
+        theme_color: '#1a1a2e',
+        categories: ['finance', 'productivity'],
         icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/.*\/api\//,
+            urlPattern: /^\/api\//,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
             },
           },
         ],
       },
+      devOptions: { enabled: true },
     }),
   ],
-  server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: process.env.VITE_API_BASE_URL ?? 'http://localhost:8000',
-        changeOrigin: true,
-      },
-    },
-  },
 })

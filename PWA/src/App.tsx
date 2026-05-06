@@ -9,6 +9,15 @@ import VerifyEmail from './pages/auth/VerifyEmail'
 import OtpVerification from './pages/auth/OtpVerification'
 import Kyc from './pages/auth/Kyc'
 import Dashboard from './pages/dashboard/Dashboard'
+import MakePayment from './pages/payment/MakePayment'
+import PaymentSummary from './pages/payment/PaymentSummary'
+import SessionPayment from './pages/payment/SessionPayment'
+import RequestMoney from './pages/request/RequestMoney'
+import ReceiveMoney from './pages/receive/ReceiveMoney'
+import ReceiveConfirm from './pages/receive/ReceiveConfirm'
+import TransactionList from './pages/transactions/TransactionList'
+import TransactionDetail from './pages/transactions/TransactionDetail'
+import Notifications from './pages/notifications/Notifications'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import OfflineBanner from './components/OfflineBanner'
@@ -42,12 +51,23 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pay/scan" element={<MakePayment />} />
+            <Route path="/pay/summary" element={<PaymentSummary />} />
+            <Route path="/request" element={<RequestMoney />} />
+            <Route path="/receive" element={<ReceiveMoney />} />
+            <Route path="/receive/confirm/:transactionId" element={<ReceiveConfirm />} />
+            <Route path="/transactions" element={<TransactionList />} />
+            <Route path="/transactions/:id" element={<TransactionDetail />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
         </Route>
 
+        {/* Pay by session link (public) */}
+        <Route path="/pay/session/:token" element={<SessionPayment />} />
+
         {/* Default redirect */}
         <Route path="/" element={<Navigate to="/splash" replace />} />
-        <Route path="*" element={<Navigate to="/splash" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   )
