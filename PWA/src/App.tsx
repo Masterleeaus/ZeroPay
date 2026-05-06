@@ -1,29 +1,72 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import SendMoney from './pages/SendMoney';
-import RequestMoney from './pages/RequestMoney';
-import PaymentQR from './pages/PaymentQR';
-import TransactionHistory from './pages/TransactionHistory';
-import Notifications from './pages/Notifications';
-import Profile from './pages/Profile';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import Splash from './pages/onboarding/Splash'
+import Onboard from './pages/onboarding/Onboard'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import VerifyEmail from './pages/auth/VerifyEmail'
+import OtpVerification from './pages/auth/OtpVerification'
+import Dashboard from './pages/dashboard/Dashboard'
+import MakePayment from './pages/payment/MakePayment'
+import PaymentSummary from './pages/payment/PaymentSummary'
+import SessionPayment from './pages/payment/SessionPayment'
+import RequestMoney from './pages/request/RequestMoney'
+import ReceiveMoney from './pages/receive/ReceiveMoney'
+import ReceiveConfirm from './pages/receive/ReceiveConfirm'
+import TransactionList from './pages/transactions/TransactionList'
+import TransactionDetail from './pages/transactions/TransactionDetail'
+import Notifications from './pages/notifications/Notifications'
+import ProtectedRoute from './components/ProtectedRoute'
+import Layout from './components/Layout'
+import OfflineBanner from './components/OfflineBanner'
 
-function App() {
+export default function App() {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    setReady(true)
+  }, [])
+
+  if (!ready) return null
+
   return (
     <BrowserRouter>
+      <OfflineBanner />
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/send" element={<SendMoney />} />
-        <Route path="/request" element={<RequestMoney />} />
-        <Route path="/qr" element={<PaymentQR />} />
-        <Route path="/history" element={<TransactionHistory />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profile" element={<Profile />} />
+        {/* Onboarding */}
+        <Route path="/splash" element={<Splash />} />
+        <Route path="/onboard" element={<Onboard />} />
+
+        {/* Auth */}
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/verify-email" element={<VerifyEmail />} />
+        <Route path="/auth/otp" element={<OtpVerification />} />
+
+        {/* Protected app routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pay/scan" element={<MakePayment />} />
+            <Route path="/pay/summary" element={<PaymentSummary />} />
+            <Route path="/request" element={<RequestMoney />} />
+            <Route path="/receive" element={<ReceiveMoney />} />
+            <Route path="/receive/confirm/:transactionId" element={<ReceiveConfirm />} />
+            <Route path="/transactions" element={<TransactionList />} />
+            <Route path="/transactions/:id" element={<TransactionDetail />} />
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
+        </Route>
+
+        {/* Pay by session link (public) */}
+        <Route path="/pay/session/:token" element={<SessionPayment />} />
+
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/splash" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
-
-export default App;

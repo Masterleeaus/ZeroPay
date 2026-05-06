@@ -1,57 +1,57 @@
 # ZeroPay PWA
 
-Standalone installable web app mirroring the ZeroPay mobile MVP feature set.
+Progressive Web App for ZeroPay — mirrors the mobile MVP feature set.
 
-## Technology Stack
+## Tech Stack
+- React 18 + Vite + TypeScript
+- vite-plugin-pwa (Workbox service worker)
+- react-router-dom v6
+- idb (IndexedDB)
+- @zxing/browser (QR scanner)
+- qrcode (QR generation)
+- axios (API)
 
-- **React 19** + **TypeScript** — UI framework
-- **Vite 6** — build tooling with fast HMR
-- **vite-plugin-pwa** — service worker and `manifest.webmanifest` generation
-- **workbox-window** — offline cache strategies
-- **react-router-dom** — SPA routing
-- **idb** — IndexedDB wrapper (offline mode)
-- **@zxing/browser** — QR code scanner
-- **qrcode** — QR code generation
-- **axios** — API calls
-
-## Getting Started
+## Setup
 
 ```bash
-cd PWA
 npm install
-npm run dev      # starts dev server at http://localhost:5173
+cp .env.example .env
+# Edit .env with your API base URL and VAPID public key
+npm run dev
 ```
 
 ## Build
 
 ```bash
-npm run build    # produces dist/ including dist/manifest.webmanifest and dist/sw.js
-npm run preview  # preview the production build locally
+npm run build
+# Output: dist/
 ```
 
-## PWA Features
+## Screens
+| Route | Screen |
+|-------|--------|
+| `/splash` | Splash / loading |
+| `/onboard` | Onboarding carousel |
+| `/auth/login` | Login |
+| `/auth/register` | Register |
+| `/auth/forgot-password` | Forgot password |
+| `/auth/verify-email` | Email verification |
+| `/auth/otp` | OTP verification |
+| `/dashboard` | Dashboard (balance + quick actions) |
+| `/pay/scan` | Make Payment — QR scanner |
+| `/pay/summary` | Payment summary + rail selection |
+| `/pay/session/:token` | Pay via session link |
+| `/request` | Request Money / Get Paid |
+| `/receive` | Receive Money (static PayID QR) |
+| `/receive/confirm/:id` | Payment confirmation |
+| `/transactions` | Transaction history |
+| `/transactions/:id` | Transaction detail |
+| `/notifications` | Notifications |
 
-- Installable (add to home screen) on Chrome/Edge/Safari
-- Offline-capable via Workbox precaching
-- `manifest.webmanifest` with ZeroPay branding (name, theme color `#1a56db`, icons)
-- Service worker registered via `vite-plugin-pwa` (auto-update strategy)
-- Runtime caching for `/api/` calls (NetworkFirst, 24h TTL)
+## Offline Mode
+- IndexedDB stores: `pending_payments`, `cached_transactions`, `cached_sessions`
+- Background sync via service worker `sync` event (`sync-payments` tag)
+- Offline payment submissions queued and retried on reconnect
 
-## Screens (MVP)
-
-| Route          | Description                       |
-|----------------|-----------------------------------|
-| `/login`       | Sign-in screen                    |
-| `/dashboard`   | Balance overview + quick actions  |
-| `/send`        | Send money form                   |
-| `/request`     | Request money form                |
-| `/qr`          | Show / scan payment QR code       |
-| `/history`     | Transaction history               |
-| `/notifications` | Push notification inbox         |
-| `/profile`     | User profile & settings           |
-
-## Module PWA Manifest
-
-The module-level PWA manifest template lives in
-`Modules/ZeroPayModule/PWA/pwa.manifest.json` and defines module-specific
-capabilities (offline mode, screens, agent settings).
+## Push Notifications
+Set `VITE_VAPID_PUBLIC_KEY` and configure ZeroPayModule backend VAPID keys.

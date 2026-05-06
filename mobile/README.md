@@ -1,6 +1,6 @@
-# qrpay
+# ZeroPay
 
-A new Flutter project.
+A Flutter mobile application for ZeroPay.
 
 ## Getting Started
 
