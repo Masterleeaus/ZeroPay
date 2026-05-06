@@ -1,0 +1,70 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { walletApi, type ReceiveInfo } from '../../api/wallet'
+import { transactionsApi, type Transaction } from '../../api/transactions'
+import QRCode from 'qrcode'
+
+export default function ReceiveMoney() {
+  const [info, setInfo] = useState<ReceiveInfo | null>(null)
+  const [qrDataUrl, setQrDataUrl] = useState('')
+  const [recent, setRecent] = useState<Transaction[]>([])
+  const [copied, setCopied] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    walletApi.getReceiveInfo().then(async r => {
+      setInfo(r.data)
+      const url = await QRCode.toDataURL(r.data.qr_payload ?? r.data.payid, { width: 200, margin: 2 })
+      setQrDataUrl(url)
+    }).catch(() => {})
+    transactionsApi.list({ type: 'received' }).then(r => setRecent(r.data.data.slice(0, 3))).catch(() => {})
+  }, [])
+
+  const share = async () => {
+    if (!info) return
+    const text = `Pay me via ZeroPay: ${info.payid}`
+    if (navigator.share) {
+      await navigator.share({ title: 'My PayID', text })
+    } else {
+      await navigator.clipboard.writeText(info.payid)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
+      <h2 style={{ color: '#1a1a2e' }}>📥 Receive Money</h2>
+
+      <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', textAlign: 'center', marginBottom: '24px' }}>
+        {qrDataUrl && <img src={qrDataUrl} alt="My PayID QR" style={{ width: '180px', height: '180px', borderRadius: '8px' }} />}
+        {info && (
+          <>
+            <p style={{ fontWeight: 700, fontSize: '1.1rem', margin: '12px 0 4px' }}>{info.account_name}</p>
+            <p style={{ color: '#666', fontSize: '14px', margin: '0 0 16px' }}>{info.payid}</p>
+          </>
+        )}
+        <button onClick={() => void share()} style={{ background: '#1a1a2e', color: '#fff', border: 'none', borderRadius: '10px', padding: '12px 24px', fontWeight: 600, cursor: 'pointer' }}>
+          {copied ? '✅ Copied!' : '🔗 Share My PayID'}
+        </button>
+      </div>
+
+      <h3 style={{ color: '#1a1a2e', marginBottom: '12px' }}>Recent Received</h3>
+      {recent.length === 0
+        ? <p style={{ color: '#666' }}>No received payments yet</p>
+        : recent.map(tx => (
+          <div key={tx.id} onClick={() => navigate(`/receive/confirm/${tx.id}`)} style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '12px 0', borderBottom: '1px solid #f0f0f0', cursor: 'pointer',
+          }}>
+            <div>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>{tx.merchant_name ?? 'Payment'}</p>
+              <p style={{ margin: '2px 0 0', color: '#666', fontSize: '12px' }}>{new Date(tx.created_at).toLocaleDateString()}</p>
+            </div>
+            <p style={{ margin: 0, fontWeight: 700, color: '#22c55e' }}>+{tx.currency} {tx.amount.toFixed(2)}</p>
+          </div>
+        ))
+      }
+    </div>
+  )
+}

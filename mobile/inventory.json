@@ -576,6 +576,6 @@
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/card.dart",
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/virtual_card_sudo_info_model.dart",
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/identiti_type.dart",
-    "android/app/src/main/kotlin/net/appdevs/qrpayuseruser/MainActivity.kt"
+    "android/app/src/main/kotlin/io/zeropay/app/MainActivity.kt"
   ]
 }
