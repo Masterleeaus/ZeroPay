@@ -22,6 +22,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\Modules\ZeroPayModule\Services\BankTransferMatchingService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\PaymentSessionService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\QrCodeService::class);
+        $this->app->singleton(\Modules\ZeroPayModule\Services\WebPushService::class);
     }
 
     /**

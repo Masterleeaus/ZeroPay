@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { walletApi, type WalletBalance } from '../../api/wallet'
 import { transactionsApi, type Transaction } from '../../api/transactions'
+import { usePushNotifications } from '../../hooks/usePushNotifications'
 import { featureFlags } from '../../featureFlags'
 
 const quickActions = [
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const touchStartY = useRef<number | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
+  const { permission, subscribe } = usePushNotifications()
 
   const load = async () => {
     try {
@@ -47,9 +49,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     void load()
-    // Push notification opt-in is handled explicitly in the Notifications screen
   }, [])
 
+  useEffect(() => {
+    // Prompt for push notifications on first dashboard visit if not yet decided.
+    if (permission === 'default') {
+      void subscribe()
+    }
+  }, [permission, subscribe])
   const refreshDashboard = async () => {
     setRefreshing(true)
     await load()
