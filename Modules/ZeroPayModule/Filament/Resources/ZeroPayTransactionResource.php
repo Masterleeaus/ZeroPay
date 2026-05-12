@@ -2,12 +2,17 @@
 
 namespace Modules\ZeroPayModule\Filament\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\ZeroPayModule\Exports\ZeroPayTransactionsExport;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource\Pages;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 
@@ -24,40 +29,165 @@ class ZeroPayTransactionResource extends Resource
         return auth()->user()?->can('zeropay.view') ?? false;
     }
 
-    public static function form(Form $form): Form
+    public static function canCreate(): bool
     {
-        return $form->schema([
-            TextInput::make('gateway_reference')->label('Reference'),
-            TextInput::make('gateway')->label('Gateway'),
-            TextInput::make('amount')->numeric(),
-            TextInput::make('currency')->default('AUD')->maxLength(3),
-            Select::make('status')->options([
-                'pending'   => 'Pending',
-                'completed' => 'Completed',
-                'failed'    => 'Failed',
-                'refunded'  => 'Refunded',
-            ]),
-            TextInput::make('fee')->numeric(),
-            TextInput::make('net_amount')->numeric(),
-        ]);
+        return false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            TextColumn::make('gateway_reference')->label('Reference')->searchable(),
-            TextColumn::make('gateway')->label('Gateway'),
-            TextColumn::make('amount')->label('Amount')->money('AUD'),
-            TextColumn::make('fee')->label('Fee')->money('AUD'),
-            TextColumn::make('status')->label('Status')->badge(),
-            TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
-        ])->defaultSort('created_at', 'desc');
+        return $table
+            ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+
+                TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'refund' => 'warning',
+                        'fee'    => 'gray',
+                        default  => 'primary',
+                    }),
+
+                TextColumn::make('gateway')
+                    ->label('Gateway')
+                    ->badge(),
+
+                TextColumn::make('gateway_reference')
+                    ->label('Gateway Ref')
+                    ->copyable()
+                    ->limit(30),
+
+                TextColumn::make('amount')
+                    ->label('Amount')
+                    ->money('AUD')
+                    ->sortable(),
+
+                TextColumn::make('fee')
+                    ->label('Fee')
+                    ->money('AUD'),
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'completed' => 'success',
+                        'pending'   => 'warning',
+                        'failed'    => 'danger',
+                        'refunded'  => 'info',
+                        default     => 'gray',
+                    }),
+
+                TextColumn::make('payer_name')
+                    ->label('Payer')
+                    ->searchable(),
+
+                TextColumn::make('payee_name')
+                    ->label('Payee')
+                    ->searchable(),
+
+                TextColumn::make('reference')
+                    ->label('Reference')
+                    ->searchable()
+                    ->copyable(),
+
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->sortable(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending'   => 'Pending',
+                        'completed' => 'Completed',
+                        'failed'    => 'Failed',
+                        'refunded'  => 'Refunded',
+                    ]),
+
+                SelectFilter::make('type')
+                    ->label('Type')
+                    ->options([
+                        'payment' => 'Payment',
+                        'refund'  => 'Refund',
+                        'fee'     => 'Fee',
+                    ]),
+
+                SelectFilter::make('gateway')
+                    ->label('Gateway')
+                    ->options([
+                        'payid'         => 'PayID',
+                        'bank_transfer' => 'Bank Transfer',
+                        'cash'          => 'Cash',
+                        'stripe'        => 'Stripe',
+                        'paypal'        => 'PayPal',
+                        'cryptomus'     => 'Cryptomus',
+                    ]),
+
+                Filter::make('created_at')
+                    ->label('Date Range')
+                    ->form([
+                        DatePicker::make('created_from')->label('From'),
+                        DatePicker::make('created_until')->label('Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_from'], fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
+
+                Filter::make('amount_range')
+                    ->label('Amount Range')
+                    ->form([
+                        TextInput::make('amount_from')->label('Min Amount')->numeric(),
+                        TextInput::make('amount_to')->label('Max Amount')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['amount_from'], fn (Builder $q, string $amount) => $q->where('amount', '>=', $amount))
+                            ->when($data['amount_to'], fn (Builder $q, string $amount) => $q->where('amount', '<=', $amount));
+                    }),
+            ])
+            ->headerActions([
+                Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        $export = new ZeroPayTransactionsExport(
+                            ZeroPayTransaction::query()
+                        );
+
+                        $filename = 'transactions-' . now()->format('Y-m-d') . '.csv';
+
+                        return $export->download($filename);
+                    }),
+            ])
+            ->actions([
+                ViewAction::make(),
+            ])
+            ->bulkActions([]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListZeroPayTransactions::route('/'),
+            'view'  => Pages\ViewZeroPayTransaction::route('/{record}'),
         ];
     }
 }
+
