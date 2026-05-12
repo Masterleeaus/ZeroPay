@@ -33,6 +33,17 @@ export default function TransactionDetail() {
   if (!tx) return <div style={{ padding: '32px', textAlign: 'center', color: '#666' }}>Loading…</div>
 
   const currentStep = tx.status === 'failed' ? 3 : timeline.indexOf(tx.status === 'completed' ? 'completed' : tx.status)
+  const receiptText = [
+    `Transaction #${tx.id}`,
+    `Type: ${tx.type}`,
+    `Amount: ${tx.currency} ${tx.amount.toFixed(2)}`,
+    `Status: ${tx.status}`,
+    `Reference: ${tx.reference ?? '—'}`,
+    `Merchant: ${tx.merchant_name ?? '—'}`,
+    `Gateway: ${tx.gateway}`,
+    `Fee: ${tx.currency} ${tx.fee.toFixed(2)}`,
+    `Timestamp: ${new Date(tx.created_at).toLocaleString()}`,
+  ].join('\n')
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -50,11 +61,14 @@ export default function TransactionDetail() {
       <div style={{ background: '#fff', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', marginBottom: '20px' }}>
         {[
           { label: 'Type', value: tx.type },
+          { label: 'Amount', value: tx.amount.toFixed(2) },
+          { label: 'Currency', value: tx.currency },
           { label: 'Gateway', value: tx.gateway },
           { label: tx.direction === 'received' ? 'From' : 'To', value: tx.merchant_name ?? '—' },
           { label: 'Reference', value: tx.reference ?? '—' },
           { label: 'Fee', value: `${tx.currency} ${tx.fee.toFixed(2)}` },
-          { label: 'Date', value: new Date(tx.created_at).toLocaleString() },
+          { label: 'Status', value: tx.status },
+          { label: 'Timestamp', value: new Date(tx.created_at).toLocaleString() },
         ].map(({ label, value }) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
             <span style={{ color: '#666', fontSize: '14px' }}>{label}</span>
@@ -62,6 +76,20 @@ export default function TransactionDetail() {
           </div>
         ))}
       </div>
+
+      <button
+        type="button"
+        onClick={async () => {
+          if (navigator.share) {
+            await navigator.share({ title: `Transaction #${tx.id}`, text: receiptText })
+            return
+          }
+          window.print()
+        }}
+        style={{ width: '100%', padding: '12px', marginBottom: '20px', borderRadius: '10px', border: 'none', background: '#1a1a2e', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+      >
+        Download Receipt / Share
+      </button>
 
       {/* Timeline */}
       <div style={{ background: '#fff', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>

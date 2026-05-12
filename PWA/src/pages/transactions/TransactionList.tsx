@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { transactionsApi, type Transaction } from '../../api/transactions'
 import { getCachedTransactions, cacheTransactions } from '../../db'
@@ -7,9 +7,9 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 const filters = ['All', 'Sent', 'Received', 'Pending', 'Failed']
 
 function statusColor(s: string) {
-  if (s === 'completed') return '#22c55e'
-  if (s === 'failed') return '#ef4444'
-  return '#f59e0b'
+  if (s === 'completed') return { bg: '#dcfce7', text: '#166534' }
+  if (s === 'failed') return { bg: '#fee2e2', text: '#991b1b' }
+  return { bg: '#fef3c7', text: '#92400e' }
 }
 
 export default function TransactionList() {
@@ -19,6 +19,7 @@ export default function TransactionList() {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
   const online = useOnlineStatus()
   const navigate = useNavigate()
 
@@ -32,9 +33,10 @@ export default function TransactionList() {
         return
       }
       const params: Record<string, unknown> = { page: p }
-      if (f !== 'All') params.type = f.toLowerCase()
+      if (f === 'Sent' || f === 'Received') params.type = f.toLowerCase()
+      if (f === 'Pending' || f === 'Failed') params.status = f.toLowerCase()
       if (q) params.search = q
-      const res = await transactionsApi.list(params as { page?: number; type?: string; search?: string })
+      const res = await transactionsApi.list(params as { page?: number; type?: string; status?: string; search?: string })
       const newTxs = res.data.data
       setTransactions(prev => replace ? newTxs : [...prev, ...newTxs])
       setHasMore(res.data.meta.current_page < res.data.meta.last_page)
@@ -56,6 +58,19 @@ export default function TransactionList() {
     }, 300)
     return () => clearTimeout(timer)
   }, [search, filter, loadTransactions])
+
+  useEffect(() => {
+    const target = loadMoreRef.current
+    if (!target || !hasMore) return
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0]?.isIntersecting || loading) return
+      const next = page + 1
+      setPage(next)
+      void loadTransactions(next, filter, search)
+    }, { rootMargin: '120px' })
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMore, loading, page, filter, search, loadTransactions])
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -105,7 +120,15 @@ export default function TransactionList() {
             <p style={{ margin: 0, fontWeight: 700, color: tx.direction === 'received' ? '#22c55e' : '#1a1a2e', fontSize: '14px' }}>
               {tx.direction === 'received' ? '+' : '-'}{tx.currency} {tx.amount.toFixed(2)}
             </p>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: statusColor(tx.status) }}>{tx.status}</span>
+            <span style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              borderRadius: '12px',
+              padding: '2px 8px',
+              background: statusColor(tx.status).bg,
+              color: statusColor(tx.status).text,
+              textTransform: 'capitalize',
+            }}>{tx.status}</span>
           </div>
         </div>
       ))}
@@ -113,15 +136,7 @@ export default function TransactionList() {
       {loading && <p style={{ textAlign: 'center', color: '#666' }}>Loading…</p>}
       {!loading && transactions.length === 0 && <p style={{ textAlign: 'center', color: '#666' }}>No transactions found</p>}
 
-      {hasMore && !loading && (
-        <button onClick={() => {
-          const next = page + 1
-          setPage(next)
-          void loadTransactions(next, filter, search)
-        }} style={{ width: '100%', padding: '12px', background: 'none', border: '1.5px solid #e0e0e0', borderRadius: '10px', color: '#1a1a2e', fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>
-          Load More
-        </button>
-      )}
+      {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
     </div>
   )
 }
