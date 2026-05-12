@@ -12,6 +12,9 @@ A Flutter mobile application for ZeroPay — a QR-based payment platform.
 
 - **Package ID (Android):** `io.zeropay.app`
 - **Bundle ID (iOS):** `io.zeropay.app`
+# ZeroPay
+
+A Flutter mobile application for ZeroPay.
 
 ## Getting Started
 
