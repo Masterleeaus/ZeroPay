@@ -9,17 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('zeropay_gateway_logs', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('company_id')->index();
-            $table->unsignedBigInteger('session_id')->nullable()->index();
-            $table->unsignedBigInteger('transaction_id')->nullable()->index();
-            $table->string('gateway')->index();
-            $table->string('direction');
-            $table->string('event');
+            $table->string('gateway');
+            $table->string('action');
+            $table->unsignedBigInteger('session_id')->nullable();
+            $table->integer('http_status')->nullable();
             $table->json('request_payload')->nullable();
             $table->json('response_payload')->nullable();
-            $table->integer('http_status')->nullable();
-            $table->integer('duration_ms')->nullable();
+            $table->boolean('success')->default(false);
+            $table->decimal('duration_ms', 8, 2)->nullable();
             $table->timestamps();
         });
     }
