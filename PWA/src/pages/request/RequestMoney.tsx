@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { sessionsApi, type QrPayload } from '../../api/sessions'
 import { cacheSession } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
@@ -9,14 +9,17 @@ export default function RequestMoney() {
   const [currency, setCurrency] = useState('AUD')
   const [reference, setReference] = useState('')
   const [qrDataUrl, setQrDataUrl] = useState('')
-  const [session, setSession] = useState<{ token: string; payload: QrPayload } | null>(null)
+  const [session, setSession] = useState<{ token: string; payload: QrPayload; status: string } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [infoMessage, setInfoMessage] = useState('')
   const online = useOnlineStatus()
 
-  const createSession = async () => {
-    setLoading(true)
+  const createSession = async (isRefresh = false) => {
+    if (!isRefresh) {
+      setLoading(true)
+    }
     setError('')
     try {
       const res = await sessionsApi.create({
@@ -28,7 +31,12 @@ export default function RequestMoney() {
       const qrPayload = JSON.stringify(qr_payload)
       const dataUrl = await QRCode.toDataURL(qrPayload, { width: 300, margin: 2 })
       setQrDataUrl(dataUrl)
-      setSession({ token: session_token, payload: qr_payload })
+      setSession({ token: session_token, payload: qr_payload, status: res.data.status })
+      if (isRefresh) {
+        setInfoMessage('🔄 Session refreshed with a new QR code.')
+      } else {
+        setInfoMessage('')
+      }
       await cacheSession({
         session_token,
         qr_payload: qr_payload as unknown as Record<string, unknown>,
@@ -38,7 +46,9 @@ export default function RequestMoney() {
       const message = err instanceof Error ? err.message : 'Failed to create session'
       setError(message)
     } finally {
-      setLoading(false)
+      if (!isRefresh) {
+        setLoading(false)
+      }
     }
   }
 
@@ -46,13 +56,59 @@ export default function RequestMoney() {
     if (!session) return
     const url = `${window.location.origin}/pay/session/${session.token}`
     if (navigator.share) {
-      await navigator.share({ title: 'ZeroPay Request', text: 'Pay me via ZeroPay', url })
-    } else {
+      try {
+        await navigator.share({ title: 'ZeroPay Request', text: 'Pay me via ZeroPay', url })
+        return
+      } catch {
+        // fallback to clipboard below
+      }
+    }
+    try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setError('Unable to share link. Please copy it manually below.')
     }
   }
+
+  useEffect(() => {
+    if (!session || session.status !== 'pending') return
+    let cancelled = false
+    const intervalId = window.setInterval(() => {
+      void sessionsApi.get(session.token)
+        .then((r) => {
+          if (cancelled) return
+          setSession((prev) => {
+            if (!prev || prev.token !== r.data.session_token) return prev
+            return { ...prev, status: r.data.status }
+          })
+          if (r.data.status === 'completed') {
+            setInfoMessage('✅ Payment received.')
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('ZeroPay', { body: 'Payment received for this request.' })
+            }
+          }
+        })
+        .catch(() => {})
+    }, 3000)
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [session])
+
+  useEffect(() => {
+    if (!session || session.status !== 'pending') return
+    const expiresAtMs = session.payload.expiry_timestamp * 1000
+    const timeoutMs = Math.max(expiresAtMs - Date.now(), 0)
+    const timeoutId = window.setTimeout(() => {
+      void createSession(true)
+    }, timeoutMs)
+    return () => window.clearTimeout(timeoutId)
+  }, [session?.token, session?.payload.expiry_timestamp, amount, currency, reference])
+
+  const paymentLink = session ? `${window.location.origin}/pay/session/${session.token}` : ''
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -80,12 +136,29 @@ export default function RequestMoney() {
           {!online && <p style={{ color: '#f59e0b', fontSize: '13px', textAlign: 'center' }}>⚠️ Connect to internet to generate a payment QR</p>}
         </div>
       ) : (
-        <div style={{ textAlign: 'center' }}>
-          {qrDataUrl && <img src={qrDataUrl} alt="Payment QR" style={{ width: '100%', maxWidth: '300px', margin: '0 auto 16px', display: 'block', borderRadius: '12px' }} />}
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: '#fff',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          textAlign: 'center',
+        }}>
+          <h3 style={{ color: '#1a1a2e', marginBottom: '6px' }}>Show this QR to the payer</h3>
           <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
-            Share this QR or link for payment
+            Status: <strong style={{ color: session.status === 'completed' ? '#16a34a' : '#f59e0b' }}>{session.status}</strong>
           </p>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          {infoMessage && (
+            <p style={{ marginTop: 0, marginBottom: '16px', color: '#1a1a2e', fontWeight: 600 }}>{infoMessage}</p>
+          )}
+          {qrDataUrl && <img src={qrDataUrl} alt="Payment QR" style={{ width: '100%', maxWidth: '360px', margin: '0 auto 16px', display: 'block', borderRadius: '12px' }} />}
+          <p style={{ color: '#666', fontSize: '13px', marginBottom: '8px' }}>Share link fallback:</p>
+          <a href={paymentLink} style={{ color: '#0f3460', fontSize: '13px', marginBottom: '16px', wordBreak: 'break-all' }}>{paymentLink}</a>
+          <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '420px' }}>
             <button onClick={() => void shareLink()} style={{ ...btnStyle, background: '#0f3460', flex: 1 }}>
               {copied ? '✅ Copied!' : '🔗 Share Link'}
             </button>
