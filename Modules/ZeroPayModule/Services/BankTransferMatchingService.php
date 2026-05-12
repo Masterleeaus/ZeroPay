@@ -21,7 +21,7 @@ class BankTransferMatchingService
 
         foreach ($candidates as $session) {
             $criteria = $this->evaluateCriteria($deposit, $session);
-            $confidence = array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / 4;
+            $confidence = array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / count($criteria);
 
             if ($confidence > $bestConfidence) {
                 $best = $session;
@@ -83,9 +83,13 @@ class BankTransferMatchingService
             'depositor_account' => $depositorAccount,
             'deposited_at' => $depositedAt,
             'status' => 'pending_review',
-            'raw_data' => $rawDepositData,
-            'meta' => $rawDepositData,
         ];
+
+        if ($this->hasColumn('zeropay_bank_deposits', 'raw_data')) {
+            $payload['raw_data'] = $rawDepositData;
+        } elseif ($this->hasColumn('zeropay_bank_deposits', 'meta')) {
+            $payload['meta'] = $rawDepositData;
+        }
 
         return ZeroPayBankDeposit::create($this->filterColumns('zeropay_bank_deposits', $payload));
     }
@@ -166,9 +170,13 @@ class BankTransferMatchingService
                 'status' => 'matched',
                 'match_score' => (int) round($confidence * 100),
                 'match_method' => 'all_criteria',
-                'transaction_id' => $transaction->id,
-                'matched_transaction_id' => $transaction->id,
             ];
+
+            if ($this->hasColumn('zeropay_bank_deposits', 'transaction_id')) {
+                $depositUpdate['transaction_id'] = $transaction->id;
+            } elseif ($this->hasColumn('zeropay_bank_deposits', 'matched_transaction_id')) {
+                $depositUpdate['matched_transaction_id'] = $transaction->id;
+            }
 
             $deposit->update($this->filterColumns('zeropay_bank_deposits', $depositUpdate));
 
@@ -266,8 +274,8 @@ class BankTransferMatchingService
         $meta = (array) ($session->meta ?? []);
 
         return (string) ($session->merchant_name
-            ?? $session->owner_name
-            ?? $session->name
+            ?? $session->getAttribute('owner_name')
+            ?? $session->getAttribute('name')
             ?? ($meta['merchant_name'] ?? null)
             ?? ($meta['owner_name'] ?? null)
             ?? ($meta['customer_name'] ?? null)
