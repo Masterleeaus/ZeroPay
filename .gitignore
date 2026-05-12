@@ -6,3 +6,4 @@ PWA/.env
 # macOS
 .DS_Store
 Modules/ZeroPayModule/vendor/
+Modules/ZeroPayModule/.phpunit.result.cache
