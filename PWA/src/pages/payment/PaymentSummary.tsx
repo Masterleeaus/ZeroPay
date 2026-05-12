@@ -4,6 +4,9 @@ import { sessionsApi, type QrPayload } from '../../api/sessions'
 import { queuePendingPayment } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 
+// SyncManager is not yet in the standard TypeScript lib types
+type SyncRegistration = ServiceWorkerRegistration & { sync: { register(tag: string): Promise<void> } }
+
 const gateways = ['Wallet', 'BankTransfer', 'PayID']
 
 export default function PaymentSummary() {
@@ -37,7 +40,7 @@ export default function PaymentSummary() {
         if ('serviceWorker' in navigator && 'SyncManager' in window) {
           try {
             const reg = await navigator.serviceWorker.ready
-            await (reg as ServiceWorkerRegistration & { sync: { register(tag: string): Promise<void> } }).sync.register('sync-payments')
+            await (reg as SyncRegistration).sync.register('sync-payments')
           } catch {
             // SyncManager unavailable (e.g. Firefox, some iOS) – will retry on next page load
           }
