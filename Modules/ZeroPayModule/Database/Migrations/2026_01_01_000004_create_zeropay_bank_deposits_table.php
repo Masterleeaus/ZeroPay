@@ -9,25 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('zeropay_bank_deposits', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('company_id')->index();
-            $table->foreignId('bank_account_id')->nullable()->constrained('zeropay_bank_accounts')->nullOnDelete();
-            $table->foreignId('transaction_id')->nullable()->constrained('zeropay_transactions')->cascadeOnDelete();
-            $table->decimal('amount', 12, 2);
+            $table->string('reference')->nullable()->index();
+            $table->decimal('amount', 18, 2);
             $table->string('currency', 3)->default('AUD');
             $table->string('depositor_name')->nullable();
-            $table->string('depositor_bsb')->nullable();
             $table->string('depositor_account')->nullable();
-            $table->string('reference')->nullable()->index();
-            $table->string('description')->nullable();
             $table->timestamp('deposited_at')->nullable();
-            $table->string('status')->default('pending_review')->index();
-            $table->integer('match_score')->default(0);
-            $table->string('match_method')->nullable();
-            $table->json('meta')->nullable();
+            $table->unsignedBigInteger('matched_transaction_id')->nullable();
+            $table->string('status')->default('pending_review');
+            $table->json('raw_data')->nullable();
             $table->timestamps();
-            $table->softDeletes();
-            $table->index(['company_id', 'status']);
         });
     }
 
