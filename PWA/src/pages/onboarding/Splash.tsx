@@ -5,7 +5,7 @@ export default function Splash() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token')
+    const token = localStorage.getItem('zeropay_token')
     if (token) {
       navigate('/dashboard', { replace: true })
       return

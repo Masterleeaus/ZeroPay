@@ -1,13 +1,45 @@
+import { useEffect, useState } from 'react'
 import { usePushNotifications } from '../../hooks/usePushNotifications'
+import { notificationsApi, type Notification } from '../../api/notifications'
 
-const mockNotifications = [
-  { id: 1, type: 'payment.completed', title: 'Payment Received', body: 'You received AUD 120.00 from Kate', time: '2 min ago', icon: '✅' },
-  { id: 2, type: 'payment.pending', title: 'Payment Processing', body: 'Payment of AUD 50.00 is being processed', time: '5 min ago', icon: '⏳' },
-  { id: 3, type: 'session.expiring', title: 'Session Expiring', body: 'Your payment QR expires in 5 minutes', time: '10 min ago', icon: '⏰' },
-]
+function notificationIcon(type: string): string {
+  if (type.includes('completed')) return '✅'
+  if (type.includes('pending')) return '⏳'
+  if (type.includes('expiring') || type.includes('expiry')) return '⏰'
+  if (type.includes('failed')) return '❌'
+  return '🔔'
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
 
 export default function Notifications() {
   const { permission, subscribed, subscribe } = usePushNotifications()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    notificationsApi.list()
+      .then(res => setNotifications(res.data.data))
+      .catch(() => setNotifications([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleMarkRead = async (id: number) => {
+    try {
+      await notificationsApi.markRead(id)
+      setNotifications(prev =>
+        prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n),
+      )
+    } catch {
+      // handled gracefully
+    }
+  }
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -35,16 +67,32 @@ export default function Notifications() {
         </div>
       )}
 
-      {mockNotifications.map(n => (
-        <div key={n.id} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', background: '#fff', borderRadius: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '8px' }}>
-          <div style={{ fontSize: '24px', flexShrink: 0 }}>{n.icon}</div>
-          <div style={{ flex: 1 }}>
-            <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: '14px', color: '#1a1a2e' }}>{n.title}</p>
-            <p style={{ margin: '0 0 6px', color: '#666', fontSize: '13px' }}>{n.body}</p>
-            <p style={{ margin: 0, color: '#999', fontSize: '12px' }}>{n.time}</p>
+      {loading ? (
+        <p style={{ color: '#666', textAlign: 'center' }}>Loading…</p>
+      ) : notifications.length === 0 ? (
+        <p style={{ color: '#666', textAlign: 'center' }}>No notifications yet</p>
+      ) : (
+        notifications.map(n => (
+          <div
+            key={n.id}
+            onClick={() => { if (!n.read_at) void handleMarkRead(n.id) }}
+            style={{
+              display: 'flex', gap: '12px', alignItems: 'flex-start',
+              padding: '14px', background: n.read_at ? '#fff' : '#f0f7ff',
+              borderRadius: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+              marginBottom: '8px', cursor: n.read_at ? 'default' : 'pointer',
+            }}
+          >
+            <div style={{ fontSize: '24px', flexShrink: 0 }}>{notificationIcon(n.type)}</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: '14px', color: '#1a1a2e' }}>{n.title}</p>
+              <p style={{ margin: '0 0 6px', color: '#666', fontSize: '13px' }}>{n.body}</p>
+              <p style={{ margin: 0, color: '#999', fontSize: '12px' }}>{timeAgo(n.created_at)}</p>
+            </div>
+            {!n.read_at && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', flexShrink: 0, marginTop: '6px' }} />}
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   )
 }
