@@ -22,11 +22,20 @@ export default function ReceiveMoney() {
 
   const share = async () => {
     if (!info) return
-    const text = `Pay me via ZeroPay: ${info.payid}`
+    const payIdLink = info.qr_payload?.trim() || info.payid
+    const text = `Pay me via ZeroPay: ${payIdLink}`
     if (navigator.share) {
-      await navigator.share({ title: 'My PayID', text })
+      let url: string | undefined
+      if (info.qr_payload) {
+        try {
+          url = new URL(info.qr_payload).toString()
+        } catch {
+          url = undefined
+        }
+      }
+      await navigator.share({ title: 'My PayID', text, ...(url ? { url } : {}) })
     } else {
-      await navigator.clipboard.writeText(info.payid)
+      await navigator.clipboard.writeText(payIdLink)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
