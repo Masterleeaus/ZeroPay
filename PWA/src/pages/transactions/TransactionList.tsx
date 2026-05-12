@@ -79,7 +79,7 @@ export default function TransactionList() {
     const target = loadMoreRef.current
     if (!target || !hasMore) return
     const observer = new IntersectionObserver(entries => {
-      if (!entries[0]?.isIntersecting || loadingRef.current) return
+      if (!entries[0].isIntersecting || loadingRef.current) return
       const next = pageRef.current + 1
       setPage(next)
       void loadTransactions(next, filter, search)

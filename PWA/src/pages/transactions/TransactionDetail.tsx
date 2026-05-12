@@ -85,7 +85,10 @@ export default function TransactionDetail() {
               return
             }
           } catch (error) {
-            if ((error as Error).name !== 'AbortError') console.error('Failed to share receipt:', error)
+            if ((error as Error).name !== 'AbortError') {
+              console.error('Failed to share receipt:', error)
+              window.alert('Unable to share receipt right now. Opening print view instead.')
+            }
           }
           window.print()
         }}
