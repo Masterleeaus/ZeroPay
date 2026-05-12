@@ -7,7 +7,7 @@ use Modules\ZeroPayModule\Models\ZeroPaySession;
 /**
  * Result returned by the bank transfer matcher.
  *
- * - status: auto_matched|needs_review|rejected
+ * - status: auto_matched|needs_review
  * - session is null when no candidate session was identified
  * - matchedCriteria includes boolean keys: reference, amount, customer, timestamp
  */

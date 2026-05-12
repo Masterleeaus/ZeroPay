@@ -13,6 +13,7 @@ use Modules\ZeroPayModule\ValueObjects\MatchResult;
 class BankTransferMatchingService
 {
     private const CUSTOMER_MATCH_THRESHOLD = 0.8;
+    private const AMOUNT_TOLERANCE = 0.01;
 
     public function match(ZeroPayBankDeposit $deposit): MatchResult
     {
@@ -208,7 +209,10 @@ class BankTransferMatchingService
         }
 
         if ($deposit->amount !== null) {
-            $query->whereBetween('amount', [(float) $deposit->amount - 0.01, (float) $deposit->amount + 0.01]);
+            $query->whereBetween('amount', [
+                (float) $deposit->amount - self::AMOUNT_TOLERANCE,
+                (float) $deposit->amount + self::AMOUNT_TOLERANCE,
+            ]);
         }
 
         if (!empty($deposit->reference)) {
@@ -232,7 +236,7 @@ class BankTransferMatchingService
         $referenceMatch = $depositReference !== '' && $sessionReference !== ''
             && mb_strtolower($depositReference) === mb_strtolower($sessionReference);
 
-        $amountMatch = abs((float) $deposit->amount - (float) $session->amount) <= 0.01;
+        $amountMatch = abs((float) $deposit->amount - (float) $session->amount) <= self::AMOUNT_TOLERANCE;
 
         $sessionOwnerName = $this->sessionOwnerName($session);
         $depositName = trim((string) $deposit->depositor_name);
@@ -255,7 +259,11 @@ class BankTransferMatchingService
     private function fuzzyNameMatch(string $left, string $right): bool
     {
         $normalize = static function (string $name): string {
-            return trim((string) preg_replace('/\s+/', ' ', preg_replace('/[^a-z0-9 ]/i', ' ', mb_strtolower($name)) ?? ''));
+            $lowercase = mb_strtolower($name);
+            $stripped = preg_replace('/[^a-z0-9 ]/i', ' ', $lowercase) ?? '';
+            $singleSpaced = preg_replace('/\s+/', ' ', $stripped) ?? '';
+
+            return trim($singleSpaced);
         };
 
         $left = $normalize($left);
