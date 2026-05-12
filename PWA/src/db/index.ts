@@ -3,6 +3,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 export interface PendingPayment {
   id: string
   session_token: string
+  auth_token?: string
   payload: Record<string, unknown>
   created_at: string
   retry_count: number

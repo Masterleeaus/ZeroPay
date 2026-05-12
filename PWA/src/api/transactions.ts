@@ -21,7 +21,7 @@ export interface TransactionListResponse {
 }
 
 export const transactionsApi = {
-  list: (params?: { page?: number; type?: string; search?: string }) =>
-    client.get<TransactionListResponse>('/transactions', { params }),
-  get: (id: number | string) => client.get<Transaction>(`/transactions/${id}`),
+  list: (params?: { page?: number; type?: string; status?: string; search?: string; limit?: number }) =>
+    client.get<TransactionListResponse>('/api/zeropay/transactions', { params }),
+  get: (id: number | string) => client.get<Transaction>(`/api/zeropay/transactions/${id}`),
 }

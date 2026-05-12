@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('zeropay_notifications', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('company_id')->index();
-            $table->unsignedBigInteger('user_id')->nullable()->index();
-            $table->unsignedBigInteger('session_id')->nullable()->index();
-            $table->string('event')->index();
-            $table->string('channel')->index();
-            $table->json('payload');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('event_type');
+            $table->string('channel');
             $table->string('status')->default('pending');
+            $table->json('payload')->nullable();
             $table->timestamp('sent_at')->nullable();
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

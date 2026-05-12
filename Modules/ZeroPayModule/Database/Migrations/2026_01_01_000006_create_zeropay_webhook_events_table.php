@@ -9,14 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('zeropay_webhook_events', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('company_id')->index();
-            $table->string('gateway')->index();
-            $table->string('event_type')->index();
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable()->index();
+            $table->string('source');
+            $table->string('event_type');
+            $table->string('external_id')->nullable()->index();
             $table->json('payload');
-            $table->string('signature')->nullable();
-            $table->string('idempotency_key')->nullable()->index();
             $table->string('status')->default('received');
+            $table->text('failure_reason')->nullable();
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
         });
