@@ -151,7 +151,7 @@ class BankTransferMatchingService
                     'gateway' => 'bank_transfer',
                     'gateway_reference' => $deposit->reference ?: $session->session_token,
                     'amount' => $deposit->amount,
-                    'currency' => $deposit->currency ?: $session->currency,
+                    'currency' => $deposit->currency ?: $session->currency ?: 'AUD',
                     'status' => 'completed',
                     'fee' => 0,
                     'net_amount' => $deposit->amount,
