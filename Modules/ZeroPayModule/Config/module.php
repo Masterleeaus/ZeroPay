@@ -1,5 +1,7 @@
 <?php
 
+use Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter;
+
 return [
 
     /*
@@ -12,7 +14,7 @@ return [
     |
     */
 
-    'name'    => 'ZeroPayModule',
+    'name' => 'ZeroPayModule',
 
     /*
     |--------------------------------------------------------------------------
@@ -23,7 +25,39 @@ return [
     | injected. Must implement Modules\ZeroPayModule\Contracts\GatewayContract.
     |
     */
-    'gateway' => \Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter::class,
+    'gateway' => DefaultGatewayAdapter::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gateway Configuration
+    |--------------------------------------------------------------------------
+    */
+    'gateways' => [
+        'stripe' => [
+            'enabled' => env('ZEROPAY_STRIPE_ENABLED', false),
+            'key' => env('STRIPE_KEY'),
+            'secret' => env('STRIPE_SECRET'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
+        'paypal' => [
+            'enabled' => env('ZEROPAY_PAYPAL_ENABLED', false),
+            'mode' => env('PAYPAL_MODE', 'sandbox'),
+            'client_id' => env('PAYPAL_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+            'app_id' => env('PAYPAL_APP_ID'),
+            'webhook_id' => env('PAYPAL_WEBHOOK_ID'),
+        ],
+        'cryptomus' => [
+            'enabled' => env('ZEROPAY_CRYPTOMUS_ENABLED', false),
+            'base_url' => env('CRYPTOMUS_BASE_URL', 'https://api.cryptomus.com'),
+            'merchant_id' => env('CRYPTOMUS_MERCHANT_ID'),
+            'api_key' => env('CRYPTOMUS_API_KEY'),
+            'webhook_secret' => env('CRYPTOMUS_WEBHOOK_SECRET'),
+        ],
+        'cash' => [
+            'enabled' => env('ZEROPAY_CASH_ENABLED', true),
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -48,8 +82,8 @@ return [
     |
     */
     'vapid' => [
-        'subject'     => env('VAPID_SUBJECT', 'mailto:admin@zeropay.io'),
-        'public_key'  => env('VAPID_PUBLIC_KEY', ''),
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@zeropay.io'),
+        'public_key' => env('VAPID_PUBLIC_KEY', ''),
         'private_key' => env('VAPID_PRIVATE_KEY', ''),
     ],
 
