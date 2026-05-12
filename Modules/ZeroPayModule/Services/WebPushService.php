@@ -28,7 +28,6 @@ class WebPushService
 
         $this->webPush = new WebPush($auth);
         $this->webPush->setReuseVAPIDHeaders(true);
-        $this->webPush->setAutomaticPadding(false);
     }
 
     /**
