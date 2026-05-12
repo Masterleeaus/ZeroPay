@@ -80,9 +80,13 @@ export default function TransactionDetail() {
       <button
         type="button"
         onClick={async () => {
-          if (navigator.share) {
-            await navigator.share({ title: `Transaction #${tx.id}`, text: receiptText })
-            return
+          try {
+            if (navigator.share) {
+              await navigator.share({ title: `Transaction #${tx.id}`, text: receiptText })
+              return
+            }
+          } catch {
+            // fall back to print
           }
           window.print()
         }}

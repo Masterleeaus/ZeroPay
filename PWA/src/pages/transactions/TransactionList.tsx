@@ -20,6 +20,8 @@ export default function TransactionList() {
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
+  const loadingRef = useRef(false)
+  const pageRef = useRef(1)
   const online = useOnlineStatus()
   const navigate = useNavigate()
 
@@ -60,17 +62,25 @@ export default function TransactionList() {
   }, [search, filter, loadTransactions])
 
   useEffect(() => {
+    loadingRef.current = loading
+  }, [loading])
+
+  useEffect(() => {
+    pageRef.current = page
+  }, [page])
+
+  useEffect(() => {
     const target = loadMoreRef.current
     if (!target || !hasMore) return
     const observer = new IntersectionObserver(entries => {
-      if (!entries[0]?.isIntersecting || loading) return
-      const next = page + 1
+      if (!entries[0]?.isIntersecting || loadingRef.current) return
+      const next = pageRef.current + 1
       setPage(next)
       void loadTransactions(next, filter, search)
     }, { rootMargin: '120px' })
     observer.observe(target)
     return () => observer.disconnect()
-  }, [hasMore, loading, page, filter, search, loadTransactions])
+  }, [hasMore, filter, search, loadTransactions])
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
