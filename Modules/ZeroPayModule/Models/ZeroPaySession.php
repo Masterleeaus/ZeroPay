@@ -25,6 +25,11 @@ class ZeroPaySession extends Model
         'expires_at',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'session_token';
+    }
+
     protected $casts = [
         'meta'       => 'array',
         'amount'     => 'decimal:2',
