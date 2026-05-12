@@ -4,6 +4,8 @@ import { cacheSession } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 import QRCode from 'qrcode'
 
+const SESSION_POLL_INTERVAL_MS = 3000
+
 export default function RequestMoney() {
   const [amount, setAmount] = useState('')
   const [currency, setCurrency] = useState('AUD')
@@ -46,6 +48,9 @@ export default function RequestMoney() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to create session'
       setError(message)
+      if (isRefresh) {
+        expiredRefreshTokenRef.current = null
+      }
     } finally {
       if (!isRefresh) {
         setLoading(false)
@@ -92,7 +97,7 @@ export default function RequestMoney() {
         .catch((err) => {
           console.error('Failed to poll session status', err)
         })
-    }, 3000)
+    }, SESSION_POLL_INTERVAL_MS)
     return () => {
       cancelled = true
       window.clearInterval(intervalId)
@@ -101,6 +106,7 @@ export default function RequestMoney() {
 
   useEffect(() => {
     if (!session || session.status !== 'pending') return
+    // API provides expiry_timestamp in Unix seconds.
     const expiresAtMs = session.payload.expiry_timestamp * 1000
     const remainingMs = expiresAtMs - Date.now()
     if (remainingMs <= 0) {
@@ -124,6 +130,11 @@ export default function RequestMoney() {
         ? '⏳ pending'
         : `ℹ️ ${session.status}`
     : ''
+  const statusColor = session?.status === 'completed'
+    ? '#16a34a'
+    : session?.status === 'pending'
+      ? '#f59e0b'
+      : '#6b7280'
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -165,7 +176,7 @@ export default function RequestMoney() {
         }}>
           <h3 style={{ color: '#1a1a2e', marginBottom: '6px' }}>Show this QR to the payer</h3>
           <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
-            Status: <strong style={{ color: session.status === 'completed' ? '#16a34a' : session.status === 'pending' ? '#f59e0b' : '#6b7280' }}>{statusLabel}</strong>
+            Status: <strong style={{ color: statusColor }}>{statusLabel}</strong>
           </p>
           {infoMessage && (
             <p style={{ marginTop: 0, marginBottom: '16px', color: '#1a1a2e', fontWeight: 600 }}>{infoMessage}</p>
