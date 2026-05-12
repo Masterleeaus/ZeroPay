@@ -33,12 +33,9 @@ class GatewayRegistry
      */
     public function available(): array
     {
-        return array_values(array_map(
-            static fn (string $name) => $name,
-            array_keys(array_filter(
-                $this->gateways,
-                static fn (GatewayContract $gateway): bool => $gateway->isAvailable()
-            ))
-        ));
+        return array_values(array_keys(array_filter(
+            $this->gateways,
+            static fn (GatewayContract $gateway): bool => $gateway->isAvailable()
+        )));
     }
 }
