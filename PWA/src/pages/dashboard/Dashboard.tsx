@@ -11,6 +11,8 @@ const quickActions = [
   { label: '🔗 Pay Links', to: '/links', phase: 1 },
   { label: '📋 Transaction History', to: '/transactions', phase: 2 },
 ]
+const RECENT_TRANSACTIONS_LIMIT = 5
+const PULL_REFRESH_THRESHOLD = 70
 
 function statusColor(s: string) {
   if (s === 'completed') return '#22c55e'
@@ -32,10 +34,10 @@ export default function Dashboard() {
     try {
       const [bal, txs] = await Promise.all([
         walletApi.getBalance(),
-        transactionsApi.list({ limit: 5 }),
+        transactionsApi.list({ limit: RECENT_TRANSACTIONS_LIMIT }),
       ])
       setBalance(bal.data)
-      setTransactions(txs.data.data.slice(0, 5))
+      setTransactions(txs.data.data.slice(0, RECENT_TRANSACTIONS_LIMIT))
     } catch {
       // handled gracefully
     } finally {
@@ -54,22 +56,26 @@ export default function Dashboard() {
     setRefreshing(false)
   }
 
+  const isAtTop = () => (containerRef.current?.scrollTop ?? 0) <= 0
+
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    if ((containerRef.current?.scrollTop ?? 0) > 0) return
+    if (!isAtTop()) return
     touchStartY.current = event.touches[0].clientY
   }
 
   const handleTouchMove = (event: TouchEvent<HTMLDivElement>) => {
-    if (touchStartY.current === null || (containerRef.current?.scrollTop ?? 0) > 0) return
-    setPullHintVisible(event.touches[0].clientY - touchStartY.current > 70)
+    if (touchStartY.current === null || !isAtTop()) return
+    const shouldShowPullHint =
+      event.touches[0].clientY - touchStartY.current > PULL_REFRESH_THRESHOLD
+    setPullHintVisible((current) => (current === shouldShowPullHint ? current : shouldShowPullHint))
   }
 
   const handleTouchEnd = () => {
     if (touchStartY.current === null) return
-    const distance = (containerRef.current?.scrollTop ?? 0) <= 0 ? pullHintVisible : false
+    const shouldRefresh = isAtTop() ? pullHintVisible : false
     touchStartY.current = null
     setPullHintVisible(false)
-    if (distance && !refreshing) {
+    if (shouldRefresh && !refreshing) {
       void refreshDashboard()
     }
   }
@@ -119,7 +125,7 @@ export default function Dashboard() {
       {/* Quick actions */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
         {visibleQuickActions.map(({ label, to }) => (
-          <button key={`${to}-${label}`} onClick={() => navigate(to)} style={{
+          <button key={to} onClick={() => navigate(to)} style={{
             background: '#fff', border: '1.5px solid #e0e0e0', borderRadius: '12px',
             padding: '16px', fontSize: '14px', fontWeight: 600, color: '#1a1a2e',
             cursor: 'pointer', textAlign: 'left',
