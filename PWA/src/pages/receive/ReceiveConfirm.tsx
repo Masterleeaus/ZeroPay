@@ -16,18 +16,26 @@ export default function ReceiveConfirm() {
 
   useEffect(() => {
     if (!transactionId) return
+    let isActive = true
+    let timer: ReturnType<typeof setTimeout> | null = null
     const poll = async () => {
       try {
         const r = await transactionsApi.get(transactionId)
+        if (!isActive) return
         setTx(r.data)
         if (r.data.status === 'pending') {
-          setTimeout(() => void poll(), 3000)
+          timer = setTimeout(() => void poll(), 3000)
         }
       } catch {
+        if (!isActive) return
         setError('Could not load transaction.')
       }
     }
     void poll()
+    return () => {
+      isActive = false
+      if (timer) clearTimeout(timer)
+    }
   }, [transactionId])
 
   if (error) {
@@ -66,7 +74,7 @@ export default function ReceiveConfirm() {
       </div>
 
       <button onClick={() => navigate('/transactions/' + tx.id)} style={{ width: '100%', marginTop: '20px', padding: '14px', background: '#1a1a2e', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
-        View Full Transaction
+        View Transaction
       </button>
     </div>
   )

@@ -9,21 +9,25 @@ export default function MakePayment() {
   const [scanning, setScanning] = useState(true)
   const navigate = useNavigate()
   const readerRef = useRef<BrowserQRCodeReader | null>(null)
+  const processedRef = useRef(false)
 
   useEffect(() => {
     const reader = new BrowserQRCodeReader()
     readerRef.current = reader
+    processedRef.current = false
 
     if (!videoRef.current) return
 
     reader.decodeFromVideoDevice(undefined, videoRef.current, (result, _err) => {
-      if (!result) return
+      if (!result || processedRef.current) return
+      processedRef.current = true
       setScanning(false)
       try {
         const payload = JSON.parse(result.getText()) as QrPayload
         const now = Math.floor(Date.now() / 1000)
         if (payload.expiry_timestamp && payload.expiry_timestamp < now) {
           setError('This QR code has expired.')
+          processedRef.current = false
           return
         }
         navigate('/pay/summary', { state: { payload } })
@@ -35,6 +39,7 @@ export default function MakePayment() {
           navigate(`/pay/session/${match[1]}`)
         } else {
           setError('Invalid QR code. Please scan a ZeroPay QR.')
+          processedRef.current = false
           setScanning(true)
         }
       }
@@ -54,7 +59,7 @@ export default function MakePayment() {
       {error && (
         <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
           {error}
-          {!scanning && <button onClick={() => { setError(''); setScanning(true) }} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#e94560', cursor: 'pointer' }}>Retry</button>}
+          {!scanning && <button onClick={() => { setError(''); processedRef.current = false; setScanning(true) }} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#e94560', cursor: 'pointer' }}>Retry</button>}
         </div>
       )}
       <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: '#000', aspectRatio: '1' }}>

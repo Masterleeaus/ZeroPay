@@ -4,6 +4,9 @@ import { sessionsApi, type QrPayload } from '../../api/sessions'
 import { queuePendingPayment } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 
+// SyncManager is not yet in the standard TypeScript lib types
+type SyncRegistration = ServiceWorkerRegistration & { sync: { register(tag: string): Promise<void> } }
+
 const gateways = ['Wallet', 'BankTransfer', 'PayID']
 
 export default function PaymentSummary() {
@@ -28,10 +31,20 @@ export default function PaymentSummary() {
         await queuePendingPayment({
           id: crypto.randomUUID(),
           session_token: payload.session_token,
+          auth_token: localStorage.getItem('auth_token') ?? undefined,
           payload: { gateway, ...payload } as Record<string, unknown>,
           created_at: new Date().toISOString(),
           retry_count: 0,
         })
+        // Register background sync so the SW replays the payment when back online
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+          try {
+            const reg = await navigator.serviceWorker.ready
+            await (reg as SyncRegistration).sync.register('sync-payments')
+          } catch {
+            // SyncManager unavailable (e.g. Firefox, some iOS) – will retry on next page load
+          }
+        }
         navigate('/dashboard', { replace: true, state: { offlineQueued: true } })
         return
       }

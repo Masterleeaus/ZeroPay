@@ -18,6 +18,7 @@ import ReceiveConfirm from './pages/receive/ReceiveConfirm'
 import TransactionList from './pages/transactions/TransactionList'
 import TransactionDetail from './pages/transactions/TransactionDetail'
 import Notifications from './pages/notifications/Notifications'
+import PaymentLinks from './pages/links/PaymentLinks'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import OfflineBanner from './components/OfflineBanner'
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/pay/summary" element={<PaymentSummary />} />
             <Route path="/request" element={<RequestMoney />} />
             <Route path="/receive" element={<ReceiveMoney />} />
+            <Route path="/links" element={<PaymentLinks />} />
             <Route path="/receive/confirm/:transactionId" element={<ReceiveConfirm />} />
             <Route path="/transactions" element={<TransactionList />} />
             <Route path="/transactions/:id" element={<TransactionDetail />} />
