@@ -16,20 +16,24 @@ export default function ReceiveConfirm() {
 
   useEffect(() => {
     if (!transactionId) return
+    let isActive = true
     let timer: ReturnType<typeof setTimeout> | null = null
     const poll = async () => {
       try {
         const r = await transactionsApi.get(transactionId)
+        if (!isActive) return
         setTx(r.data)
         if (r.data.status === 'pending') {
           timer = setTimeout(() => void poll(), 3000)
         }
       } catch {
+        if (!isActive) return
         setError('Could not load transaction.')
       }
     }
     void poll()
     return () => {
+      isActive = false
       if (timer) clearTimeout(timer)
     }
   }, [transactionId])

@@ -25,7 +25,15 @@ export default function ReceiveMoney() {
     const payIdLink = info.qr_payload?.trim() || info.payid
     const text = `Pay me via ZeroPay: ${payIdLink}`
     if (navigator.share) {
-      await navigator.share({ title: 'My PayID', text, url: payIdLink })
+      let url: string | undefined
+      if (info.qr_payload) {
+        try {
+          url = new URL(info.qr_payload).toString()
+        } catch {
+          url = undefined
+        }
+      }
+      await navigator.share({ title: 'My PayID', text, ...(url ? { url } : {}) })
     } else {
       await navigator.clipboard.writeText(payIdLink)
       setCopied(true)
