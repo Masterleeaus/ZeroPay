@@ -69,6 +69,11 @@ class ZeroPaySession extends Model
         return $this->hasOne(ZeroPayQrCode::class, 'session_id');
     }
 
+    public function qrCodes(): HasMany
+    {
+        return $this->hasMany(ZeroPayQrCode::class, 'session_id');
+    }
+
     public function gatewayLogs(): HasMany
     {
         return $this->hasMany(ZeroPayGatewayLog::class, 'session_id');
