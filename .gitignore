@@ -5,3 +5,6 @@ PWA/.env
 
 # macOS
 .DS_Store
+
+# Module vendor directories
+Modules/*/vendor/
