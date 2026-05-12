@@ -32,4 +32,25 @@ return [
     */
     'rate_limit' => 60,
 
+    /*
+    |--------------------------------------------------------------------------
+    | VAPID Keys — Web Push Notifications
+    |--------------------------------------------------------------------------
+    |
+    | Generate a key pair with:
+    |   vendor/bin/web-push generate-vapid-keys
+    | or any online VAPID key generator.
+    |
+    | Store the values in your application .env file:
+    |   VAPID_PUBLIC_KEY=
+    |   VAPID_PRIVATE_KEY=
+    |   VAPID_SUBJECT=mailto:admin@zeropay.io
+    |
+    */
+    'vapid' => [
+        'subject'     => env('VAPID_SUBJECT', 'mailto:admin@zeropay.io'),
+        'public_key'  => env('VAPID_PUBLIC_KEY', ''),
+        'private_key' => env('VAPID_PRIVATE_KEY', ''),
+    ],
+
 ];

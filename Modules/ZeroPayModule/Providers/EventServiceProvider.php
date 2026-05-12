@@ -13,6 +13,12 @@ use Modules\ZeroPayModule\Events\ZeroPaySessionCreated;
 use Modules\ZeroPayModule\Listeners\HandlePaymentCompleted;
 use Modules\ZeroPayModule\Listeners\HandlePaymentFailed;
 use Modules\ZeroPayModule\Listeners\HandleZeroPaySessionCreated;
+use Modules\ZeroPayModule\Listeners\SendPushForPaymentCompleted;
+use Modules\ZeroPayModule\Listeners\SendPushForPaymentFailed;
+use Modules\ZeroPayModule\Listeners\SendPushForPaymentPending;
+use Modules\ZeroPayModule\Listeners\SendPushForPaymentStarted;
+use Modules\ZeroPayModule\Listeners\SendPushForSessionExpiring;
+use Modules\ZeroPayModule\Listeners\SendPushForSessionOpened;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,16 +26,26 @@ class EventServiceProvider extends ServiceProvider
         ZeroPaySessionCreated::class => [
             HandleZeroPaySessionCreated::class,
         ],
+        SessionOpened::class => [
+            SendPushForSessionOpened::class,
+        ],
+        PaymentStarted::class => [
+            SendPushForPaymentStarted::class,
+        ],
+        PaymentPending::class => [
+            SendPushForPaymentPending::class,
+        ],
         PaymentCompleted::class => [
             HandlePaymentCompleted::class,
+            SendPushForPaymentCompleted::class,
         ],
         PaymentFailed::class => [
             HandlePaymentFailed::class,
+            SendPushForPaymentFailed::class,
         ],
-        SessionOpened::class   => [],
-        PaymentStarted::class  => [],
-        PaymentPending::class  => [],
-        SessionExpiring::class => [],
+        SessionExpiring::class => [
+            SendPushForSessionExpiring::class,
+        ],
     ];
 
     public function boot(): void

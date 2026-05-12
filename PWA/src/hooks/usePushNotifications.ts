@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { pushApi } from '../api/push'
 
 const VAPID_PUBLIC_KEY: string = import.meta.env.VITE_VAPID_PUBLIC_KEY ?? ''
@@ -18,7 +18,7 @@ export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>(Notification.permission)
   const [subscribed, setSubscribed] = useState(false)
 
-  const subscribe = async () => {
+  const subscribe = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
     const perm = await Notification.requestPermission()
     setPermission(perm)
@@ -31,7 +31,7 @@ export function usePushNotifications() {
     })
     await pushApi.subscribe(sub.toJSON())
     setSubscribed(true)
-  }
+  }, [])
 
   useEffect(() => {
     if (permission === 'granted') setSubscribed(true)
