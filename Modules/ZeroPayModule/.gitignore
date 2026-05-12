@@ -1,0 +1,7 @@
+# Vendor packages that embed their own .git repositories
+vendor/minishlink/
+vendor/spomky-labs/
+vendor/srmklive/
+vendor/stripe/
+vendor/symfony/polyfill-php82/
+vendor/web-token/
