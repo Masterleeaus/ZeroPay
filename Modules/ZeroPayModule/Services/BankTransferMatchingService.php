@@ -12,6 +12,8 @@ use Modules\ZeroPayModule\ValueObjects\MatchResult;
 
 class BankTransferMatchingService
 {
+    private const CUSTOMER_MATCH_THRESHOLD = 0.8;
+
     public function match(ZeroPayBankDeposit $deposit): MatchResult
     {
         $candidates = $this->findCandidateSessions($deposit);
@@ -21,7 +23,10 @@ class BankTransferMatchingService
 
         foreach ($candidates as $session) {
             $criteria = $this->evaluateCriteria($deposit, $session);
-            $confidence = array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / count($criteria);
+            $criteriaCount = count($criteria);
+            $confidence = $criteriaCount > 0
+                ? array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / $criteriaCount
+                : 0.0;
 
             if ($confidence > $bestConfidence) {
                 $best = $session;
@@ -183,7 +188,7 @@ class BankTransferMatchingService
             return new MatchResult(
                 matched: true,
                 session: $session->fresh(),
-                confidence: 1.0,
+                confidence: $confidence,
                 matchedCriteria: $criteria,
                 status: 'auto_matched'
             );
@@ -266,7 +271,7 @@ class BankTransferMatchingService
 
         similar_text($left, $right, $percent);
 
-        return ($percent / 100) >= 0.8;
+        return ($percent / 100) >= self::CUSTOMER_MATCH_THRESHOLD;
     }
 
     private function sessionOwnerName(ZeroPaySession $session): string
