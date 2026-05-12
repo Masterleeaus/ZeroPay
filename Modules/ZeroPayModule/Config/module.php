@@ -20,7 +20,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The gateway adapter that will be resolved when GatewayContract is
-    | injected. Must implement Modules\ZeroPayModule\Contracts\GatewayContract.
+    | injected. Must implement Modules\ZeroPayModule\Services\Contracts\GatewayContract.
     |
     */
     'gateway' => \Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter::class,

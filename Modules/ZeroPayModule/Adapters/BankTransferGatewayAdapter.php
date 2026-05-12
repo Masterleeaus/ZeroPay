@@ -2,27 +2,42 @@
 
 namespace Modules\ZeroPayModule\Adapters;
 
-use Modules\ZeroPayModule\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
+use Modules\ZeroPayModule\Services\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Services\ValueObjects\GatewayResponse;
+use Modules\ZeroPayModule\Services\ValueObjects\WebhookResult;
 
 class BankTransferGatewayAdapter implements GatewayContract
 {
-    public function createPayment(array $session): array
+    public function createPayment(ZeroPaySession $session): GatewayResponse
     {
-        return [
-            'status'    => 'pending',
-            'gateway'   => 'bank_transfer',
-            'reference' => uniqid('bt_', true),
-        ];
+        $reference = uniqid('bt_', true);
+
+        return new GatewayResponse(
+            success: true,
+            reference: $reference,
+            status: 'pending',
+            rawResponse: ['gateway' => $this->getName(), 'session_id' => $session->id],
+        );
     }
 
-    public function verifyPayment(string $reference): array
+    public function verifyPayment(string $reference): GatewayResponse
     {
-        return ['status' => 'pending', 'reference' => $reference, 'gateway' => 'bank_transfer'];
+        return new GatewayResponse(
+            success: true,
+            reference: $reference,
+            status: 'pending',
+            rawResponse: ['gateway' => $this->getName()],
+        );
     }
 
-    public function handleWebhook(array $payload): array
+    public function handleWebhook(array $payload): WebhookResult
     {
-        return ['processed' => true, 'gateway' => 'bank_transfer', 'payload' => $payload];
+        return new WebhookResult(
+            processed: true,
+            status: 'processed',
+            rawResponse: ['gateway' => $this->getName(), 'payload' => $payload],
+        );
     }
 
     public function calculateFee(float $amount): float
@@ -30,8 +45,23 @@ class BankTransferGatewayAdapter implements GatewayContract
         return 0.0;
     }
 
-    public function refundPayment(string $transactionId): array
+    public function refundPayment(int $transactionId): GatewayResponse
     {
-        return ['status' => 'refunded', 'transaction_id' => $transactionId, 'gateway' => 'bank_transfer'];
+        return new GatewayResponse(
+            success: true,
+            reference: (string) $transactionId,
+            status: 'refunded',
+            rawResponse: ['gateway' => $this->getName(), 'transaction_id' => $transactionId],
+        );
+    }
+
+    public function getName(): string
+    {
+        return 'bank_transfer';
+    }
+
+    public function isAvailable(): bool
+    {
+        return true;
     }
 }
