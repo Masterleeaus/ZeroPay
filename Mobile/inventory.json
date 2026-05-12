@@ -1,4 +1,6 @@
 {
+  "app_name": "ZeroPay",
+  "package": "io.zeropay.app",
   "counts": {
     "lib_files": 387,
     "dart_files": 387,

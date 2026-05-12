@@ -12,6 +12,7 @@ import '../../custom_assets/assets.gen.dart';
 import '../../model/categories_model.dart';
 import '../../routes/routes.dart';
 import '../app_settings/app_settings_controller.dart';
+import '../../utils/feature_flags.dart';
 
 class DashBoardController extends GetxController {
   List<CategoriesModel> categoriesData = [];
@@ -83,14 +84,14 @@ class DashBoardController extends GetxController {
         }));
       }
 
-      if (data.remittanceMoney) {
+      if (data.remittanceMoney && FeatureFlags.remittance) {
         categoriesData.add(
             CategoriesModel(Assets.icon.remittance, Strings.remittance, () {
           Get.toNamed(Routes.remittanceScreen);
         }));
       }
 
-      if (data.addMoney) {
+      if (data.addMoney && FeatureFlags.addMoney) {
         categoriesData.add(
           CategoriesModel(Assets.icon.deposit, Strings.addMoney, () {
             Get.toNamed(Routes.addMoneyScreen);
@@ -98,7 +99,7 @@ class DashBoardController extends GetxController {
         );
       }
 
-      if (data.withdrawMoney) {
+      if (data.withdrawMoney && FeatureFlags.withdraw) {
         categoriesData.add(
           CategoriesModel(Assets.icon.withdraw, Strings.withdraw, () {
             Get.toNamed(Routes.withdrawScreen);
@@ -114,7 +115,7 @@ class DashBoardController extends GetxController {
         );
       }
 
-      if (data.virtualCard) {
+      if (data.virtualCard && FeatureFlags.virtualCards) {
         categoriesData.add(
           CategoriesModel(
             Assets.icon.virtualCard,
@@ -126,14 +127,14 @@ class DashBoardController extends GetxController {
         );
       }
 
-      if (data.billPay) {
+      if (data.billPay && FeatureFlags.billPay) {
         categoriesData
             .add(CategoriesModel(Assets.icon.billPay, Strings.billPay, () {
           Get.toNamed(Routes.billPayScreen);
         }));
       }
 
-      if (data.mobileTopUp) {
+      if (data.mobileTopUp && FeatureFlags.mobileTopup) {
         categoriesData.add(
           CategoriesModel(Assets.icon.mobileTopUp, Strings.mobileTopUp, () {
             Get.toNamed(Routes.mobileToUpScreen);
@@ -157,7 +158,7 @@ class DashBoardController extends GetxController {
         );
       }
 
-      if (data.requestMoney) {
+      if (data.requestMoney && FeatureFlags.agentMoneyOut) {
         categoriesData.add(
           CategoriesModel(Assets.icon.agent, Strings.agentMoneyOut, () {
             Get.toNamed(Routes.agentMoneyOutScreen);

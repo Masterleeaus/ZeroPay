@@ -1,4 +1,6 @@
 {
+  "app_name": "ZeroPay",
+  "package": "io.zeropay.app",
   "counts": {
     "lib_files": 387,
     "dart_files": 387,
@@ -576,6 +578,6 @@
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/card.dart",
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/virtual_card_sudo_info_model.dart",
     "lib/backend/model/categories/virtual_card/virtual_card_sudo/identiti_type.dart",
-    "android/app/src/main/kotlin/com/zeropay/user/MainActivity.kt"
+    "android/app/src/main/kotlin/io/zeropay/app/MainActivity.kt"
   ]
 }
