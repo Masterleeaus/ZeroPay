@@ -10,8 +10,8 @@ enum NotificationEventType: string
     case SessionProcessing = 'session.processing';
     case SessionCompleted = 'session.completed';
     case SessionFailed = 'session.failed';
-    case SessionExpired = 'session.expired';
     case SessionExpiring = 'session.expiring';
+    case SessionExpired = 'session.expired';
     case PaymentStarted = 'payment.started';
     case PaymentPending = 'payment.pending';
     case PaymentCompleted = 'payment.completed';

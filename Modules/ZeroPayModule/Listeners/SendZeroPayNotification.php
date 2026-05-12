@@ -4,14 +4,10 @@ namespace Modules\ZeroPayModule\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Modules\ZeroPayModule\Events\PaymentCompleted;
 use Modules\ZeroPayModule\Events\PaymentFailed;
 use Modules\ZeroPayModule\Events\PaymentPending;
-use Modules\ZeroPayModule\Events\PaymentStarted;
 use Modules\ZeroPayModule\Events\SessionExpiring;
-use Modules\ZeroPayModule\Events\SessionOpened;
-use Modules\ZeroPayModule\Events\ZeroPaySessionCreated;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 use Modules\ZeroPayModule\Notifications\PaymentCompletedNotification;
 use Modules\ZeroPayModule\Notifications\PaymentFailedNotification;
@@ -48,8 +44,7 @@ class SendZeroPayNotification implements ShouldQueue
                 return [null, null];
             }
 
-            $userClass = config('auth.providers.users.model', \App\Models\User::class);
-            $user = $userClass::find($userId);
+            $user     = $this->findUser($userId);
             $amount   = number_format((float) ($event->paymentData['amount'] ?? 0), 2);
             $currency = $event->paymentData['currency'] ?? 'AUD';
 
@@ -64,10 +59,7 @@ class SendZeroPayNotification implements ShouldQueue
                 return [null, null];
             }
 
-            $userClass = config('auth.providers.users.model', \App\Models\User::class);
-            $user = $userClass::find($userId);
-
-            return [$user, new PaymentFailedNotification($event->reference, $event->reason, $event->paymentData)];
+            return [$this->findUser($userId), new PaymentFailedNotification($event->reference, $event->reason, $event->paymentData)];
         }
 
         if ($event instanceof PaymentPending) {
@@ -76,10 +68,7 @@ class SendZeroPayNotification implements ShouldQueue
                 return [null, null];
             }
 
-            $userClass = config('auth.providers.users.model', \App\Models\User::class);
-            $user = $userClass::find($session->user_id);
-
-            return [$user, new PaymentPendingNotification($session)];
+            return [$this->findUser($session->user_id), new PaymentPendingNotification($session)];
         }
 
         if ($event instanceof SessionExpiring) {
@@ -88,13 +77,24 @@ class SendZeroPayNotification implements ShouldQueue
                 return [null, null];
             }
 
-            $userClass = config('auth.providers.users.model', \App\Models\User::class);
-            $user = $userClass::find($session->user_id);
-
-            return [$user, new SessionExpiringNotification($session)];
+            return [$this->findUser($session->user_id), new SessionExpiringNotification($session)];
         }
 
         // session.created, session.opened, payment.started — push only (handled by dedicated listeners)
         return [null, null];
+    }
+
+    /**
+     * Resolve the user model instance for the given user ID.
+     *
+     * @param  int|string $userId
+     * @return mixed
+     */
+    private function findUser(int|string $userId): mixed
+    {
+        /** @var class-string $userClass */
+        $userClass = config('auth.providers.users.model', \App\Models\User::class);
+
+        return $userClass::find($userId);
     }
 }
