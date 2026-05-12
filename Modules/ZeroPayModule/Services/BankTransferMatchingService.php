@@ -14,6 +14,7 @@ class BankTransferMatchingService
 {
     private const CUSTOMER_MATCH_THRESHOLD = 0.8;
     private const AMOUNT_TOLERANCE = 0.01;
+    private const DEPOSIT_REFERENCE_PREFIX = 'bank_deposit_';
 
     public function match(ZeroPayBankDeposit $deposit): MatchResult
     {
@@ -155,7 +156,7 @@ class BankTransferMatchingService
                     'session_id' => $session->id,
                     'user_id' => $session->user_id,
                     'gateway' => 'bank_transfer',
-                    'gateway_reference' => $deposit->reference ?: ('bank_deposit_'.$deposit->id),
+                    'gateway_reference' => $deposit->reference ?: $this->fallbackGatewayReference($deposit),
                     'amount' => $deposit->amount,
                     'currency' => $deposit->currency ?: $session->currency ?: 'AUD',
                     'status' => 'completed',
@@ -236,7 +237,9 @@ class BankTransferMatchingService
         $referenceMatch = $depositReference !== '' && $sessionReference !== ''
             && mb_strtolower($depositReference) === mb_strtolower($sessionReference);
 
-        $amountMatch = abs((float) $deposit->amount - (float) $session->amount) <= self::AMOUNT_TOLERANCE;
+        $amountMatch = $deposit->amount !== null
+            && $session->amount !== null
+            && abs((float) $deposit->amount - (float) $session->amount) <= self::AMOUNT_TOLERANCE;
 
         $sessionOwnerName = $this->sessionOwnerName($session);
         $depositName = trim((string) $deposit->depositor_name);
@@ -302,6 +305,11 @@ class BankTransferMatchingService
         }
 
         return (string) ($session->session_token ?? '');
+    }
+
+    private function fallbackGatewayReference(ZeroPayBankDeposit $deposit): string
+    {
+        return self::DEPOSIT_REFERENCE_PREFIX.$deposit->id;
     }
 
     private function markPendingReview(ZeroPayBankDeposit $deposit, float $confidence): void
