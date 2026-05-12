@@ -8,8 +8,13 @@ use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 use Modules\ZeroPayModule\ValueObjects\GatewayResponse;
 use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
-class BankTransferGateway implements GatewayContract
+class BankTransferGateway extends AbstractGateway implements GatewayContract
 {
+    protected function gatewayKey(): string
+    {
+        return 'bank_transfer';
+    }
+
     /**
      * Create a bank transfer payment: look up the default bank account for the company
      * and return the account details with a unique reference for manual matching.

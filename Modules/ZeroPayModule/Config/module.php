@@ -29,24 +29,43 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | PayID Configuration
+    | Gateway Configuration
     |--------------------------------------------------------------------------
-    |
-    | The PayID address used as the payment destination for NPP/PayID payments.
-    | Override via ZEROPAY_PAYID in your .env file.
-    |
     */
-    'payid' => env('ZEROPAY_PAYID', 'payments@merchant.com'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Merchant Name
-    |--------------------------------------------------------------------------
-    |
-    | The merchant name displayed on QR code payloads.
-    |
-    */
-    'merchant_name' => env('ZEROPAY_MERCHANT_NAME', 'ZeroPay Merchant'),
+    'gateways' => [
+        'payid' => [
+            'enabled' => env('ZEROPAY_PAYID_ENABLED', true),
+            'pay_id' => env('ZEROPAY_PAYID', 'payments@merchant.com'),
+            'merchant_name' => env('ZEROPAY_MERCHANT_NAME', 'ZeroPay Merchant'),
+        ],
+        'bank_transfer' => [
+            'enabled' => env('ZEROPAY_BANK_TRANSFER_ENABLED', true),
+        ],
+        'stripe' => [
+            'enabled' => env('ZEROPAY_STRIPE_ENABLED', false),
+            'key' => env('STRIPE_KEY'),
+            'secret' => env('STRIPE_SECRET'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
+        'paypal' => [
+            'enabled' => env('ZEROPAY_PAYPAL_ENABLED', false),
+            'mode' => env('PAYPAL_MODE', 'sandbox'),
+            'client_id' => env('PAYPAL_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+            'app_id' => env('PAYPAL_APP_ID'),
+            'webhook_id' => env('PAYPAL_WEBHOOK_ID'),
+        ],
+        'cryptomus' => [
+            'enabled' => env('ZEROPAY_CRYPTOMUS_ENABLED', false),
+            'base_url' => env('CRYPTOMUS_BASE_URL', 'https://api.cryptomus.com'),
+            'merchant_id' => env('CRYPTOMUS_MERCHANT_ID'),
+            'api_key' => env('CRYPTOMUS_API_KEY'),
+            'webhook_secret' => env('CRYPTOMUS_WEBHOOK_SECRET'),
+        ],
+        'cash' => [
+            'enabled' => env('ZEROPAY_CASH_ENABLED', true),
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

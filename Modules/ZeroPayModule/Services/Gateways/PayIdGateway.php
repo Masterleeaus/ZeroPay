@@ -9,11 +9,19 @@ use Modules\ZeroPayModule\Services\QrCodeService;
 use Modules\ZeroPayModule\ValueObjects\GatewayResponse;
 use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
-class PayIdGateway implements GatewayContract
+class PayIdGateway extends AbstractGateway implements GatewayContract
 {
     public function __construct(
         protected QrCodeService $qrCodeService,
-    ) {}
+        ?array $config = null,
+    ) {
+        parent::__construct($config);
+    }
+
+    protected function gatewayKey(): string
+    {
+        return 'payid';
+    }
 
     /**
      * Create a PayID payment: generate a QR payload, persist the zeropay_qr_codes record,
@@ -21,19 +29,17 @@ class PayIdGateway implements GatewayContract
      */
     public function createPayment(array $session): array
     {
-        $payId = config('zeropay-module.payid', 'payments@merchant.com');
+        $gatewayConfig = $this->gatewayConfig();
+        $payId = (string) ($gatewayConfig['pay_id'] ?? 'payments@merchant.com');
+        $merchantName = (string) ($gatewayConfig['merchant_name'] ?? 'ZeroPay Merchant');
+        $reference = $session['session_token'] ?? uniqid('payid_', true);
 
-        /** @var ZeroPaySession|null $sessionModel */
-        $sessionModel = ZeroPaySession::query()->find($session['id'] ?? null);
-
-        if ($sessionModel) {
-            $merchantName = config('zeropay-module.merchant_name', 'ZeroPay Merchant');
+        if (! empty($session['id'])) {
+            $sessionModel = new ZeroPaySession;
+            $sessionModel->setRawAttributes($session);
 
             $qrCode = $this->qrCodeService->generateForSession($sessionModel, $payId, $merchantName);
-
             $reference = $qrCode->reference;
-        } else {
-            $reference = $session['session_token'] ?? uniqid('payid_', true);
         }
 
         return (new GatewayResponse(

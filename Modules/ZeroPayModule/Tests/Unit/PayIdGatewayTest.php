@@ -49,7 +49,6 @@ class PayIdGatewayTest extends TestCase
     public function test_create_payment_with_session_model_calls_qr_code_service(): void
     {
         $session = new ZeroPaySession([
-            'id' => 42,
             'company_id' => 1,
             'session_token' => 'qr-session-token',
             'amount' => '100.00',
@@ -63,7 +62,7 @@ class PayIdGatewayTest extends TestCase
         $this->qrCodeService
             ->expects($this->once())
             ->method('generateForSession')
-            ->with($this->identicalTo($session))
+            ->with($this->isInstanceOf(ZeroPaySession::class))
             ->willReturn($qrCode);
 
         $result = $this->gateway->createPayment($session->toArray());
