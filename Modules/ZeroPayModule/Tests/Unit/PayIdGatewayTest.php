@@ -21,19 +21,24 @@ class PayIdGatewayTest extends TestCase
     {
         parent::setUp();
         $this->qrCodeService = $this->createMock(QrCodeService::class);
-        $this->gateway = new PayIdGateway($this->qrCodeService);
+
+        $this->gateway = new PayIdGateway(
+            qrCodeService: $this->qrCodeService,
+            config: ['enabled' => true, 'pay_id' => 'pay@test.com', 'merchant_name' => 'Test Merchant'],
+            transactionVerifier: fn (string $ref): bool => false,
+            transactionUpdater: fn (string $ref): null => null,
+        );
     }
 
-    public function test_create_payment_without_session_model_returns_payid_response(): void
+    public function test_create_payment_without_session_id_uses_session_token(): void
     {
-        // When no DB session can be found (id = null), it falls back to session_token
         $session = [
             'id' => null,
             'session_token' => 'test-token-123',
             'company_id' => 1,
         ];
 
-        // QrCodeService should NOT be called when session model cannot be found
+        // QrCodeService should NOT be called when session ID is absent
         $this->qrCodeService->expects($this->never())->method('generateForSession');
 
         $result = $this->gateway->createPayment($session);
@@ -46,7 +51,7 @@ class PayIdGatewayTest extends TestCase
         $this->assertStringContainsString('test-token-123', $result['redirect_url']);
     }
 
-    public function test_create_payment_with_session_model_calls_qr_code_service(): void
+    public function test_create_payment_with_session_id_calls_qr_code_service(): void
     {
         $session = new ZeroPaySession([
             'company_id' => 1,
@@ -73,34 +78,66 @@ class PayIdGatewayTest extends TestCase
         $this->assertArrayHasKey('redirect_url', $result);
     }
 
-    public function test_verify_payment_returns_pending_when_no_completed_transaction(): void
+    public function test_verify_payment_returns_pending_when_verifier_returns_false(): void
     {
         $result = $this->gateway->verifyPayment('ref-abc');
 
         $this->assertSame('payid', $result['gateway']);
         $this->assertSame('ref-abc', $result['reference']);
-        $this->assertArrayHasKey('status', $result);
+        $this->assertSame('pending', $result['status']);
+    }
+
+    public function test_verify_payment_returns_completed_when_verifier_returns_true(): void
+    {
+        $gateway = new PayIdGateway(
+            qrCodeService: $this->qrCodeService,
+            config: ['enabled' => true],
+            transactionVerifier: fn (string $ref): bool => true,
+        );
+
+        $result = $gateway->verifyPayment('ref-completed');
+
+        $this->assertSame('completed', $result['status']);
+        $this->assertSame('payid', $result['gateway']);
     }
 
     public function test_handle_webhook_returns_processed_result(): void
     {
-        $payload = ['reference' => 'payid_ref_001', 'amount' => 50.00];
+        $updatedRef = null;
+        $gateway = new PayIdGateway(
+            qrCodeService: $this->qrCodeService,
+            config: ['enabled' => true],
+            transactionVerifier: fn (string $ref): bool => false,
+            transactionUpdater: function (string $ref) use (&$updatedRef): void {
+                $updatedRef = $ref;
+            },
+        );
 
-        $result = $this->gateway->handleWebhook($payload);
+        $payload = ['reference' => 'payid_ref_001', 'amount' => 50.00];
+        $result = $gateway->handleWebhook($payload);
 
         $this->assertTrue($result['processed']);
         $this->assertSame('payid', $result['gateway']);
         $this->assertSame($payload, $result['payload']);
+        $this->assertSame('payid_ref_001', $updatedRef);
     }
 
-    public function test_handle_webhook_without_reference_still_succeeds(): void
+    public function test_handle_webhook_without_reference_skips_updater(): void
     {
-        $payload = ['event' => 'payment.confirmed'];
+        $called = false;
+        $gateway = new PayIdGateway(
+            qrCodeService: $this->qrCodeService,
+            config: ['enabled' => true],
+            transactionUpdater: function () use (&$called): void {
+                $called = true;
+            },
+        );
 
-        $result = $this->gateway->handleWebhook($payload);
+        $result = $gateway->handleWebhook(['event' => 'payment.confirmed']);
 
         $this->assertTrue($result['processed']);
         $this->assertSame('payid', $result['gateway']);
+        $this->assertFalse($called);
     }
 
     public function test_calculate_fee_returns_zero(): void

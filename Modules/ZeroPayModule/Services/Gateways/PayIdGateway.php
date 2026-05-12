@@ -11,9 +11,15 @@ use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
 class PayIdGateway extends AbstractGateway implements GatewayContract
 {
+    /**
+     * @param  callable(string): bool|null  $transactionVerifier  Returns true when reference has a completed transaction.
+     * @param  callable(string): void|null  $transactionUpdater  Marks pending transactions as completed for a reference.
+     */
     public function __construct(
         protected QrCodeService $qrCodeService,
         ?array $config = null,
+        protected mixed $transactionVerifier = null,
+        protected mixed $transactionUpdater = null,
     ) {
         parent::__construct($config);
     }
@@ -42,13 +48,15 @@ class PayIdGateway extends AbstractGateway implements GatewayContract
             $reference = $qrCode->reference;
         }
 
+        $appUrl = rtrim((string) $this->configValue('app.url', 'http://localhost'), '/');
+
         return (new GatewayResponse(
             status: 'pending',
             gateway: 'payid',
             reference: $reference,
             data: [
                 'pay_id' => $payId,
-                'redirect_url' => url('/pay/session/'.$reference),
+                'redirect_url' => $appUrl.'/pay/session/'.$reference,
             ],
         ))->toArray();
     }
@@ -59,16 +67,16 @@ class PayIdGateway extends AbstractGateway implements GatewayContract
      */
     public function verifyPayment(string $reference): array
     {
-        $transaction = ZeroPayTransaction::query()
-            ->where('gateway_reference', $reference)
-            ->where('gateway', 'payid')
-            ->where('status', 'completed')
-            ->first();
-
-        $status = $transaction ? 'completed' : 'pending';
+        $isCompleted = $this->transactionVerifier !== null
+            ? (bool) ($this->transactionVerifier)($reference)
+            : (bool) ZeroPayTransaction::query()
+                ->where('gateway_reference', $reference)
+                ->where('gateway', 'payid')
+                ->where('status', 'completed')
+                ->first();
 
         return (new GatewayResponse(
-            status: $status,
+            status: $isCompleted ? 'completed' : 'pending',
             gateway: 'payid',
             reference: $reference,
         ))->toArray();
@@ -82,11 +90,15 @@ class PayIdGateway extends AbstractGateway implements GatewayContract
         $reference = $payload['reference'] ?? $payload['payid_reference'] ?? null;
 
         if ($reference) {
-            ZeroPayTransaction::query()
-                ->where('gateway_reference', $reference)
-                ->where('gateway', 'payid')
-                ->where('status', 'pending')
-                ->update(['status' => 'completed']);
+            if ($this->transactionUpdater !== null) {
+                ($this->transactionUpdater)($reference);
+            } else {
+                ZeroPayTransaction::query()
+                    ->where('gateway_reference', $reference)
+                    ->where('gateway', 'payid')
+                    ->where('status', 'pending')
+                    ->update(['status' => 'completed']);
+            }
         }
 
         return (new WebhookResult(

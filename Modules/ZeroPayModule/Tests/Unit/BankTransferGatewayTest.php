@@ -14,10 +14,15 @@ class BankTransferGatewayTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->gateway = new BankTransferGateway;
+
+        $this->gateway = new BankTransferGateway(
+            config: ['enabled' => true],
+            bankAccountResolver: fn (int $companyId): ?array => null,
+            depositVerifier: fn (string $ref): bool => false,
+        );
     }
 
-    public function test_create_payment_returns_pending_response_with_reference(): void
+    public function test_create_payment_with_valid_session_returns_pending_response(): void
     {
         $session = [
             'id' => 1,
@@ -49,29 +54,63 @@ class BankTransferGatewayTest extends TestCase
         $this->assertNotEmpty($result['reference']);
     }
 
-    public function test_create_payment_returns_reference_in_data(): void
+    public function test_create_payment_includes_bank_account_when_resolver_returns_details(): void
     {
-        $session = [
-            'id' => 10,
-            'company_id' => 7,
-            'session_token' => 'ref-xyz',
+        $bankDetails = [
+            'account_name' => 'ZeroPay Pty Ltd',
+            'bsb' => '123-456',
+            'account_number' => '98765432',
+            'bank_name' => 'ANZ',
         ];
 
-        $result = $this->gateway->createPayment($session);
+        $gateway = new BankTransferGateway(
+            config: ['enabled' => true],
+            bankAccountResolver: fn (int $companyId): ?array => $bankDetails,
+        );
 
-        // The reference must appear at top-level AND in the data field
+        $result = $gateway->createPayment([
+            'id' => 1,
+            'company_id' => 7,
+            'session_token' => 'ref-xyz',
+        ]);
+
         $this->assertSame('ref-xyz', $result['reference']);
-        // The response also contains 'reference' in data (via GatewayResponse::data merge)
-        $this->assertArrayHasKey('reference', $result);
+        $this->assertArrayHasKey('bank_account', $result);
+        $this->assertSame('ZeroPay Pty Ltd', $result['bank_account']['account_name']);
+        $this->assertSame('123-456', $result['bank_account']['bsb']);
     }
 
-    public function test_verify_payment_returns_pending_when_no_matched_deposit(): void
+    public function test_create_payment_omits_bank_account_when_resolver_returns_null(): void
+    {
+        $result = $this->gateway->createPayment([
+            'id' => 1,
+            'company_id' => 99,
+            'session_token' => 'tok',
+        ]);
+
+        $this->assertArrayNotHasKey('bank_account', $result);
+    }
+
+    public function test_verify_payment_returns_pending_when_deposit_not_matched(): void
     {
         $result = $this->gateway->verifyPayment('bt-ref-unknown');
 
         $this->assertSame('bank_transfer', $result['gateway']);
         $this->assertSame('bt-ref-unknown', $result['reference']);
-        $this->assertArrayHasKey('status', $result);
+        $this->assertSame('pending', $result['status']);
+    }
+
+    public function test_verify_payment_returns_completed_when_deposit_matched(): void
+    {
+        $gateway = new BankTransferGateway(
+            config: ['enabled' => true],
+            depositVerifier: fn (string $ref): bool => true,
+        );
+
+        $result = $gateway->verifyPayment('bt-ref-matched');
+
+        $this->assertSame('completed', $result['status']);
+        $this->assertSame('bank_transfer', $result['gateway']);
     }
 
     public function test_handle_webhook_returns_not_processed(): void
@@ -98,21 +137,6 @@ class BankTransferGatewayTest extends TestCase
         $this->assertSame('refunded', $result['status']);
         $this->assertSame('txn-bt-001', $result['transaction_id']);
         $this->assertSame('bank_transfer', $result['gateway']);
-    }
-
-    public function test_gateway_response_includes_gateway_key(): void
-    {
-        $session = [
-            'id' => 1,
-            'company_id' => 1,
-            'session_token' => 'tok',
-        ];
-
-        $result = $this->gateway->createPayment($session);
-
-        $this->assertArrayHasKey('status', $result);
-        $this->assertArrayHasKey('gateway', $result);
-        $this->assertArrayHasKey('reference', $result);
     }
 
     public function test_gateway_response_value_object_merges_data(): void

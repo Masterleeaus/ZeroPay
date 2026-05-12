@@ -10,6 +10,18 @@ use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
 class BankTransferGateway extends AbstractGateway implements GatewayContract
 {
+    /**
+     * @param  callable(int): ?array|null  $bankAccountResolver  Returns bank account details for a company ID, or null if none.
+     * @param  callable(string): bool|null  $depositVerifier  Returns true when reference has a matched deposit.
+     */
+    public function __construct(
+        ?array $config = null,
+        protected mixed $bankAccountResolver = null,
+        protected mixed $depositVerifier = null,
+    ) {
+        parent::__construct($config);
+    }
+
     protected function gatewayKey(): string
     {
         return 'bank_transfer';
@@ -26,18 +38,14 @@ class BankTransferGateway extends AbstractGateway implements GatewayContract
         $companyId = $session['company_id'] ?? null;
         $reference = $session['session_token'] ?? uniqid('bt_', true);
 
-        $bankAccount = $companyId
-            ? ZeroPayBankAccount::query()
-                ->where('company_id', $companyId)
-                ->where('status', 'active')
-                ->where('is_default', true)
-                ->first()
+        $bankAccount = $companyId !== null
+            ? $this->resolveBankAccount((int) $companyId)
             : null;
 
         $data = ['reference' => $reference];
 
-        if ($bankAccount) {
-            $data['bank_account'] = [
+        if ($bankAccount !== null) {
+            $data['bank_account'] = is_array($bankAccount) ? $bankAccount : [
                 'account_name' => $bankAccount->account_name,
                 'bsb' => $bankAccount->bsb,
                 'account_number' => $bankAccount->account_number,
@@ -59,15 +67,15 @@ class BankTransferGateway extends AbstractGateway implements GatewayContract
      */
     public function verifyPayment(string $reference): array
     {
-        $deposit = ZeroPayBankDeposit::query()
-            ->where('reference', $reference)
-            ->where('status', 'matched')
-            ->first();
-
-        $status = $deposit ? 'completed' : 'pending';
+        $isMatched = $this->depositVerifier !== null
+            ? (bool) ($this->depositVerifier)($reference)
+            : (bool) ZeroPayBankDeposit::query()
+                ->where('reference', $reference)
+                ->where('status', 'matched')
+                ->first();
 
         return (new GatewayResponse(
-            status: $status,
+            status: $isMatched ? 'completed' : 'pending',
             gateway: 'bank_transfer',
             reference: $reference,
         ))->toArray();
@@ -93,5 +101,18 @@ class BankTransferGateway extends AbstractGateway implements GatewayContract
     public function refundPayment(string $transactionId): array
     {
         return ['status' => 'refunded', 'transaction_id' => $transactionId, 'gateway' => 'bank_transfer'];
+    }
+
+    private function resolveBankAccount(int $companyId): mixed
+    {
+        if ($this->bankAccountResolver !== null) {
+            return ($this->bankAccountResolver)($companyId);
+        }
+
+        return ZeroPayBankAccount::query()
+            ->where('company_id', $companyId)
+            ->where('status', 'active')
+            ->where('is_default', true)
+            ->first();
     }
 }
