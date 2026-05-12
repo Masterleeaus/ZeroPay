@@ -1,0 +1,7 @@
+# PWA build artefacts & dependencies
+PWA/node_modules/
+PWA/dist/
+PWA/.env
+
+# macOS
+.DS_Store
