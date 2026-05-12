@@ -68,6 +68,36 @@ class PaymentSessionService
         return $transaction;
     }
 
+    public function pay(ZeroPaySession $session, string $gateway, int $payerUserId): ZeroPayTransaction
+    {
+        $gatewayInstance = $this->gatewayFactory->make($gateway);
+        $result          = $gatewayInstance->createPayment($session->toArray());
+        $fee             = $gatewayInstance->calculateFee((float) $session->amount);
+
+        $qrCode = $session->qrCodes()->latest()->first();
+
+        $transaction = ZeroPayTransaction::create([
+            'company_id'        => $session->company_id,
+            'session_id'        => $session->id,
+            'user_id'           => $payerUserId,
+            'gateway'           => $gateway,
+            'gateway_reference' => $result['reference'] ?? null,
+            'amount'            => $session->amount,
+            'currency'          => $session->currency,
+            'status'            => 'pending',
+            'fee'               => $fee,
+            'net_amount'        => (float) $session->amount - $fee,
+            'meta'              => [
+                'gateway_response' => $result,
+                'merchant_name'    => $qrCode?->merchant_name,
+            ],
+        ]);
+
+        $session->update(['status' => 'processing', 'gateway' => $gateway]);
+
+        return $transaction;
+    }
+
     public function expire(ZeroPaySession $session): void
     {
         $session->update(['status' => 'expired']);
