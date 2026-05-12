@@ -85,13 +85,13 @@ export default function TransactionDetail() {
               return
             }
           } catch (error) {
-            if ((error as Error).name !== 'AbortError') console.error(error)
+            if ((error as Error).name !== 'AbortError') console.error('Failed to share receipt:', error)
           }
           window.print()
         }}
         style={{ width: '100%', padding: '12px', marginBottom: '20px', borderRadius: '10px', border: 'none', background: '#1a1a2e', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
       >
-        Download Receipt / Share
+        Print / Share Receipt
       </button>
 
       {/* Timeline */}
