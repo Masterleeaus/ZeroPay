@@ -117,37 +117,38 @@ export default function TransactionList() {
       {!online && <p style={{ color: '#f59e0b', fontSize: '13px', marginBottom: '12px' }}>📶 Showing cached transactions</p>}
 
       {/* List */}
-      {transactions.map(tx => (
-        <div key={tx.id} onClick={() => navigate(`/transactions/${tx.id}`)} style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '12px', background: '#fff', borderRadius: '10px', marginBottom: '8px',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.06)', cursor: 'pointer',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: tx.direction === 'received' ? '#dcfce7' : '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
-              {tx.direction === 'received' ? '📥' : '📤'}
+      {transactions.map(tx => {
+        const status = statusColor(tx.status)
+        return <div key={tx.id} onClick={() => navigate(`/transactions/${tx.id}`)} style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '12px', background: '#fff', borderRadius: '10px', marginBottom: '8px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.06)', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: tx.direction === 'received' ? '#dcfce7' : '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
+                {tx.direction === 'received' ? '📥' : '📤'}
+              </div>
+              <div>
+                <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>{tx.merchant_name ?? tx.reference ?? 'Payment'}</p>
+                <p style={{ margin: '2px 0 0', color: '#666', fontSize: '12px' }}>{tx.gateway} · {new Date(tx.created_at).toLocaleDateString()}</p>
+              </div>
             </div>
-            <div>
-              <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>{tx.merchant_name ?? tx.reference ?? 'Payment'}</p>
-              <p style={{ margin: '2px 0 0', color: '#666', fontSize: '12px' }}>{tx.gateway} · {new Date(tx.created_at).toLocaleDateString()}</p>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ margin: 0, fontWeight: 700, color: tx.direction === 'received' ? '#22c55e' : '#1a1a2e', fontSize: '14px' }}>
+                {tx.direction === 'received' ? '+' : '-'}{tx.currency} {tx.amount.toFixed(2)}
+              </p>
+              <span style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                borderRadius: '12px',
+                padding: '2px 8px',
+                background: status.bg,
+                color: status.text,
+                textTransform: 'capitalize',
+              }}>{tx.status}</span>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <p style={{ margin: 0, fontWeight: 700, color: tx.direction === 'received' ? '#22c55e' : '#1a1a2e', fontSize: '14px' }}>
-              {tx.direction === 'received' ? '+' : '-'}{tx.currency} {tx.amount.toFixed(2)}
-            </p>
-            <span style={{
-              fontSize: '11px',
-              fontWeight: 700,
-              borderRadius: '12px',
-              padding: '2px 8px',
-              background: statusColor(tx.status).bg,
-              color: statusColor(tx.status).text,
-              textTransform: 'capitalize',
-            }}>{tx.status}</span>
-          </div>
-        </div>
-      ))}
+      })}
 
       {loading && <p style={{ textAlign: 'center', color: '#666' }}>Loading…</p>}
       {!loading && transactions.length === 0 && <p style={{ textAlign: 'center', color: '#666' }}>No transactions found</p>}

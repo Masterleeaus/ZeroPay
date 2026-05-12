@@ -33,18 +33,6 @@ export default function TransactionDetail() {
   if (!tx) return <div style={{ padding: '32px', textAlign: 'center', color: '#666' }}>Loading…</div>
 
   const currentStep = tx.status === 'failed' ? 3 : timeline.indexOf(tx.status === 'completed' ? 'completed' : tx.status)
-  const receiptText = [
-    `Transaction #${tx.id}`,
-    `Type: ${tx.type}`,
-    `Amount: ${tx.currency} ${tx.amount.toFixed(2)}`,
-    `Status: ${tx.status}`,
-    `Reference: ${tx.reference ?? '—'}`,
-    `Merchant: ${tx.merchant_name ?? '—'}`,
-    `Gateway: ${tx.gateway}`,
-    `Fee: ${tx.currency} ${tx.fee.toFixed(2)}`,
-    `Timestamp: ${new Date(tx.created_at).toLocaleString()}`,
-  ].join('\n')
-
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
       <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#e94560', cursor: 'pointer', fontSize: '14px', marginBottom: '16px' }}>← Back</button>
@@ -80,6 +68,17 @@ export default function TransactionDetail() {
       <button
         type="button"
         onClick={async () => {
+          const receiptText = [
+            `Transaction #${tx.id}`,
+            `Type: ${tx.type}`,
+            `Amount: ${tx.currency} ${tx.amount.toFixed(2)}`,
+            `Status: ${tx.status}`,
+            `Reference: ${tx.reference ?? '—'}`,
+            `Merchant: ${tx.merchant_name ?? '—'}`,
+            `Gateway: ${tx.gateway}`,
+            `Fee: ${tx.currency} ${tx.fee.toFixed(2)}`,
+            `Timestamp: ${new Date(tx.created_at).toLocaleString()}`,
+          ].join('\n')
           try {
             if (navigator.share) {
               await navigator.share({ title: `Transaction #${tx.id}`, text: receiptText })
