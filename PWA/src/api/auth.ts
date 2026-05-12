@@ -16,12 +16,12 @@ export interface KycPayload {
 }
 
 export const authApi = {
-  login: (data: LoginPayload) => client.post<AuthResponse>('/auth/login', data),
-  register: (data: RegisterPayload) => client.post<AuthResponse>('/auth/register', data),
-  forgotPassword: (email: string) => client.post('/auth/forgot-password', { email }),
-  verifyEmail: (token: string) => client.post('/auth/verify-email', { token }),
-  verifyOtp: (otp: string, type: string) => client.post('/auth/verify-otp', { otp, type }),
-  resendVerification: (email: string) => client.post('/auth/resend-verification', { email }),
+  login: (data: LoginPayload) => client.post<AuthResponse>('/api/auth/login', data),
+  register: (data: RegisterPayload) => client.post<AuthResponse>('/api/auth/register', data),
+  forgotPassword: (email: string) => client.post('/api/auth/forgot-password', { email }),
+  verifyEmail: (token: string) => client.post('/api/auth/verify-email', { token }),
+  verifyOtp: (otp: string, type: string) => client.post('/api/auth/verify-otp', { otp, type }),
+  resendVerification: (email: string) => client.post('/api/auth/resend-verification', { email }),
   submitKyc: (data: KycPayload) => {
     const form = new FormData()
     Object.entries(data).forEach(([k, v]) => {
@@ -32,9 +32,9 @@ export const authApi = {
         form.append(k, v) // File extends Blob — accepted by FormData.append
       }
     })
-    return client.post('/auth/kyc', form, {
+    return client.post('/api/auth/kyc', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-  logout: () => client.post('/auth/logout'),
+  logout: () => client.post('/api/auth/logout'),
 }

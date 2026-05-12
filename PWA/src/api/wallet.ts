@@ -4,6 +4,6 @@ export interface WalletBalance { balance: number; currency: string; formatted: s
 export interface ReceiveInfo { payid: string; account_name: string; qr_payload: string }
 
 export const walletApi = {
-  getBalance: () => client.get<WalletBalance>('/wallet'),
-  getReceiveInfo: () => client.get<ReceiveInfo>('/wallet/receive-info'),
+  getBalance: () => client.get<WalletBalance>('/api/zeropay/wallet'),
+  getReceiveInfo: () => client.get<ReceiveInfo>('/api/zeropay/wallet/receive-info'),
 }
