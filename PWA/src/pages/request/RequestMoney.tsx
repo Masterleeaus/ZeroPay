@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { sessionsApi, type QrPayload } from '../../api/sessions'
 import { cacheSession } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
@@ -14,9 +14,10 @@ export default function RequestMoney() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [infoMessage, setInfoMessage] = useState('')
+  const expiredRefreshTokenRef = useRef<string | null>(null)
   const online = useOnlineStatus()
 
-  const createSession = async (isRefresh = false) => {
+  const createSession = useCallback(async (isRefresh = false) => {
     if (!isRefresh) {
       setLoading(true)
     }
@@ -50,7 +51,7 @@ export default function RequestMoney() {
         setLoading(false)
       }
     }
-  }
+  }, [amount, currency, reference])
 
   const shareLink = async () => {
     if (!session) return
@@ -85,12 +86,12 @@ export default function RequestMoney() {
           })
           if (r.data.status === 'completed') {
             setInfoMessage('✅ Payment received.')
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('ZeroPay', { body: 'Payment received for this request.' })
-            }
+            window.clearInterval(intervalId)
           }
         })
-        .catch(() => {})
+        .catch((err) => {
+          console.error('Failed to poll session status', err)
+        })
     }, 3000)
     return () => {
       cancelled = true
@@ -101,14 +102,28 @@ export default function RequestMoney() {
   useEffect(() => {
     if (!session || session.status !== 'pending') return
     const expiresAtMs = session.payload.expiry_timestamp * 1000
-    const timeoutMs = Math.max(expiresAtMs - Date.now(), 0)
+    const remainingMs = expiresAtMs - Date.now()
+    if (remainingMs <= 0) {
+      if (expiredRefreshTokenRef.current === session.token) return
+      expiredRefreshTokenRef.current = session.token
+      void createSession(true)
+      return
+    }
+    expiredRefreshTokenRef.current = null
     const timeoutId = window.setTimeout(() => {
       void createSession(true)
-    }, timeoutMs)
+    }, remainingMs)
     return () => window.clearTimeout(timeoutId)
-  }, [session?.token, session?.payload.expiry_timestamp, amount, currency, reference])
+  }, [createSession, session])
 
   const paymentLink = session ? `${window.location.origin}/pay/session/${session.token}` : ''
+  const statusLabel = session
+    ? session.status === 'completed'
+      ? '✅ completed'
+      : session.status === 'pending'
+        ? '⏳ pending'
+        : `ℹ️ ${session.status}`
+    : ''
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
@@ -150,7 +165,7 @@ export default function RequestMoney() {
         }}>
           <h3 style={{ color: '#1a1a2e', marginBottom: '6px' }}>Show this QR to the payer</h3>
           <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
-            Status: <strong style={{ color: session.status === 'completed' ? '#16a34a' : '#f59e0b' }}>{session.status}</strong>
+            Status: <strong style={{ color: session.status === 'completed' ? '#16a34a' : session.status === 'pending' ? '#f59e0b' : '#6b7280' }}>{statusLabel}</strong>
           </p>
           {infoMessage && (
             <p style={{ marginTop: 0, marginBottom: '16px', color: '#1a1a2e', fontWeight: 600 }}>{infoMessage}</p>
