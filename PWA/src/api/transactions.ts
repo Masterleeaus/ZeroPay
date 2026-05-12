@@ -21,7 +21,7 @@ export interface TransactionListResponse {
 }
 
 export const transactionsApi = {
-  list: (params?: { page?: number; type?: string; search?: string }) =>
+  list: (params?: { page?: number; type?: string; search?: string; limit?: number }) =>
     client.get<TransactionListResponse>('/transactions', { params }),
   get: (id: number | string) => client.get<Transaction>(`/transactions/${id}`),
 }
