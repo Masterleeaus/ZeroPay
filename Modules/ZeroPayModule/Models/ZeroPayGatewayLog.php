@@ -4,6 +4,7 @@ namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
 class ZeroPayGatewayLog extends Model
 {
@@ -23,9 +24,14 @@ class ZeroPayGatewayLog extends Model
     ];
 
     protected $casts = [
-        'request_payload'  => 'array',
+        'request_payload' => 'array',
         'response_payload' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new TenantScope);
+    }
 
     public function session(): BelongsTo
     {

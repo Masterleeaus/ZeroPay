@@ -3,6 +3,7 @@
 namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
 class ZeroPayWebhookEvent extends Model
 {
@@ -20,7 +21,12 @@ class ZeroPayWebhookEvent extends Model
     ];
 
     protected $casts = [
-        'payload'      => 'array',
+        'payload' => 'array',
         'processed_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new TenantScope);
+    }
 }

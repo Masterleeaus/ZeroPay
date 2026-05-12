@@ -3,13 +3,26 @@
 namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
 class ZeroPaySession extends Model
 {
     use SoftDeletes;
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_OPENED = 'opened';
+
+    public const STATUS_PROCESSING = 'processing';
+
+    public const STATUS_COMPLETED = 'completed';
+
+    public const STATUS_FAILED = 'failed';
+
+    public const STATUS_EXPIRED = 'expired';
 
     protected $table = 'zeropay_sessions';
 
@@ -26,14 +39,14 @@ class ZeroPaySession extends Model
     ];
 
     protected $casts = [
-        'meta'       => 'array',
-        'amount'     => 'decimal:2',
+        'meta' => 'array',
+        'amount' => 'decimal:2',
         'expires_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenantScope());
+        static::addGlobalScope(new TenantScope);
     }
 
     public function scopeForCompany($query, int $companyId)
@@ -46,13 +59,37 @@ class ZeroPaySession extends Model
         return $this->hasMany(ZeroPayTransaction::class, 'session_id');
     }
 
-    public function qrCodes(): HasMany
+    public function qrCode(): HasOne
     {
-        return $this->hasMany(ZeroPayQrCode::class, 'session_id');
+        return $this->hasOne(ZeroPayQrCode::class, 'session_id');
     }
 
     public function gatewayLogs(): HasMany
     {
         return $this->hasMany(ZeroPayGatewayLog::class, 'session_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(ZeroPayNotification::class, 'session_id');
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->status === self::STATUS_EXPIRED
+            || ($this->expires_at !== null && $this->expires_at->isPast());
+    }
+
+    public function isActive(): bool
+    {
+        if ($this->isExpired()) {
+            return false;
+        }
+
+        return in_array($this->status, [
+            self::STATUS_PENDING,
+            self::STATUS_OPENED,
+            self::STATUS_PROCESSING,
+        ], true);
     }
 }
