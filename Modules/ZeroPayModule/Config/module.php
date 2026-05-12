@@ -1,5 +1,7 @@
 <?php
 
+use Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter;
+
 return [
 
     /*
@@ -12,7 +14,7 @@ return [
     |
     */
 
-    'name'    => 'ZeroPayModule',
+    'name' => 'ZeroPayModule',
 
     /*
     |--------------------------------------------------------------------------
@@ -23,7 +25,28 @@ return [
     | injected. Must implement Modules\ZeroPayModule\Contracts\GatewayContract.
     |
     */
-    'gateway' => \Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter::class,
+    'gateway' => DefaultGatewayAdapter::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | PayID Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The PayID address used as the payment destination for NPP/PayID payments.
+    | Override via ZEROPAY_PAYID in your .env file.
+    |
+    */
+    'payid' => env('ZEROPAY_PAYID', 'payments@merchant.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Merchant Name
+    |--------------------------------------------------------------------------
+    |
+    | The merchant name displayed on QR code payloads.
+    |
+    */
+    'merchant_name' => env('ZEROPAY_MERCHANT_NAME', 'ZeroPay Merchant'),
 
     /*
     |--------------------------------------------------------------------------
@@ -48,8 +71,8 @@ return [
     |
     */
     'vapid' => [
-        'subject'     => env('VAPID_SUBJECT', 'mailto:admin@zeropay.io'),
-        'public_key'  => env('VAPID_PUBLIC_KEY', ''),
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@zeropay.io'),
+        'public_key' => env('VAPID_PUBLIC_KEY', ''),
         'private_key' => env('VAPID_PRIVATE_KEY', ''),
     ],
 

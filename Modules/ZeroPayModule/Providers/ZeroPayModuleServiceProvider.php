@@ -3,12 +3,20 @@
 namespace Modules\ZeroPayModule\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\ZeroPayModule\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter;
+use Modules\ZeroPayModule\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Services\BankTransferMatchingService;
+use Modules\ZeroPayModule\Services\GatewayFactory;
+use Modules\ZeroPayModule\Services\Gateways\BankTransferGateway;
+use Modules\ZeroPayModule\Services\Gateways\PayIdGateway;
+use Modules\ZeroPayModule\Services\PaymentSessionService;
+use Modules\ZeroPayModule\Services\QrCodeService;
+use Modules\ZeroPayModule\Services\WebPushService;
 
 class ZeroPayModuleServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'ZeroPayModule';
+
     protected string $moduleNameLower = 'zeropay-module';
 
     /**
@@ -18,11 +26,13 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
         $this->app->bind(GatewayContract::class, DefaultGatewayAdapter::class);
-        $this->app->singleton(\Modules\ZeroPayModule\Services\GatewayFactory::class);
-        $this->app->singleton(\Modules\ZeroPayModule\Services\BankTransferMatchingService::class);
-        $this->app->singleton(\Modules\ZeroPayModule\Services\PaymentSessionService::class);
-        $this->app->singleton(\Modules\ZeroPayModule\Services\QrCodeService::class);
-        $this->app->singleton(\Modules\ZeroPayModule\Services\WebPushService::class);
+        $this->app->singleton(GatewayFactory::class);
+        $this->app->singleton(BankTransferMatchingService::class);
+        $this->app->singleton(PaymentSessionService::class);
+        $this->app->singleton(QrCodeService::class);
+        $this->app->singleton(WebPushService::class);
+        $this->app->singleton(PayIdGateway::class);
+        $this->app->singleton(BankTransferGateway::class);
     }
 
     /**
@@ -55,7 +65,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         );
 
         $this->publishes([
-            module_path($this->moduleName, 'Config/module.php') => config_path($this->moduleNameLower . '.php'),
+            module_path($this->moduleName, 'Config/module.php') => config_path($this->moduleNameLower.'.php'),
         ], 'config');
     }
 
@@ -70,7 +80,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         );
 
         $this->publishes([
-            module_path($this->moduleName, 'Resources/views') => resource_path('views/modules/' . $this->moduleNameLower),
+            module_path($this->moduleName, 'Resources/views') => resource_path('views/modules/'.$this->moduleNameLower),
         ], 'views');
     }
 
@@ -85,7 +95,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         );
 
         $this->publishes([
-            module_path($this->moduleName, 'Resources/lang') => lang_path('modules/' . $this->moduleNameLower),
+            module_path($this->moduleName, 'Resources/lang') => lang_path('modules/'.$this->moduleNameLower),
         ], 'translations');
     }
 
@@ -115,8 +125,8 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         }
 
         $commands = [];
-        foreach (glob($commandPath . '/*.php') as $file) {
-            $class = 'Modules\\' . $this->moduleName . '\\Console\\Commands\\' . pathinfo($file, PATHINFO_FILENAME);
+        foreach (glob($commandPath.'/*.php') as $file) {
+            $class = 'Modules\\'.$this->moduleName.'\\Console\\Commands\\'.pathinfo($file, PATHINFO_FILENAME);
             if (class_exists($class)) {
                 $commands[] = $class;
             }

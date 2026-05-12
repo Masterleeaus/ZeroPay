@@ -9,8 +9,8 @@ class CashGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'cash',
+            'status' => 'pending',
+            'gateway' => 'cash',
             'reference' => uniqid('cash_', true),
         ];
     }

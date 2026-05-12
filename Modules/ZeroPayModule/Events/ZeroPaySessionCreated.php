@@ -13,7 +13,7 @@ class ZeroPaySessionCreated
     /**
      * Create a new event instance.
      *
-     * @param array<string, mixed> $sessionData
+     * @param  array<string, mixed>  $sessionData
      */
     public function __construct(
         public readonly array $sessionData

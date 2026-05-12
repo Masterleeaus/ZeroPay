@@ -4,6 +4,10 @@ namespace Modules\ZeroPayModule\Providers;
 
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
+use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource;
 use Modules\ZeroPayModule\ZeroPayModulePlugin;
 
 class FilamentServiceProvider extends ServiceProvider
@@ -42,16 +46,16 @@ class FilamentServiceProvider extends ServiceProvider
     protected function resources(): array
     {
         return [
-            \Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource::class,
-            \Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource::class,
-            \Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource::class,
+            ZeroPaySessionResource::class,
+            ZeroPayTransactionResource::class,
+            ZeroPayBankDepositResource::class,
         ];
     }
 
     protected function pages(): array
     {
         return [
-            \Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage::class,
+            ZeroPayDashboardPage::class,
         ];
     }
 

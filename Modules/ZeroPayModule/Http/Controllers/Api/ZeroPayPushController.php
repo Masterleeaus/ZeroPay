@@ -24,15 +24,15 @@ class ZeroPayPushController extends Controller
     public function subscribe(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'subscription'                  => 'required|array',
-            'subscription.endpoint'         => 'required|url',
-            'subscription.keys'             => 'required|array',
-            'subscription.keys.p256dh'      => 'required|string',
-            'subscription.keys.auth'        => 'required|string',
-            'subscription.contentEncoding'  => 'sometimes|string',
+            'subscription' => 'required|array',
+            'subscription.endpoint' => 'required|url',
+            'subscription.keys' => 'required|array',
+            'subscription.keys.p256dh' => 'required|string',
+            'subscription.keys.auth' => 'required|string',
+            'subscription.contentEncoding' => 'sometimes|string',
         ]);
 
-        $user      = $request->user();
+        $user = $request->user();
         $companyId = $user->company_id ?? null;
 
         ZeroPayPushSubscription::upsertFromJson(

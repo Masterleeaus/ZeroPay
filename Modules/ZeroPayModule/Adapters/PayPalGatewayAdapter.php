@@ -9,8 +9,8 @@ class PayPalGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'paypal',
+            'status' => 'pending',
+            'gateway' => 'paypal',
             'reference' => uniqid('pp_', true),
         ];
     }

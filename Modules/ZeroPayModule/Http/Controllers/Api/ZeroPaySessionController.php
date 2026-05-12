@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Modules\ZeroPayModule\Actions\CreateZeroPaySessionAction;
 use Modules\ZeroPayModule\Actions\DeleteZeroPaySessionAction;
 use Modules\ZeroPayModule\Actions\UpdateZeroPaySessionAction;
@@ -20,15 +21,15 @@ class ZeroPaySessionController extends Controller
         protected CreateZeroPaySessionAction $createAction,
         protected UpdateZeroPaySessionAction $updateAction,
         protected DeleteZeroPaySessionAction $deleteAction,
-        protected PaymentSessionService      $sessionService,
-        protected GatewayFactory             $gatewayFactory,
+        protected PaymentSessionService $sessionService,
+        protected GatewayFactory $gatewayFactory,
     ) {}
 
     public function index(Request $request): JsonResponse
     {
         $companyId = $request->user()->company_id ?? null;
 
-        if (!$companyId) {
+        if (! $companyId) {
             return response()->json(['error' => 'No company context for authenticated user'], 422);
         }
 
@@ -44,21 +45,21 @@ class ZeroPaySessionController extends Controller
     {
         $companyId = $request->user()->company_id ?? null;
 
-        if (!$companyId) {
+        if (! $companyId) {
             return response()->json(['error' => 'No company context for authenticated user'], 422);
         }
 
         $supportedGateways = $this->gatewayFactory->supported();
         $validated = $request->validate([
-            'gateway'  => ['required', 'string', \Illuminate\Validation\Rule::in($supportedGateways)],
-            'amount'   => 'nullable|numeric|min:0',
+            'gateway' => ['required', 'string', Rule::in($supportedGateways)],
+            'amount' => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|size:3',
         ]);
 
-        $validated['company_id']    = $companyId;
-        $validated['user_id']       = $request->user()->id;
+        $validated['company_id'] = $companyId;
+        $validated['user_id'] = $request->user()->id;
         $validated['session_token'] = Str::uuid()->toString();
-        $validated['name']          = $validated['session_token'];
+        $validated['name'] = $validated['session_token'];
 
         $session = $this->createAction->execute(ZeroPaySessionData::fromArray($validated));
 
@@ -69,15 +70,15 @@ class ZeroPaySessionController extends Controller
     {
         $session->load('transactions', 'qrCodes');
 
-        $qrCode    = $session->qrCodes->first();
+        $qrCode = $session->qrCodes->first();
         $qrPayload = [
-            'payid'             => $qrCode?->pay_id ?: null,
-            'merchant_name'     => $qrCode?->merchant_name ?: null,
-            'amount'            => $session->amount !== null ? (float) $session->amount : null,
-            'currency'          => $session->currency ?? 'AUD',
-            'reference'         => $qrCode?->reference ?? $session->session_token,
-            'session_token'     => $session->session_token,
-            'expiry_timestamp'  => $session->expires_at?->timestamp ?? 0,
+            'payid' => $qrCode?->pay_id ?: null,
+            'merchant_name' => $qrCode?->merchant_name ?: null,
+            'amount' => $session->amount !== null ? (float) $session->amount : null,
+            'currency' => $session->currency ?? 'AUD',
+            'reference' => $qrCode?->reference ?? $session->session_token,
+            'session_token' => $session->session_token,
+            'expiry_timestamp' => $session->expires_at?->timestamp ?? 0,
         ];
 
         return response()->json(array_merge($session->toArray(), ['qr_payload' => $qrPayload]));
@@ -87,10 +88,10 @@ class ZeroPaySessionController extends Controller
     {
         $validated = $request->validate([
             'status' => 'sometimes|string',
-            'meta'   => 'sometimes|array',
+            'meta' => 'sometimes|array',
         ]);
 
-        $data    = array_merge($session->toArray(), $validated);
+        $data = array_merge($session->toArray(), $validated);
         $updated = $this->updateAction->execute($session, ZeroPaySessionData::fromArray($data));
 
         return response()->json($updated);
@@ -105,7 +106,7 @@ class ZeroPaySessionController extends Controller
 
     public function complete(Request $request, ZeroPaySession $session): JsonResponse
     {
-        $validated   = $request->validate(['reference' => 'required|string']);
+        $validated = $request->validate(['reference' => 'required|string']);
         $transaction = $this->sessionService->complete($session, $validated['reference']);
 
         return response()->json($transaction);
@@ -125,15 +126,15 @@ class ZeroPaySessionController extends Controller
         }
 
         $supportedGateways = $this->gatewayFactory->supported();
-        $validated         = $request->validate([
-            'gateway' => ['required', 'string', \Illuminate\Validation\Rule::in($supportedGateways)],
+        $validated = $request->validate([
+            'gateway' => ['required', 'string', Rule::in($supportedGateways)],
         ]);
 
         $transaction = $this->sessionService->pay($session, $validated['gateway'], $request->user()->id);
 
         return response()->json([
             'transaction_id' => $transaction->id,
-            'status'         => $transaction->status,
+            'status' => $transaction->status,
         ], 201);
     }
 }

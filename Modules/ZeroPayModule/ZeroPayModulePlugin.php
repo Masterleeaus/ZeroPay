@@ -4,10 +4,10 @@ namespace Modules\ZeroPayModule;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource;
-use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 
 class ZeroPayModulePlugin implements Plugin
 {

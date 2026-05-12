@@ -3,36 +3,36 @@
 namespace Modules\ZeroPayModule\Adapters;
 
 use Modules\ZeroPayModule\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Services\Gateways\PayIdGateway;
 
 class PayIdGatewayAdapter implements GatewayContract
 {
+    public function __construct(
+        protected PayIdGateway $gateway,
+    ) {}
+
     public function createPayment(array $session): array
     {
-        return [
-            'status'    => 'pending',
-            'gateway'   => 'payid',
-            'reference' => uniqid('payid_', true),
-            'pay_id'    => config('zeropay-module.payid', 'payments@merchant.com'),
-        ];
+        return $this->gateway->createPayment($session);
     }
 
     public function verifyPayment(string $reference): array
     {
-        return ['status' => 'pending', 'reference' => $reference, 'gateway' => 'payid'];
+        return $this->gateway->verifyPayment($reference);
     }
 
     public function handleWebhook(array $payload): array
     {
-        return ['processed' => true, 'gateway' => 'payid', 'payload' => $payload];
+        return $this->gateway->handleWebhook($payload);
     }
 
     public function calculateFee(float $amount): float
     {
-        return 0.0;
+        return $this->gateway->calculateFee($amount);
     }
 
     public function refundPayment(string $transactionId): array
     {
-        return ['status' => 'refunded', 'transaction_id' => $transactionId, 'gateway' => 'payid'];
+        return $this->gateway->refundPayment($transactionId);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 return [
     'zeropay.view', 'zeropay.create', 'zeropay.update', 'zeropay.delete',
     'zeropay.export', 'zeropay.import', 'zeropay.approve',

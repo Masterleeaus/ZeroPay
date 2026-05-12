@@ -5,3 +5,4 @@ PWA/.env
 
 # macOS
 .DS_Store
+Modules/ZeroPayModule/vendor/

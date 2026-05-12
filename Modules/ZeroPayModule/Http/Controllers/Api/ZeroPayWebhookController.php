@@ -16,31 +16,31 @@ class ZeroPayWebhookController extends Controller
     {
         $supported = $this->gatewayFactory->supported();
 
-        if (!in_array($gateway, $supported, true)) {
+        if (! in_array($gateway, $supported, true)) {
             return response()->json(['error' => 'Unsupported gateway'], 400);
         }
 
-        $payload   = $request->all();
+        $payload = $request->all();
         $signature = $request->header('X-Signature');
 
         // Always record the raw event before any processing so it is auditable.
         // The company_id from the payload is untrusted at this stage; it is
         // stored as-is for later reconciliation once the signature is verified.
         $event = ZeroPayWebhookEvent::create([
-            'company_id'      => isset($payload['company_id']) ? (int) $payload['company_id'] : 0,
-            'gateway'         => $gateway,
-            'event_type'      => $payload['event'] ?? 'unknown',
-            'payload'         => $payload,
-            'signature'       => $signature,
+            'company_id' => isset($payload['company_id']) ? (int) $payload['company_id'] : 0,
+            'gateway' => $gateway,
+            'event_type' => $payload['event'] ?? 'unknown',
+            'payload' => $payload,
+            'signature' => $signature,
             'idempotency_key' => $payload['idempotency_key'] ?? null,
-            'status'          => 'received',
+            'status' => 'received',
         ]);
 
         // Delegate the actual payload processing to the gateway adapter.
         // Each adapter is responsible for verifying the signature before
         // trusting any payload values (e.g. amount, company_id).
         $adapter = $this->gatewayFactory->make($gateway);
-        $result  = $adapter->handleWebhook($payload);
+        $result = $adapter->handleWebhook($payload);
 
         $event->update(['status' => 'processed', 'processed_at' => now()]);
 

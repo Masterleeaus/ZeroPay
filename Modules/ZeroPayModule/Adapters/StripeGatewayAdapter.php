@@ -9,8 +9,8 @@ class StripeGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'stripe',
+            'status' => 'pending',
+            'gateway' => 'stripe',
             'reference' => uniqid('stripe_', true),
         ];
     }

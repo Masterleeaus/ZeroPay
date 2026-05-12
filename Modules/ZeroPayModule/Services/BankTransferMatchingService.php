@@ -53,17 +53,17 @@ class BankTransferMatchingService
     ): array {
         $deposit->update([
             'transaction_id' => $transaction->id,
-            'status'         => 'matched',
-            'match_score'    => $score,
-            'match_method'   => $method,
+            'status' => 'matched',
+            'match_score' => $score,
+            'match_method' => $method,
         ]);
 
         $transaction->update(['status' => 'completed']);
 
         return [
-            'matched'        => true,
-            'score'          => $score,
-            'method'         => $method,
+            'matched' => true,
+            'score' => $score,
+            'method' => $method,
             'transaction_id' => $transaction->id,
         ];
     }

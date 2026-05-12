@@ -14,10 +14,15 @@ use Modules\ZeroPayModule\Models\ZeroPaySession;
 class ZeroPaySessionResource extends Resource
 {
     protected static ?string $model = ZeroPaySession::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+
     protected static ?string $navigationGroup = 'ZeroPay';
+
     protected static ?string $navigationLabel = 'Payment Sessions';
+
     protected static ?string $modelLabel = 'Payment Session';
+
     protected static ?int $navigationSort = 1;
 
     public static function canViewAny(): bool
@@ -32,12 +37,12 @@ class ZeroPaySessionResource extends Resource
             Select::make('gateway')
                 ->label('Gateway')
                 ->options([
-                    'payid'         => 'PayID',
+                    'payid' => 'PayID',
                     'bank_transfer' => 'Bank Transfer',
-                    'cash'          => 'Cash',
-                    'stripe'        => 'Stripe',
-                    'paypal'        => 'PayPal',
-                    'cryptomus'     => 'Cryptomus',
+                    'cash' => 'Cash',
+                    'stripe' => 'Stripe',
+                    'paypal' => 'PayPal',
+                    'cryptomus' => 'Cryptomus',
                 ])
                 ->required(),
             TextInput::make('amount')->label('Amount')->numeric(),
@@ -45,11 +50,11 @@ class ZeroPaySessionResource extends Resource
             Select::make('status')
                 ->label('Status')
                 ->options([
-                    'pending'   => 'Pending',
-                    'open'      => 'Open',
-                    'active'    => 'Active',
+                    'pending' => 'Pending',
+                    'open' => 'Open',
+                    'active' => 'Active',
                     'completed' => 'Completed',
-                    'expired'   => 'Expired',
+                    'expired' => 'Expired',
                     'cancelled' => 'Cancelled',
                 ])
                 ->required(),
@@ -65,10 +70,10 @@ class ZeroPaySessionResource extends Resource
             TextColumn::make('status')->label('Status')->badge()
                 ->colors([
                     'warning' => 'pending',
-                    'info'    => 'open',
+                    'info' => 'open',
                     'primary' => 'active',
                     'success' => 'completed',
-                    'danger'  => fn ($state) => in_array($state, ['expired', 'cancelled']),
+                    'danger' => fn ($state) => in_array($state, ['expired', 'cancelled']),
                 ]),
             TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
         ])->defaultSort('created_at', 'desc');
@@ -77,9 +82,9 @@ class ZeroPaySessionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListZeroPaySessions::route('/'),
+            'index' => Pages\ListZeroPaySessions::route('/'),
             'create' => Pages\CreateZeroPaySession::route('/create'),
-            'edit'   => Pages\EditZeroPaySession::route('/{record}/edit'),
+            'edit' => Pages\EditZeroPaySession::route('/{record}/edit'),
         ];
     }
 }

@@ -18,14 +18,14 @@ class SendPushForPaymentPending implements ShouldQueue
             return;
         }
 
-        $amount   = number_format((float) $session->amount, 2);
+        $amount = number_format((float) $session->amount, 2);
         $currency = $session->currency ?? 'AUD';
 
         $this->pushService->notifyUser((int) $session->user_id, [
             'event' => 'payment.pending',
             'title' => 'Payment Processing',
-            'body'  => "Payment of {$currency} {$amount} is being processed.",
-            'url'   => '/transactions',
+            'body' => "Payment of {$currency} {$amount} is being processed.",
+            'url' => '/transactions',
         ]);
     }
 }

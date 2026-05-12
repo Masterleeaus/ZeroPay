@@ -9,8 +9,8 @@ class CryptomusGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'cryptomus',
+            'status' => 'pending',
+            'gateway' => 'cryptomus',
             'reference' => uniqid('crypto_', true),
         ];
     }

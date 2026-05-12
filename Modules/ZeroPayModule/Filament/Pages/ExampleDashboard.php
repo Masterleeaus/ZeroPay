@@ -2,6 +2,4 @@
 
 namespace Modules\ZeroPayModule\Filament\Pages;
 
-class ExampleDashboard extends ZeroPayModulePage
-{
-}
+class ExampleDashboard extends ZeroPayModulePage {}

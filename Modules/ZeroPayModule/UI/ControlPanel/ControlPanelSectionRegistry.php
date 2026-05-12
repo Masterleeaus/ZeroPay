@@ -2,7 +2,6 @@
 
 namespace Modules\ZeroPayModule\UI\ControlPanel;
 
-
 final class ControlPanelSectionRegistry
 {
     public static function defaults(): array
@@ -22,5 +21,4 @@ final class ControlPanelSectionRegistry
             'settings' => 'Module settings and permissions',
         ];
     }
-
 }

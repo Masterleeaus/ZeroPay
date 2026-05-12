@@ -9,19 +9,19 @@ class DefaultGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'default',
+            'status' => 'pending',
+            'gateway' => 'default',
             'reference' => uniqid('zpay_', true),
-            'session'   => $session,
+            'session' => $session,
         ];
     }
 
     public function verifyPayment(string $reference): array
     {
         return [
-            'status'    => 'pending',
+            'status' => 'pending',
             'reference' => $reference,
-            'gateway'   => 'default',
+            'gateway' => 'default',
         ];
     }
 
@@ -29,8 +29,8 @@ class DefaultGatewayAdapter implements GatewayContract
     {
         return [
             'processed' => true,
-            'gateway'   => 'default',
-            'payload'   => $payload,
+            'gateway' => 'default',
+            'payload' => $payload,
         ];
     }
 
@@ -42,9 +42,9 @@ class DefaultGatewayAdapter implements GatewayContract
     public function refundPayment(string $transactionId): array
     {
         return [
-            'status'         => 'refunded',
+            'status' => 'refunded',
             'transaction_id' => $transactionId,
-            'gateway'        => 'default',
+            'gateway' => 'default',
         ];
     }
 }

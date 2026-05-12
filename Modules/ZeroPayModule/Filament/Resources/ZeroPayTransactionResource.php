@@ -14,9 +14,13 @@ use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 class ZeroPayTransactionResource extends Resource
 {
     protected static ?string $model = ZeroPayTransaction::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+
     protected static ?string $navigationGroup = 'ZeroPay';
+
     protected static ?string $navigationLabel = 'Transactions';
+
     protected static ?int $navigationSort = 2;
 
     public static function canViewAny(): bool
@@ -32,10 +36,10 @@ class ZeroPayTransactionResource extends Resource
             TextInput::make('amount')->numeric(),
             TextInput::make('currency')->default('AUD')->maxLength(3),
             Select::make('status')->options([
-                'pending'   => 'Pending',
+                'pending' => 'Pending',
                 'completed' => 'Completed',
-                'failed'    => 'Failed',
-                'refunded'  => 'Refunded',
+                'failed' => 'Failed',
+                'refunded' => 'Refunded',
             ]),
             TextInput::make('fee')->numeric(),
             TextInput::make('net_amount')->numeric(),

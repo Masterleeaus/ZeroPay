@@ -2,7 +2,6 @@
 
 namespace Modules\ZeroPayModule\UI\ControlPanel;
 
-
 final class ControlPanelLayout
 {
     public static function sections(): array
@@ -14,5 +13,4 @@ final class ControlPanelLayout
             'bottom' => ['records', 'activity', 'settings'],
         ];
     }
-
 }

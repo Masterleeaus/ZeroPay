@@ -2,7 +2,4 @@
 
 namespace Modules\ZeroPayModule\Automation;
 
-class ExampleAutomationTrigger
-{
-
-}
+class ExampleAutomationTrigger {}

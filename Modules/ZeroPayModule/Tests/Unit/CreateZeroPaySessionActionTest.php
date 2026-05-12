@@ -2,7 +2,4 @@
 
 namespace Modules\ZeroPayModule\Tests\Unit;
 
-class CreateZeroPaySessionActionTest
-{
-
-}
+class CreateZeroPaySessionActionTest {}

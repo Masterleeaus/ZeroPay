@@ -13,8 +13,7 @@ class PaymentCompleted
     /**
      * Create a new event instance.
      *
-     * @param string               $reference
-     * @param array<string, mixed> $paymentData
+     * @param  array<string, mixed>  $paymentData
      */
     public function __construct(
         public readonly string $reference,
