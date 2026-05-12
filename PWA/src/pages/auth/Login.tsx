@@ -15,7 +15,7 @@ export default function Login() {
     setError('')
     try {
       const res = await authApi.login({ email, password })
-      localStorage.setItem('auth_token', res.data.token)
+      localStorage.setItem('zeropay_token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
       navigate('/dashboard', { replace: true })
     } catch (err: unknown) {

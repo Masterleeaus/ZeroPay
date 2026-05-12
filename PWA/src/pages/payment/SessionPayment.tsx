@@ -44,7 +44,7 @@ export default function SessionPayment() {
         onClick={() => navigate('/pay/summary', { state: { payload } })}
         style={{ width: '100%', padding: '16px', background: '#e94560', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginTop: '24px' }}
       >
-        {localStorage.getItem('auth_token') ? 'Pay Now' : 'Sign In to Pay'}
+        {localStorage.getItem('zeropay_token') ? 'Pay Now' : 'Sign In to Pay'}
       </button>
     </div>
   )

@@ -13,7 +13,7 @@ class QrCodeService
         $expiry = $session->expires_at ?? Carbon::now()->addHours(24);
 
         $payload = [
-            'pay_id'           => $payId,
+            'payid'            => $payId,
             'merchant_name'    => $merchantName,
             'amount'           => $session->amount,
             'currency'         => $session->currency ?? 'AUD',

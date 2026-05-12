@@ -21,7 +21,7 @@ export default function Register() {
     setError('')
     try {
       const res = await authApi.register(form)
-      localStorage.setItem('auth_token', res.data.token)
+      localStorage.setItem('zeropay_token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
       navigate('/auth/verify-email', { replace: true })
     } catch (err: unknown) {

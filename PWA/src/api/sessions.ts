@@ -24,8 +24,8 @@ export interface Session {
 }
 
 export const sessionsApi = {
-  create: (data: CreateSessionPayload) => client.post<Session>('/sessions', data),
-  get: (token: string) => client.get<Session>(`/sessions/${token}`),
+  create: (data: CreateSessionPayload) => client.post<Session>('/api/zeropay/sessions', data),
+  get: (token: string) => client.get<Session>(`/api/zeropay/sessions/${token}`),
   pay: (token: string, data: { gateway: string; [key: string]: unknown }) =>
-    client.post<{ transaction_id: string; status: string }>(`/sessions/${token}/pay`, data),
+    client.post<{ transaction_id: string; status: string }>(`/api/zeropay/sessions/${token}/pay`, data),
 }
