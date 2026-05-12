@@ -2,23 +2,53 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { walletApi, type ReceiveInfo } from '../../api/wallet'
 import { transactionsApi, type Transaction } from '../../api/transactions'
+import { cacheSession, getCachedSession } from '../../db'
+import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 import QRCode from 'qrcode'
+
+const RECEIVE_INFO_CACHE_KEY = 'receive-info'
 
 export default function ReceiveMoney() {
   const [info, setInfo] = useState<ReceiveInfo | null>(null)
   const [qrDataUrl, setQrDataUrl] = useState('')
   const [recent, setRecent] = useState<Transaction[]>([])
   const [copied, setCopied] = useState(false)
+  const online = useOnlineStatus()
   const navigate = useNavigate()
 
   useEffect(() => {
-    walletApi.getReceiveInfo().then(async r => {
-      setInfo(r.data)
-      const url = await QRCode.toDataURL(r.data.qr_payload ?? r.data.payid, { width: 200, margin: 2 })
-      setQrDataUrl(url)
-    }).catch(() => {})
-    transactionsApi.list({ type: 'received' }).then(r => setRecent(r.data.data.slice(0, 3))).catch(() => {})
-  }, [])
+    const load = async () => {
+      if (online) {
+        try {
+          const r = await walletApi.getReceiveInfo()
+          setInfo(r.data)
+          const url = await QRCode.toDataURL(r.data.qr_payload ?? r.data.payid, { width: 200, margin: 2 })
+          setQrDataUrl(url)
+          // Cache for offline use
+          await cacheSession({
+            session_token: RECEIVE_INFO_CACHE_KEY,
+            qr_payload: r.data as unknown as Record<string, unknown>,
+            expires_at: Date.now() + 24 * 60 * 60 * 1000, // 24 h
+          })
+          transactionsApi.list({ type: 'received' }).then(r => setRecent(r.data.data.slice(0, 3))).catch(() => {})
+          return // loaded from network; skip cache fallback
+        } catch {
+          // Network failed – fall through to cached data
+        }
+      }
+
+      // Offline or network fetch failed: load from IndexedDB
+      const cached = await getCachedSession(RECEIVE_INFO_CACHE_KEY)
+      if (cached) {
+        const cachedInfo = cached.qr_payload as unknown as ReceiveInfo
+        setInfo(cachedInfo)
+        const url = await QRCode.toDataURL(cachedInfo.qr_payload ?? cachedInfo.payid, { width: 200, margin: 2 })
+        setQrDataUrl(url)
+      }
+    }
+    void load()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online])
 
   const share = async () => {
     if (!info) return
@@ -35,6 +65,12 @@ export default function ReceiveMoney() {
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px' }}>
       <h2 style={{ color: '#1a1a2e' }}>📥 Receive Money</h2>
+
+      {!online && (
+        <p style={{ color: '#f59e0b', fontSize: '13px', marginBottom: '12px' }}>
+          📶 Offline — showing cached QR code
+        </p>
+      )}
 
       <div style={{ background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', textAlign: 'center', marginBottom: '24px' }}>
         {qrDataUrl && <img src={qrDataUrl} alt="My PayID QR" style={{ width: '180px', height: '180px', borderRadius: '8px' }} />}
