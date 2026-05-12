@@ -7,6 +7,7 @@ import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import VerifyEmail from './pages/auth/VerifyEmail'
 import OtpVerification from './pages/auth/OtpVerification'
+import Kyc from './pages/auth/Kyc'
 import Dashboard from './pages/dashboard/Dashboard'
 import MakePayment from './pages/payment/MakePayment'
 import PaymentSummary from './pages/payment/PaymentSummary'
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/verify-email" element={<VerifyEmail />} />
         <Route path="/auth/otp" element={<OtpVerification />} />
+        <Route path="/auth/kyc" element={<Kyc />} />
 
         {/* Protected app routes */}
         <Route element={<ProtectedRoute />}>
