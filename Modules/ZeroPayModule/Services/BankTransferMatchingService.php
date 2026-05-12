@@ -3,6 +3,7 @@
 namespace Modules\ZeroPayModule\Services;
 
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 
 class BankTransferMatchingService
@@ -43,6 +44,44 @@ class BankTransferMatchingService
         $deposit->update(['status' => 'pending_review', 'match_score' => 0]);
 
         return ['matched' => false, 'score' => 0, 'method' => null];
+    }
+
+    /**
+     * Manually confirm a match between a bank deposit and an existing session.
+     *
+     * Creates a zeropay_transaction, links it to the deposit, and marks the
+     * session as completed.
+     */
+    public function confirmMatch(ZeroPayBankDeposit $deposit, ZeroPaySession $session): array
+    {
+        $transaction = ZeroPayTransaction::create([
+            'company_id'        => $session->company_id,
+            'session_id'        => $session->id,
+            'user_id'           => $session->user_id,
+            'gateway'           => 'bank_transfer',
+            'gateway_reference' => $deposit->reference,
+            'amount'            => $deposit->amount,
+            'currency'          => $deposit->currency ?? $session->currency,
+            'status'            => 'completed',
+            'fee'               => 0,
+            'net_amount'        => $deposit->amount,
+        ]);
+
+        $deposit->update([
+            'transaction_id' => $transaction->id,
+            'status'         => 'matched',
+            'match_score'    => 100,
+            'match_method'   => 'manual',
+        ]);
+
+        $session->update(['status' => ZeroPaySession::STATUS_COMPLETED]);
+
+        return [
+            'matched'        => true,
+            'score'          => 100,
+            'method'         => 'manual',
+            'transaction_id' => $transaction->id,
+        ];
     }
 
     protected function applyMatch(

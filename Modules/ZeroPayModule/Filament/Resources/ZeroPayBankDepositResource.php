@@ -3,13 +3,18 @@
 namespace Modules\ZeroPayModule\Filament\Resources;
 
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource\Pages;
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
+use Modules\ZeroPayModule\Services\BankTransferMatchingService;
 
 class ZeroPayBankDepositResource extends Resource
 {
@@ -43,20 +48,115 @@ class ZeroPayBankDepositResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            TextColumn::make('amount')->label('Amount')->money('AUD'),
-            TextColumn::make('reference')->label('Reference')->searchable(),
-            TextColumn::make('depositor_name')->label('Depositor'),
-            TextColumn::make('status')->label('Status')->badge()
-                ->colors([
-                    'warning' => 'pending_review',
-                    'success' => 'matched',
-                    'danger'  => 'unmatched',
-                    'gray'    => 'ignored',
-                ]),
-            TextColumn::make('match_score')->label('Score'),
-            TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
-        ])->defaultSort('created_at', 'desc');
+        return $table
+            ->columns([
+                TextColumn::make('depositor_name')
+                    ->label('Depositor Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('amount')
+                    ->label('Amount')
+                    ->money('AUD')
+                    ->sortable(),
+                TextColumn::make('currency')
+                    ->label('Currency'),
+                TextColumn::make('reference')
+                    ->label('Reference')
+                    ->searchable(),
+                TextColumn::make('deposited_at')
+                    ->label('Deposited At')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->colors([
+                        'warning' => 'pending_review',
+                        'success' => 'matched',
+                        'danger'  => 'unmatched',
+                        'gray'    => 'ignored',
+                    ]),
+                TextColumn::make('transaction_id')
+                    ->label('Matched Transaction')
+                    ->placeholder('—'),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->actions([
+                Action::make('matchManually')
+                    ->label('Match Manually')
+                    ->icon('heroicon-o-link')
+                    ->color('success')
+                    ->visible(fn (ZeroPayBankDeposit $record): bool => $record->status === 'pending_review')
+                    ->form(fn (ZeroPayBankDeposit $record): array => [
+                        Select::make('session_id')
+                            ->label('Session')
+                            ->options(
+                                ZeroPaySession::query()
+                                    ->where('company_id', $record->company_id)
+                                    ->whereIn('status', ['pending', 'opened', 'processing'])
+                                    ->where('gateway', 'bank_transfer')
+                                    ->get()
+                                    ->mapWithKeys(fn (ZeroPaySession $s): array => [
+                                        $s->id => "{$s->session_token} — {$s->amount} {$s->currency}",
+                                    ])
+                                    ->all()
+                            )
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->action(function (ZeroPayBankDeposit $record, array $data): void {
+                        $session = ZeroPaySession::findOrFail($data['session_id']);
+                        app(BankTransferMatchingService::class)->confirmMatch($record, $session);
+
+                        Notification::make()
+                            ->title('Deposit matched successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->authorize(fn (): bool => auth()->user()?->can('zeropay.approve') ?? false),
+
+                Action::make('markUnmatched')
+                    ->label('Mark Unmatched')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (ZeroPayBankDeposit $record): bool => $record->status === 'pending_review')
+                    ->form([
+                        Textarea::make('reason')
+                            ->label('Reason')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(function (ZeroPayBankDeposit $record, array $data): void {
+                        $record->update([
+                            'status' => 'unmatched',
+                            'meta'   => array_merge($record->meta ?? [], [
+                                'rejection_reason' => $data['reason'],
+                            ]),
+                        ]);
+
+                        Notification::make()
+                            ->title('Deposit marked as unmatched')
+                            ->warning()
+                            ->send();
+                    })
+                    ->authorize(fn (): bool => auth()->user()?->can('zeropay.approve') ?? false),
+
+                Action::make('viewRawData')
+                    ->label('Raw Data')
+                    ->icon('heroicon-o-code-bracket')
+                    ->color('gray')
+                    ->form(fn (ZeroPayBankDeposit $record): array => [
+                        Textarea::make('raw_data')
+                            ->label('Raw Data (JSON)')
+                            ->default(
+                                json_encode($record->raw_data ?? $record->meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                            )
+                            ->disabled()
+                            ->rows(15)
+                            ->columnSpanFull(),
+                    ])
+                    ->modalSubmitAction(false),
+            ]);
     }
 
     public static function getPages(): array
