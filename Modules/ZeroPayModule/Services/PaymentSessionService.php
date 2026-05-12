@@ -81,7 +81,7 @@ class PaymentSessionService
             'session_id'        => $session->id,
             'user_id'           => $payerUserId,
             'gateway'           => $gateway,
-            'gateway_reference' => $result->reference ?: null,
+            'gateway_reference' => $result->reference,
             'amount'            => $session->amount,
             'currency'          => $session->currency,
             'status'            => 'pending',

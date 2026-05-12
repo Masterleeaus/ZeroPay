@@ -33,9 +33,14 @@ class GatewayRegistry
      */
     public function available(): array
     {
-        return array_values(array_keys(array_filter(
-            $this->gateways,
-            static fn (GatewayContract $gateway): bool => $gateway->isAvailable()
-        )));
+        $available = [];
+
+        foreach ($this->gateways as $name => $gateway) {
+            if ($gateway->isAvailable()) {
+                $available[] = $name;
+            }
+        }
+
+        return $available;
     }
 }
