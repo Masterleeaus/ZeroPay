@@ -5,6 +5,13 @@ import { getCachedTransactions, cacheTransactions } from '../../db'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 
 const filters = ['All', 'Sent', 'Received', 'Pending', 'Failed']
+const filterQueryMap: Record<string, { type?: string; status?: string }> = {
+  Sent: { type: 'sent' },
+  Received: { type: 'received' },
+  Pending: { status: 'pending' },
+  Failed: { status: 'failed' },
+}
+const loadMoreRootMargin = '120px'
 
 function statusColor(s: string) {
   if (s === 'completed') return { bg: '#dcfce7', text: '#166534' }
@@ -35,8 +42,7 @@ export default function TransactionList() {
         return
       }
       const params: Record<string, unknown> = { page: p }
-      if (f === 'Sent' || f === 'Received') params.type = f.toLowerCase()
-      if (f === 'Pending' || f === 'Failed') params.status = f.toLowerCase()
+      Object.assign(params, filterQueryMap[f] ?? {})
       if (q) params.search = q
       const res = await transactionsApi.list(params as { page?: number; type?: string; status?: string; search?: string })
       const newTxs = res.data.data
@@ -77,7 +83,7 @@ export default function TransactionList() {
       const next = pageRef.current + 1
       setPage(next)
       void loadTransactions(next, filter, search)
-    }, { rootMargin: '120px' })
+    }, { rootMargin: loadMoreRootMargin })
     observer.observe(target)
     return () => observer.disconnect()
   }, [hasMore, filter, search, loadTransactions])

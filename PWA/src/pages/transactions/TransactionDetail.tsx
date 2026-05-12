@@ -85,8 +85,8 @@ export default function TransactionDetail() {
               await navigator.share({ title: `Transaction #${tx.id}`, text: receiptText })
               return
             }
-          } catch {
-            // fall back to print
+          } catch (error) {
+            if ((error as Error).name !== 'AbortError') console.error(error)
           }
           window.print()
         }}
