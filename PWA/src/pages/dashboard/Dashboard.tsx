@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { walletApi, type WalletBalance } from '../../api/wallet'
 import { transactionsApi, type Transaction } from '../../api/transactions'
+import { featureFlags } from '../../featureFlags'
 
 const quickActions = [
-  { label: '📷 Make Payment', to: '/pay/scan' },
-  { label: '💸 Request $', to: '/request' },
-  { label: '📥 Receive', to: '/receive' },
-  { label: '🔗 Pay Links', to: '/links' },
+  { label: '📷 Make Payment', to: '/pay/scan', phase: 1 },
+  { label: '💸 Request $', to: '/request', phase: 1 },
+  { label: '📥 Receive', to: '/receive', phase: 1 },
+  { label: '🔗 Pay Links', to: '/links', phase: 1 },
+  { label: '📋 Transaction History', to: '/transactions', phase: 2 },
 ]
 
 function statusColor(s: string) {
@@ -20,13 +22,17 @@ export default function Dashboard() {
   const [balance, setBalance] = useState<WalletBalance | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [pullHintVisible, setPullHintVisible] = useState(false)
+  const touchStartY = useRef<number | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
 
   const load = async () => {
     try {
       const [bal, txs] = await Promise.all([
         walletApi.getBalance(),
-        transactionsApi.list({ page: 1 }),
+        transactionsApi.list({ limit: 5 }),
       ])
       setBalance(bal.data)
       setTransactions(txs.data.data.slice(0, 5))
@@ -42,21 +48,62 @@ export default function Dashboard() {
     // Push notification opt-in is handled explicitly in the Notifications screen
   }, [])
 
+  const refreshDashboard = async () => {
+    setRefreshing(true)
+    await load()
+    setRefreshing(false)
+  }
+
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    if ((containerRef.current?.scrollTop ?? 0) > 0) return
+    touchStartY.current = event.touches[0].clientY
+  }
+
+  const handleTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    if (touchStartY.current === null || (containerRef.current?.scrollTop ?? 0) > 0) return
+    setPullHintVisible(event.touches[0].clientY - touchStartY.current > 70)
+  }
+
+  const handleTouchEnd = () => {
+    if (touchStartY.current === null) return
+    const distance = (containerRef.current?.scrollTop ?? 0) <= 0 ? pullHintVisible : false
+    touchStartY.current = null
+    setPullHintVisible(false)
+    if (distance && !refreshing) {
+      void refreshDashboard()
+    }
+  }
+
+  const visibleQuickActions = quickActions.filter((action) =>
+    action.phase === 1 || featureFlags.dashboardPhase2Tiles,
+  )
+
   const user = (() => {
     try { return JSON.parse(localStorage.getItem('user') ?? '{}') as { name?: string } }
     catch { return {} }
   })()
 
   return (
-    <div style={{ padding: '16px', maxWidth: '480px', margin: '0 auto' }}>
+    <div
+      ref={containerRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{ padding: '16px', maxWidth: '480px', margin: '0 auto', overflowY: 'auto' }}
+    >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <p style={{ margin: 0, color: '#666', fontSize: '13px' }}>Welcome back</p>
-          <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#1a1a2e' }}>{user.name ?? 'User'}</h2>
+          <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#1a1a2e' }}>ZeroPay</h2>
+          <p style={{ margin: '2px 0 0', color: '#666', fontSize: '13px' }}>Hi, {user.name ?? 'User'}</p>
         </div>
         <button onClick={() => navigate('/notifications')} style={{ background: 'none', border: 'none', fontSize: '24px' }}>🔔</button>
       </div>
+      {(pullHintVisible || refreshing) && (
+        <p style={{ marginTop: '-16px', marginBottom: '12px', color: '#666', fontSize: '12px', textAlign: 'center' }}>
+          {refreshing ? 'Refreshing…' : 'Release to refresh'}
+        </p>
+      )}
 
       {/* Balance card */}
       <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #0f3460)', color: '#fff', borderRadius: '16px', padding: '24px', marginBottom: '24px' }}>
@@ -71,8 +118,8 @@ export default function Dashboard() {
 
       {/* Quick actions */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-        {quickActions.map(({ label, to }) => (
-          <button key={to} onClick={() => navigate(to)} style={{
+        {visibleQuickActions.map(({ label, to }) => (
+          <button key={`${to}-${label}`} onClick={() => navigate(to)} style={{
             background: '#fff', border: '1.5px solid #e0e0e0', borderRadius: '12px',
             padding: '16px', fontSize: '14px', fontWeight: 600, color: '#1a1a2e',
             cursor: 'pointer', textAlign: 'left',
