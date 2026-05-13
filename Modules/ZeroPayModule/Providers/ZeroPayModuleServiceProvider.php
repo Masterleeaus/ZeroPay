@@ -7,6 +7,7 @@ use Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter;
 use Modules\ZeroPayModule\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Services\BankTransferMatchingService;
 use Modules\ZeroPayModule\Services\GatewayFactory;
+use Modules\ZeroPayModule\Services\GatewayRegistry;
 use Modules\ZeroPayModule\Services\Gateways\BankTransferGateway;
 use Modules\ZeroPayModule\Services\Gateways\PayIdGateway;
 use Modules\ZeroPayModule\Services\PaymentSessionService;
@@ -27,6 +28,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->app->bind(GatewayContract::class, DefaultGatewayAdapter::class);
         $this->app->singleton(GatewayFactory::class);
+        $this->app->singleton(GatewayRegistry::class);
         $this->app->singleton(BankTransferMatchingService::class);
         $this->app->singleton(PaymentSessionService::class);
         $this->app->singleton(QrCodeService::class);

@@ -4,6 +4,7 @@ namespace Modules\ZeroPayModule;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayControlPanel;
 use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
@@ -31,6 +32,7 @@ class ZeroPayModulePlugin implements Plugin
 
         $panel->pages([
             ZeroPayDashboardPage::class,
+            ZeroPayControlPanel::class,
         ]);
     }
 

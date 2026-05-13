@@ -4,6 +4,7 @@ namespace Modules\ZeroPayModule\Providers;
 
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayControlPanel;
 use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
@@ -56,6 +57,7 @@ class FilamentServiceProvider extends ServiceProvider
     {
         return [
             ZeroPayDashboardPage::class,
+            ZeroPayControlPanel::class,
         ];
     }
 

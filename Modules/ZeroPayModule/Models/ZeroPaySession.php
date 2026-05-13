@@ -36,6 +36,9 @@ class ZeroPaySession extends Model
         'status',
         'meta',
         'expires_at',
+        'reference',
+        'merchant_name',
+        'completed_at',
     ];
 
     public function getRouteKeyName(): string
@@ -47,6 +50,7 @@ class ZeroPaySession extends Model
         'meta' => 'array',
         'amount' => 'decimal:2',
         'expires_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     protected static function booted(): void
