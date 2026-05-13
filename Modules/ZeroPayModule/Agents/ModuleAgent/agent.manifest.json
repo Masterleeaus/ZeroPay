@@ -1,26 +1,36 @@
 {
   "schema": "titan.agent.module.v1",
+  "agent_id": "zeropay-module-agent",
   "agent": "zeropay-module.agent",
-  "display_name": "Example Module Agent",
+  "display_name": "ZeroPay Payment Agent",
+  "name": "ZeroPay Payment Agent",
+  "description": "Handles payment session queries, gateway status, and transaction lookups",
   "module": "zeropay-module",
   "owner": "TitanAgents",
   "runtime": "TitanCore.ProviderRouter",
   "system_supervisor": "TitanZero",
   "answer_mode": "grounded_with_citations",
+  "capabilities": [
+    "session.lookup",
+    "transaction.lookup",
+    "gateway.status",
+    "deposit.match"
+  ],
   "knowledge_scope": [
     "Knowledge/guides",
     "Knowledge/policies",
-    "Knowledge/pricing",
     "Knowledge/faqs",
-    "Knowledge/contracts",
     "Knowledge/compliance",
-    "Knowledge/sops",
-    "Knowledge/checklists"
+    "Knowledge/sops"
+  ],
+  "knowledge_sources": [
+    "Knowledge/guides/",
+    "Knowledge/faqs/"
   ],
   "tools": [
-    "zeropay.lookup_record",
-    "zeropay.create_record",
-    "zeropay.update_record"
+    "zeropay.create_session",
+    "zeropay.lookup_session",
+    "zeropay.get_transaction"
   ],
   "permissions": [
     "zeropay.view",
@@ -31,7 +41,9 @@
     "tenant_scoped": true,
     "require_citations_for_knowledge_answers": true,
     "deny_cross_company_data": true,
-    "human_confirm_for_write_actions": true
+    "human_confirm_for_write_actions": true,
+    "no_pii_in_responses": true,
+    "no_payment_credentials_in_responses": true
   },
   "training": {
     "dataset_manifest": "Agents/ModuleAgent/training/dataset-manifest.json",
