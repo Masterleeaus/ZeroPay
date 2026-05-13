@@ -45,6 +45,11 @@ class ZeroPayBankDeposit extends Model
         static::addGlobalScope(new TenantScope());
     }
 
+    public function scopePendingReview($query)
+    {
+        return $query->where('status', 'pending_review');
+    }
+
     public function bankAccount(): BelongsTo
     {
         return $this->belongsTo(ZeroPayBankAccount::class, 'bank_account_id');
