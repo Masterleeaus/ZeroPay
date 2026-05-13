@@ -17,6 +17,7 @@ class ZeroPayBankDeposit extends Model
         'company_id',
         'bank_account_id',
         'transaction_id',
+        'matched_transaction_id',
         'amount',
         'currency',
         'depositor_name',
@@ -29,10 +30,12 @@ class ZeroPayBankDeposit extends Model
         'match_score',
         'match_method',
         'meta',
+        'raw_data',
     ];
 
     protected $casts = [
         'meta'         => 'array',
+        'raw_data'     => 'array',
         'amount'       => 'decimal:2',
         'deposited_at' => 'datetime',
     ];
