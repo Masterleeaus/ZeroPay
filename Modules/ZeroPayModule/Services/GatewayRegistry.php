@@ -16,15 +16,15 @@ class GatewayRegistry
 {
     /** @var array<string, string> Maps gateway key → ZeroPaySettings property name */
     protected const SETTING_MAP = [
-        'payid'         => 'gateway_payid_enabled',
+        'payid' => 'gateway_payid_enabled',
         'bank_transfer' => 'gateway_bank_transfer_enabled',
-        'stripe'        => 'gateway_stripe_enabled',
-        'paypal'        => 'gateway_paypal_enabled',
-        'cryptomus'     => 'gateway_cryptomus_enabled',
-        'cash'          => 'gateway_cash_enabled',
+        'stripe' => 'gateway_stripe_enabled',
+        'paypal' => 'gateway_paypal_enabled',
+        'cryptomus' => 'gateway_cryptomus_enabled',
+        'cash' => 'gateway_cash_enabled',
     ];
 
-    public function __construct(protected ?ZeroPaySettings $settings = null) {}
+    public function __construct(protected ?object $settings = null) {}
 
     /**
      * Returns true when the given gateway is enabled.

@@ -24,7 +24,7 @@ class ViewZeroPayTransaction extends ViewRecord
                     TextEntry::make('type')
                         ->label('Type')
                         ->badge()
-                        ->color(fn (string $state): string => match ($state) {
+                        ->color(fn (?string $state): string => match ($state) {
                             'refund' => 'warning',
                             'fee'    => 'gray',
                             default  => 'primary',

@@ -43,8 +43,8 @@ class ZeroPayTransactionsExport
             $transaction->type,
             $transaction->gateway,
             $transaction->gateway_reference,
-            number_format((float) $transaction->amount, 2),
-            number_format((float) $transaction->fee, 2),
+            $transaction->amount,
+            $transaction->fee,
             $transaction->status,
             $transaction->payer_name,
             $transaction->payee_name,
@@ -68,7 +68,7 @@ class ZeroPayTransactionsExport
 
             fputcsv($handle, $headings);
 
-            $query->orderBy('id')->chunk(500, function ($rows) use ($handle) {
+            $query->orderBy('id')->chunkById(500, function ($rows) use ($handle) {
                 foreach ($rows as $row) {
                     fputcsv($handle, $this->map($row));
                 }

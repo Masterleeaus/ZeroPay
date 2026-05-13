@@ -33,14 +33,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('zeropay_transactions', function (Blueprint $table) {
-            $table->dropColumn([
+            $columns = array_filter([
                 'type',
                 'payer_name',
                 'payee_name',
                 'reference',
                 'failure_reason',
                 'gateway_response',
-            ]);
+            ], fn (string $col) => Schema::hasColumn('zeropay_transactions', $col));
+
+            if (! empty($columns)) {
+                $table->dropColumn(array_values($columns));
+            }
         });
     }
 };

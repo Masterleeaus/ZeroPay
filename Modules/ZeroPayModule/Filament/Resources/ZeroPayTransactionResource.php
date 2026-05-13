@@ -59,7 +59,7 @@ class ZeroPayTransactionResource extends Resource
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'refund' => 'warning',
                         'fee'    => 'gray',
                         default  => 'primary',
@@ -150,8 +150,8 @@ class ZeroPayTransactionResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['created_from'], fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
-                            ->when($data['created_until'], fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date));
+                            ->when($data['created_from'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date));
                     }),
 
                 Filter::make('amount_range')
@@ -162,14 +162,15 @@ class ZeroPayTransactionResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['amount_from'], fn (Builder $q, string $amount) => $q->where('amount', '>=', $amount))
-                            ->when($data['amount_to'], fn (Builder $q, string $amount) => $q->where('amount', '<=', $amount));
+                            ->when($data['amount_from'] ?? null, fn (Builder $q, string $amount) => $q->where('amount', '>=', $amount))
+                            ->when($data['amount_to'] ?? null, fn (Builder $q, string $amount) => $q->where('amount', '<=', $amount));
                     }),
             ])
             ->headerActions([
                 Action::make('export_csv')
                     ->label('Export CSV')
                     ->icon('heroicon-o-arrow-down-tray')
+                    ->visible(fn () => auth()->user()?->can('zeropay.export') ?? false)
                     ->action(function () {
                         $export = new ZeroPayTransactionsExport(
                             ZeroPayTransaction::query()
