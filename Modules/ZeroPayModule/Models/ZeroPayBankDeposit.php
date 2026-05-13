@@ -31,11 +31,13 @@ class ZeroPayBankDeposit extends Model
         'match_method',
         'raw_data',
         'meta',
+        'raw_data',
     ];
 
     protected $casts = [
         'raw_data'     => 'array',
         'meta'         => 'array',
+        'raw_data'     => 'array',
         'amount'       => 'decimal:2',
         'deposited_at' => 'datetime',
     ];

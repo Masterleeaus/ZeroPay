@@ -2,6 +2,7 @@
 
 namespace Modules\ZeroPayModule\Adapters;
 
+use Illuminate\Contracts\Bus\Dispatcher;
 use Modules\ZeroPayModule\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Jobs\ProcessBankDepositJob;
 
@@ -10,8 +11,8 @@ class BankTransferGatewayAdapter implements GatewayContract
     public function createPayment(array $session): array
     {
         return [
-            'status'    => 'pending',
-            'gateway'   => 'bank_transfer',
+            'status' => 'pending',
+            'gateway' => 'bank_transfer',
             'reference' => uniqid('bt_', true),
         ];
     }
@@ -23,7 +24,7 @@ class BankTransferGatewayAdapter implements GatewayContract
 
     public function handleWebhook(array $payload): array
     {
-        ProcessBankDepositJob::dispatch($payload);
+        app(Dispatcher::class)->dispatch(new ProcessBankDepositJob($payload));
 
         return ['processed' => true, 'queued' => true, 'gateway' => 'bank_transfer'];
     }
