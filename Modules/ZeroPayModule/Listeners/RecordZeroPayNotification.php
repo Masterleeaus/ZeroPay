@@ -191,7 +191,7 @@ class RecordZeroPayNotification implements ShouldQueue
                 'company_id' => $companyId,
                 'user_id' => $userId,
                 'session_id' => $sessionId,
-                'event_type' => $eventType,
+                'event' => $eventType,
                 'channel' => $channel,
                 'status' => 'sent',
                 'payload' => $payload,
