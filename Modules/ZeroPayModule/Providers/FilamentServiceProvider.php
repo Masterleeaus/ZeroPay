@@ -52,6 +52,7 @@ class FilamentServiceProvider extends ServiceProvider
     {
         return [
             \Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage::class,
+            \Modules\ZeroPayModule\Filament\Pages\ZeroPayControlPanel::class,
         ];
     }
 
