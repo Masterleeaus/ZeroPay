@@ -24,7 +24,7 @@ class GatewayRegistry
         'cash' => 'gateway_cash_enabled',
     ];
 
-    public function __construct(protected ?ZeroPaySettings $settings = null) {}
+    public function __construct(protected ?object $settings = null) {}
 
     public function register(string $name, GatewayContract $gateway): void
     {

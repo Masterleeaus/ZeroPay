@@ -15,7 +15,6 @@ class ZeroPayNotification extends Model
         'company_id',
         'user_id',
         'session_id',
-        'event',
         'event_type',
         'channel',
         'payload',
@@ -24,7 +23,6 @@ class ZeroPayNotification extends Model
     ];
 
     protected $casts = [
-        'event' => NotificationEventType::class,
         'event_type' => NotificationEventType::class,
         'payload' => 'array',
         'sent_at' => 'datetime',
@@ -38,23 +36,5 @@ class ZeroPayNotification extends Model
     public function session(): BelongsTo
     {
         return $this->belongsTo(ZeroPaySession::class, 'session_id');
-    }
-
-    public function getEventTypeAttribute(): ?NotificationEventType
-    {
-        $event = $this->attributes['event'] ?? null;
-
-        return $event !== null ? NotificationEventType::from($event) : null;
-    }
-
-    public function setEventTypeAttribute(NotificationEventType|string|null $value): void
-    {
-        if ($value === null) {
-            $this->attributes['event'] = null;
-
-            return;
-        }
-
-        $this->attributes['event'] = $value instanceof NotificationEventType ? $value->value : $value;
     }
 }
