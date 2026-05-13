@@ -56,6 +56,7 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
 
         $this->app->alias(GatewayContract::class, \Modules\ZeroPayModule\Contracts\GatewayContract::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\GatewayFactory::class);
+        $this->app->singleton(\Modules\ZeroPayModule\Services\GatewayRegistry::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\BankTransferMatchingService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\PaymentSessionService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\QrCodeService::class);

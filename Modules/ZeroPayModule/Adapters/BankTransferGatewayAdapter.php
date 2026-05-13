@@ -2,6 +2,7 @@
 
 namespace Modules\ZeroPayModule\Adapters;
 
+use Modules\ZeroPayModule\Jobs\ProcessBankDepositJob;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Services\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Services\ValueObjects\GatewayResponse;
@@ -33,10 +34,12 @@ class BankTransferGatewayAdapter implements GatewayContract
 
     public function handleWebhook(array $payload): WebhookResult
     {
+        ProcessBankDepositJob::dispatch($payload);
+
         return new WebhookResult(
             processed: true,
             status: 'processed',
-            rawResponse: ['gateway' => $this->getName(), 'payload' => $payload],
+            rawResponse: ['gateway' => $this->getName(), 'payload' => $payload, 'queued' => true],
         );
     }
 
