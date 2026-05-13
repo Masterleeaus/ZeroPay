@@ -2,7 +2,4 @@
 
 namespace Modules\ZeroPayModule\Workflows;
 
-class ExampleApprovalWorkflow
-{
-
-}
+class ExampleApprovalWorkflow {}

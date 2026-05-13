@@ -26,8 +26,8 @@ class ViewZeroPayTransaction extends ViewRecord
                         ->badge()
                         ->color(fn (?string $state): string => match ($state) {
                             'refund' => 'warning',
-                            'fee'    => 'gray',
-                            default  => 'primary',
+                            'fee' => 'gray',
+                            default => 'primary',
                         }),
 
                     TextEntry::make('gateway')
@@ -55,10 +55,10 @@ class ViewZeroPayTransaction extends ViewRecord
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
                             'completed' => 'success',
-                            'pending'   => 'warning',
-                            'failed'    => 'danger',
-                            'refunded'  => 'info',
-                            default     => 'gray',
+                            'pending' => 'warning',
+                            'failed' => 'danger',
+                            'refunded' => 'info',
+                            default => 'gray',
                         }),
 
                     TextEntry::make('payer_name')

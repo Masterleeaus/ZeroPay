@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 class RouteServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'ZeroPayModule';
+
     protected string $moduleNameLower = 'zeropay-module';
 
     /**

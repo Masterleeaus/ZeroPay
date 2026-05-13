@@ -16,12 +16,12 @@ class ZeroPayGatewayBreakdownWidget extends ChartWidget
     protected function getData(): array
     {
         $gatewayLabels = [
-            'payid'         => 'PayID',
+            'payid' => 'PayID',
             'bank_transfer' => 'Bank Transfer',
-            'stripe'        => 'Stripe',
-            'paypal'        => 'PayPal',
-            'cash'          => 'Cash',
-            'cryptomus'     => 'Cryptomus',
+            'stripe' => 'Stripe',
+            'paypal' => 'PayPal',
+            'cash' => 'Cash',
+            'cryptomus' => 'Cryptomus',
         ];
 
         $colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6366f1'];
@@ -47,7 +47,7 @@ class ZeroPayGatewayBreakdownWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'data'            => $data,
+                    'data' => $data,
                     'backgroundColor' => $backgroundColors,
                 ],
             ],

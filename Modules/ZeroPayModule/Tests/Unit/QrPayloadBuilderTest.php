@@ -2,6 +2,7 @@
 
 namespace Modules\ZeroPayModule\Tests\Unit;
 
+use chillerlan\QRCode\QRCode;
 use Illuminate\Support\Carbon;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Services\QrPayloadBuilder;
@@ -17,20 +18,20 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_build_produces_spec_compliant_payload(): void
     {
-        $expiry  = Carbon::createFromTimestamp(1_900_000_000);
+        $expiry = Carbon::createFromTimestamp(1_900_000_000);
         $session = new ZeroPaySession([
             'session_token' => 'abc123xyz',
-            'amount'        => 99.95,
-            'currency'      => 'AUD',
-            'meta'          => [
-                'payid'         => 'merchant@zeropay.io',
+            'amount' => 99.95,
+            'currency' => 'AUD',
+            'meta' => [
+                'payid' => 'merchant@zeropay.io',
                 'merchant_name' => 'Acme Pty Ltd',
-                'reference'     => 'INV-2026-001',
+                'reference' => 'INV-2026-001',
             ],
-            'expires_at'    => $expiry,
+            'expires_at' => $expiry,
         ]);
 
-        $builder = new QrPayloadBuilder();
+        $builder = new QrPayloadBuilder;
         $payload = $builder->build($session);
 
         $this->assertInstanceOf(QrPayload::class, $payload);
@@ -47,8 +48,8 @@ class QrPayloadBuilderTest extends TestCase
     {
         $session = new ZeroPaySession([
             'session_token' => 'tok-001',
-            'amount'        => null,
-            'currency'      => null,
+            'amount' => null,
+            'currency' => null,
         ]);
 
         $builder = new QrPayloadBuilder(
@@ -67,14 +68,14 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_build_uses_ttl_when_session_has_no_expiry(): void
     {
-        $before  = time();
+        $before = time();
         $session = new ZeroPaySession([
             'session_token' => 'tok-002',
         ]);
 
         $builder = new QrPayloadBuilder(sessionTtlMinutes: 15);
         $payload = $builder->build($session);
-        $after   = time();
+        $after = time();
 
         // expiryTimestamp should be approximately now + 15 minutes
         $this->assertGreaterThanOrEqual($before + 15 * 60, $payload->expiryTimestamp);
@@ -87,7 +88,7 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_fallback_url_follows_spec_format(): void
     {
-        $builder = new QrPayloadBuilder();
+        $builder = new QrPayloadBuilder;
 
         $this->assertSame('/pay/session/abc123xyz', $builder->buildFallbackUrl('abc123xyz'));
         $this->assertSame('/pay/session/tok-999', $builder->buildFallbackUrl('tok-999'));
@@ -99,17 +100,17 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_to_json_produces_valid_spec_compliant_json(): void
     {
-        $payload                  = new QrPayload();
-        $payload->payid           = 'merchant@zeropay.io';
-        $payload->merchantName    = 'Acme Pty Ltd';
-        $payload->amount          = 99.95;
-        $payload->currency        = 'AUD';
-        $payload->reference       = 'INV-2026-001';
-        $payload->sessionToken    = 'abc123xyz';
+        $payload = new QrPayload;
+        $payload->payid = 'merchant@zeropay.io';
+        $payload->merchantName = 'Acme Pty Ltd';
+        $payload->amount = 99.95;
+        $payload->currency = 'AUD';
+        $payload->reference = 'INV-2026-001';
+        $payload->sessionToken = 'abc123xyz';
         $payload->expiryTimestamp = 1_234_567_890;
 
-        $builder = new QrPayloadBuilder();
-        $json    = $builder->toJson($payload);
+        $builder = new QrPayloadBuilder;
+        $json = $builder->toJson($payload);
 
         $decoded = json_decode($json, true);
         $this->assertIsArray($decoded);
@@ -124,16 +125,16 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_to_json_handles_null_amount(): void
     {
-        $payload                  = new QrPayload();
-        $payload->payid           = 'p@example.com';
-        $payload->merchantName    = 'Shop';
-        $payload->amount          = null;
-        $payload->currency        = 'AUD';
-        $payload->reference       = 'ref';
-        $payload->sessionToken    = 'tok';
+        $payload = new QrPayload;
+        $payload->payid = 'p@example.com';
+        $payload->merchantName = 'Shop';
+        $payload->amount = null;
+        $payload->currency = 'AUD';
+        $payload->reference = 'ref';
+        $payload->sessionToken = 'tok';
         $payload->expiryTimestamp = 9_999_999_999;
 
-        $json    = (new QrPayloadBuilder())->toJson($payload);
+        $json = (new QrPayloadBuilder)->toJson($payload);
         $decoded = json_decode($json, true);
 
         $this->assertNull($decoded['amount']);
@@ -146,26 +147,26 @@ class QrPayloadBuilderTest extends TestCase
     public function test_to_qr_image_calls_injected_renderer_with_json_and_size(): void
     {
         $capturedContent = null;
-        $capturedSize    = null;
+        $capturedSize = null;
 
         $renderer = function (string $content, int $size) use (&$capturedContent, &$capturedSize): string {
             $capturedContent = $content;
-            $capturedSize    = $size;
+            $capturedSize = $size;
 
             return base64_encode('fake-png-data');
         };
 
-        $payload                  = new QrPayload();
-        $payload->payid           = 'p@example.com';
-        $payload->merchantName    = 'Shop';
-        $payload->amount          = 10.0;
-        $payload->currency        = 'AUD';
-        $payload->reference       = 'ref';
-        $payload->sessionToken    = 'tok';
+        $payload = new QrPayload;
+        $payload->payid = 'p@example.com';
+        $payload->merchantName = 'Shop';
+        $payload->amount = 10.0;
+        $payload->currency = 'AUD';
+        $payload->reference = 'ref';
+        $payload->sessionToken = 'tok';
         $payload->expiryTimestamp = 9_999_999_999;
 
         $builder = new QrPayloadBuilder(qrRenderer: $renderer);
-        $result  = $builder->toQrImage($payload, 300);
+        $result = $builder->toQrImage($payload, 300);
 
         $this->assertSame(base64_encode('fake-png-data'), $result);
         $this->assertSame(300, $capturedSize);
@@ -177,19 +178,19 @@ class QrPayloadBuilderTest extends TestCase
     public function test_to_qr_image_uses_default_size_of_400(): void
     {
         $capturedSize = null;
-        $renderer     = static function (string $content, int $size) use (&$capturedSize): string {
+        $renderer = static function (string $content, int $size) use (&$capturedSize): string {
             $capturedSize = $size;
 
             return base64_encode('png');
         };
 
-        $payload                  = new QrPayload();
-        $payload->payid           = 'p@e.com';
-        $payload->merchantName    = 'M';
-        $payload->amount          = null;
-        $payload->currency        = 'AUD';
-        $payload->reference       = 'r';
-        $payload->sessionToken    = 't';
+        $payload = new QrPayload;
+        $payload->payid = 'p@e.com';
+        $payload->merchantName = 'M';
+        $payload->amount = null;
+        $payload->currency = 'AUD';
+        $payload->reference = 'r';
+        $payload->sessionToken = 't';
         $payload->expiryTimestamp = 1;
 
         (new QrPayloadBuilder(qrRenderer: $renderer))->toQrImage($payload);
@@ -200,23 +201,23 @@ class QrPayloadBuilderTest extends TestCase
     public function test_to_qr_image_throws_when_no_renderer_and_library_absent(): void
     {
         // Only run this assertion when chillerlan/php-qrcode is NOT installed
-        if (class_exists(\chillerlan\QRCode\QRCode::class)) {
+        if (class_exists(QRCode::class)) {
             $this->markTestSkipped('chillerlan/php-qrcode is installed; skipping missing-library test.');
         }
 
-        $payload                  = new QrPayload();
-        $payload->payid           = 'p@e.com';
-        $payload->merchantName    = 'M';
-        $payload->amount          = null;
-        $payload->currency        = 'AUD';
-        $payload->reference       = 'r';
-        $payload->sessionToken    = 't';
+        $payload = new QrPayload;
+        $payload->payid = 'p@e.com';
+        $payload->merchantName = 'M';
+        $payload->amount = null;
+        $payload->currency = 'AUD';
+        $payload->reference = 'r';
+        $payload->sessionToken = 't';
         $payload->expiryTimestamp = 1;
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessageMatches('/chillerlan\/php-qrcode/');
 
-        (new QrPayloadBuilder())->toQrImage($payload);
+        (new QrPayloadBuilder)->toQrImage($payload);
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -226,17 +227,17 @@ class QrPayloadBuilderTest extends TestCase
     public function test_validate_parses_valid_json_into_payload(): void
     {
         $json = json_encode([
-            'payid'             => 'merchant@zeropay.io',
-            'merchant_name'     => 'Acme Pty Ltd',
-            'amount'            => 99.95,
-            'currency'          => 'AUD',
-            'reference'         => 'INV-2026-001',
-            'session_token'     => 'abc123xyz',
-            'expiry_timestamp'  => 1_234_567_890,
+            'payid' => 'merchant@zeropay.io',
+            'merchant_name' => 'Acme Pty Ltd',
+            'amount' => 99.95,
+            'currency' => 'AUD',
+            'reference' => 'INV-2026-001',
+            'session_token' => 'abc123xyz',
+            'expiry_timestamp' => 1_234_567_890,
         ]);
 
-        $validator = new QrPayloadValidator();
-        $payload   = $validator->validate($json);
+        $validator = new QrPayloadValidator;
+        $payload = $validator->validate($json);
 
         $this->assertSame('merchant@zeropay.io', $payload->payid);
         $this->assertSame('Acme Pty Ltd', $payload->merchantName);
@@ -250,16 +251,16 @@ class QrPayloadBuilderTest extends TestCase
     public function test_validate_accepts_null_amount(): void
     {
         $json = json_encode([
-            'payid'            => 'p@e.com',
-            'merchant_name'    => 'Shop',
-            'amount'           => null,
-            'currency'         => 'AUD',
-            'reference'        => 'ref',
-            'session_token'    => 'tok',
+            'payid' => 'p@e.com',
+            'merchant_name' => 'Shop',
+            'amount' => null,
+            'currency' => 'AUD',
+            'reference' => 'ref',
+            'session_token' => 'tok',
             'expiry_timestamp' => 9_999_999_999,
         ]);
 
-        $payload = (new QrPayloadValidator())->validate($json);
+        $payload = (new QrPayloadValidator)->validate($json);
 
         $this->assertNull($payload->amount);
     }
@@ -269,24 +270,24 @@ class QrPayloadBuilderTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/not valid JSON/');
 
-        (new QrPayloadValidator())->validate('not-json');
+        (new QrPayloadValidator)->validate('not-json');
     }
 
     public function test_validate_throws_on_missing_required_field(): void
     {
         $json = json_encode([
-            'payid'            => 'p@e.com',
+            'payid' => 'p@e.com',
             // 'merchant_name' missing
-            'currency'         => 'AUD',
-            'reference'        => 'ref',
-            'session_token'    => 'tok',
+            'currency' => 'AUD',
+            'reference' => 'ref',
+            'session_token' => 'tok',
             'expiry_timestamp' => 1,
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/merchant_name/');
 
-        (new QrPayloadValidator())->validate($json);
+        (new QrPayloadValidator)->validate($json);
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -295,18 +296,18 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_is_expired_returns_false_for_future_timestamp(): void
     {
-        $payload                  = new QrPayload();
+        $payload = new QrPayload;
         $payload->expiryTimestamp = time() + 60;
 
-        $this->assertFalse((new QrPayloadValidator())->isExpired($payload));
+        $this->assertFalse((new QrPayloadValidator)->isExpired($payload));
     }
 
     public function test_is_expired_returns_true_for_past_timestamp(): void
     {
-        $payload                  = new QrPayload();
+        $payload = new QrPayload;
         $payload->expiryTimestamp = time() - 1;
 
-        $this->assertTrue((new QrPayloadValidator())->isExpired($payload));
+        $this->assertTrue((new QrPayloadValidator)->isExpired($payload));
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -317,20 +318,20 @@ class QrPayloadBuilderTest extends TestCase
     {
         $session = new ZeroPaySession(['session_token' => 'abc123xyz']);
 
-        $payload               = new QrPayload();
+        $payload = new QrPayload;
         $payload->sessionToken = 'abc123xyz';
 
-        $this->assertTrue((new QrPayloadValidator())->matchesSession($payload, $session));
+        $this->assertTrue((new QrPayloadValidator)->matchesSession($payload, $session));
     }
 
     public function test_matches_session_returns_false_when_tokens_differ(): void
     {
         $session = new ZeroPaySession(['session_token' => 'abc123xyz']);
 
-        $payload               = new QrPayload();
+        $payload = new QrPayload;
         $payload->sessionToken = 'different-token';
 
-        $this->assertFalse((new QrPayloadValidator())->matchesSession($payload, $session));
+        $this->assertFalse((new QrPayloadValidator)->matchesSession($payload, $session));
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -339,24 +340,24 @@ class QrPayloadBuilderTest extends TestCase
 
     public function test_round_trip_build_to_json_to_validate(): void
     {
-        $expiry  = Carbon::createFromTimestamp(2_000_000_000);
+        $expiry = Carbon::createFromTimestamp(2_000_000_000);
         $session = new ZeroPaySession([
             'session_token' => 'round-trip-tok',
-            'amount'        => 50.00,
-            'currency'      => 'AUD',
-            'meta'          => [
-                'payid'         => 'rt@zeropay.io',
+            'amount' => 50.00,
+            'currency' => 'AUD',
+            'meta' => [
+                'payid' => 'rt@zeropay.io',
                 'merchant_name' => 'RT Merchant',
-                'reference'     => 'RT-REF-001',
+                'reference' => 'RT-REF-001',
             ],
-            'expires_at'    => $expiry,
+            'expires_at' => $expiry,
         ]);
 
-        $builder   = new QrPayloadBuilder();
-        $validator = new QrPayloadValidator();
+        $builder = new QrPayloadBuilder;
+        $validator = new QrPayloadValidator;
 
-        $built     = $builder->build($session);
-        $json      = $builder->toJson($built);
+        $built = $builder->build($session);
+        $json = $builder->toJson($built);
         $validated = $validator->validate($json);
 
         $this->assertSame($built->payid, $validated->payid);

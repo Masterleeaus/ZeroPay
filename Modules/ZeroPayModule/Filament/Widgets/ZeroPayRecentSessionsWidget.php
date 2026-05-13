@@ -29,13 +29,13 @@ class ZeroPayRecentSessionsWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('gateway')
                     ->label('Gateway')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'payid'         => 'PayID',
+                        'payid' => 'PayID',
                         'bank_transfer' => 'Bank Transfer',
-                        'stripe'        => 'Stripe',
-                        'paypal'        => 'PayPal',
-                        'cash'          => 'Cash',
-                        'cryptomus'     => 'Cryptomus',
-                        default         => ucfirst(str_replace('_', ' ', $state)),
+                        'stripe' => 'Stripe',
+                        'paypal' => 'PayPal',
+                        'cash' => 'Cash',
+                        'cryptomus' => 'Cryptomus',
+                        default => ucfirst(str_replace('_', ' ', $state)),
                     }),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -46,11 +46,11 @@ class ZeroPayRecentSessionsWidget extends BaseWidget
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'completed'  => 'success',
+                        'completed' => 'success',
                         'processing' => 'primary',
-                        'opened'     => 'info',
-                        'pending'    => 'warning',
-                        default      => 'danger',
+                        'opened' => 'info',
+                        'pending' => 'warning',
+                        default => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')

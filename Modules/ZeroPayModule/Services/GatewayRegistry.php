@@ -5,7 +5,6 @@ namespace Modules\ZeroPayModule\Services;
 use Illuminate\Container\Container;
 use Modules\ZeroPayModule\Exceptions\GatewayNotFoundException;
 use Modules\ZeroPayModule\Services\Contracts\GatewayContract;
-use Modules\ZeroPayModule\Settings\ZeroPaySettings;
 
 class GatewayRegistry
 {
@@ -35,7 +34,7 @@ class GatewayRegistry
     {
         $key = strtolower($name);
 
-        if (!isset($this->gateways[$key])) {
+        if (! isset($this->gateways[$key])) {
             throw GatewayNotFoundException::forName($name);
         }
 

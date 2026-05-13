@@ -14,9 +14,13 @@ use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 class ZeroPayBankDepositResource extends Resource
 {
     protected static ?string $model = ZeroPayBankDeposit::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
+
     protected static ?string $navigationGroup = 'ZeroPay';
+
     protected static ?string $navigationLabel = 'Bank Deposits';
+
     protected static ?int $navigationSort = 3;
 
     public static function canViewAny(): bool
@@ -34,9 +38,9 @@ class ZeroPayBankDepositResource extends Resource
             TextInput::make('description')->label('Description'),
             Select::make('status')->options([
                 'pending_review' => 'Pending Review',
-                'matched'        => 'Matched',
-                'unmatched'      => 'Unmatched',
-                'ignored'        => 'Ignored',
+                'matched' => 'Matched',
+                'unmatched' => 'Unmatched',
+                'ignored' => 'Ignored',
             ]),
         ]);
     }
@@ -51,8 +55,8 @@ class ZeroPayBankDepositResource extends Resource
                 ->colors([
                     'warning' => 'pending_review',
                     'success' => 'matched',
-                    'danger'  => 'unmatched',
-                    'gray'    => 'ignored',
+                    'danger' => 'unmatched',
+                    'gray' => 'ignored',
                 ]),
             TextColumn::make('match_score')->label('Score'),
             TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),

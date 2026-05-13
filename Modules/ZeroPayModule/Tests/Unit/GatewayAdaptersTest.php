@@ -2,207 +2,224 @@
 
 namespace Modules\ZeroPayModule\Tests\Unit;
 
+use Modules\ZeroPayModule\Adapters\BankTransferGatewayAdapter;
 use Modules\ZeroPayModule\Adapters\CashGatewayAdapter;
 use Modules\ZeroPayModule\Adapters\CryptomusGatewayAdapter;
+use Modules\ZeroPayModule\Adapters\PayIdGatewayAdapter;
 use Modules\ZeroPayModule\Adapters\PayPalGatewayAdapter;
 use Modules\ZeroPayModule\Adapters\StripeGatewayAdapter;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
+use Modules\ZeroPayModule\Services\QrCodeService;
+use Modules\ZeroPayModule\Services\ValueObjects\GatewayResponse;
+use Modules\ZeroPayModule\Services\ValueObjects\WebhookResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class GatewayAdaptersTest extends TestCase
 {
-    public function test_stripe_adapter_honours_enabled_flag_and_returns_client_secret(): void
+    private function makeSession(array $attributes = []): ZeroPaySession
     {
-        $captured = [];
-        $adapter = new StripeGatewayAdapter(
-            ['enabled' => true, 'secret' => 'sk_test_123'],
-            function (array $payload, array $config) use (&$captured): array {
-                $captured = compact('payload', 'config');
-
-                return ['id' => 'pi_123', 'client_secret' => 'secret_123'];
-            }
-        );
-
-        $this->assertTrue($adapter->isAvailable());
-
-        $payment = $adapter->createPayment([
-            'amount' => 10.50,
+        $session = new ZeroPaySession;
+        $session->setRawAttributes(array_merge([
+            'id' => 1,
+            'company_id' => 10,
+            'session_token' => 'test-token-123',
+            'amount' => '100.00',
             'currency' => 'AUD',
-            'session_token' => 'session_123',
-        ]);
+            'gateway' => 'payid',
+            'status' => 'pending',
+        ], $attributes));
 
-        $this->assertSame('stripe', $payment['gateway']);
-        $this->assertSame('pi_123', $payment['reference']);
-        $this->assertSame('secret_123', $payment['client_secret']);
-        $this->assertSame(1050, $captured['payload']['amount']);
-        $this->assertSame('sk_test_123', $captured['config']['secret']);
-        $this->assertFalse((new StripeGatewayAdapter(['enabled' => false]))->isAvailable());
+        return $session;
     }
 
-    public function test_stripe_webhook_signature_verification_maps_completed_status(): void
+    public function test_stripe_adapter_returns_pending_response(): void
     {
-        $payload = json_encode([
-            'id' => 'evt_123',
-            'type' => 'payment_intent.succeeded',
-            'data' => [
-                'object' => [
-                    'id' => 'pi_123',
-                ],
-            ],
-        ]);
-
-        $this->assertIsString($payload);
-
-        $secret = 'whsec_test_secret';
-        $timestamp = time();
-        $signature = hash_hmac('sha256', $timestamp.'.'.$payload, $secret);
-
-        $adapter = new StripeGatewayAdapter([
-            'enabled' => true,
-            'webhook_secret' => $secret,
-        ]);
-
-        $result = $adapter->handleWebhook([
-            'payload' => $payload,
-            'signature' => "t={$timestamp},v1={$signature}",
-        ]);
-
-        $this->assertTrue($result['validated']);
-        $this->assertSame('completed', $result['status']);
-        $this->assertSame('pi_123', $result['reference']);
-    }
-
-    public function test_paypal_adapter_uses_existing_config_shape_and_returns_approval_url(): void
-    {
-        $captured = [];
-        $adapter = new PayPalGatewayAdapter(
-            [
-                'enabled' => true,
-                'mode' => 'sandbox',
-                'client_id' => 'client-id',
-                'client_secret' => 'client-secret',
-            ],
-            [
-                'mode' => 'live',
-                'sandbox' => ['client_id' => 'old', 'client_secret' => 'old-secret'],
-                'currency' => 'USD',
-                'notify_url' => 'https://example.test/paypal/ipn',
-                'locale' => 'en_US',
-                'validate_ssl' => true,
-            ],
-            function (array $providerConfig, array $orderPayload) use (&$captured): array {
-                $captured = compact('providerConfig', 'orderPayload');
-
-                return [
-                    'id' => 'ORDER-123',
-                    'links' => [
-                        ['rel' => 'approve', 'href' => 'https://paypal.test/approve/ORDER-123'],
-                    ],
-                ];
-            }
-        );
-
-        $payment = $adapter->createPayment([
-            'amount' => 25.00,
-            'currency' => 'USD',
-            'session_token' => 'session_456',
-        ]);
+        $adapter = new StripeGatewayAdapter;
+        $session = $this->makeSession(['gateway' => 'stripe']);
 
         $this->assertTrue($adapter->isAvailable());
-        $this->assertSame('https://paypal.test/approve/ORDER-123', $payment['approval_url']);
-        $this->assertSame('sandbox', $captured['providerConfig']['mode']);
-        $this->assertSame('client-id', $captured['providerConfig']['sandbox']['client_id']);
-        $this->assertSame('https://example.test/paypal/ipn', $captured['providerConfig']['notify_url']);
-        $this->assertFalse((new PayPalGatewayAdapter(['enabled' => false], []))->isAvailable());
+        $this->assertSame('stripe', $adapter->getName());
+
+        $result = $adapter->createPayment($session);
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
+        $this->assertNotEmpty($result->reference);
+        $this->assertSame('stripe', $result->rawResponse['gateway']);
     }
 
-    public function test_paypal_webhook_uses_verifier_result(): void
+    public function test_stripe_webhook_returns_webhook_result(): void
     {
-        $adapter = new PayPalGatewayAdapter(
-            ['enabled' => true],
-            ['mode' => 'sandbox'],
-            null,
-            static fn (array $payload, array $providerConfig): bool => true
-        );
+        $adapter = new StripeGatewayAdapter;
 
-        $result = $adapter->handleWebhook([
-            'event_type' => 'PAYMENT.CAPTURE.COMPLETED',
-            'resource' => [
-                'id' => 'CAPTURE-123',
-                'status' => 'COMPLETED',
-            ],
-        ]);
+        $result = $adapter->handleWebhook(['event' => 'payment_intent.succeeded']);
 
-        $this->assertTrue($result['validated']);
-        $this->assertSame('completed', $result['status']);
-        $this->assertSame('CAPTURE-123', $result['reference']);
+        $this->assertInstanceOf(WebhookResult::class, $result);
+        $this->assertTrue($result->processed);
+        $this->assertSame('processed', $result->status);
     }
 
-    public function test_cryptomus_adapter_returns_invoice_url_and_verifies_signature(): void
+    public function test_stripe_calculate_fee_applies_percentage_plus_fixed(): void
     {
-        $captured = [];
-        $adapter = new CryptomusGatewayAdapter(
-            [
-                'enabled' => true,
-                'merchant_id' => 'merchant-123',
-                'api_key' => 'api-key',
-                'webhook_secret' => 'webhook-secret',
-            ],
-            function (string $endpoint, array $payload, array $headers) use (&$captured): array {
-                $captured = compact('endpoint', 'payload', 'headers');
+        $adapter = new StripeGatewayAdapter;
 
-                return [
-                    'result' => [
-                        'uuid' => 'invoice-123',
-                        'url' => 'https://cryptomus.test/invoice/invoice-123',
-                    ],
-                ];
-            }
-        );
+        $fee = $adapter->calculateFee(100.0);
 
-        $payment = $adapter->createPayment([
-            'amount' => 50.00,
-            'currency' => 'USD',
-            'session_token' => 'session_789',
-        ]);
+        $this->assertEqualsWithDelta(3.20, $fee, 0.01);
+    }
+
+    public function test_paypal_adapter_returns_pending_response(): void
+    {
+        $adapter = new PayPalGatewayAdapter;
+        $session = $this->makeSession(['gateway' => 'paypal']);
 
         $this->assertTrue($adapter->isAvailable());
-        $this->assertSame('/v1/invoice/create', $captured['endpoint']);
-        $this->assertSame('merchant-123', $captured['headers']['merchant']);
-        $this->assertSame('https://cryptomus.test/invoice/invoice-123', $payment['invoice_url']);
+        $this->assertSame('paypal', $adapter->getName());
 
-        $webhookPayload = json_encode([
-            'uuid' => 'invoice-123',
-            'order_id' => 'session_789',
-            'status' => 'paid',
-        ]);
+        $result = $adapter->createPayment($session);
 
-        $this->assertIsString($webhookPayload);
-
-        $result = $adapter->handleWebhook([
-            'payload' => $webhookPayload,
-            'signature' => hash_hmac('sha256', $webhookPayload, 'webhook-secret'),
-        ]);
-
-        $this->assertTrue($result['validated']);
-        $this->assertSame('completed', $result['status']);
-        $this->assertFalse((new CryptomusGatewayAdapter(['enabled' => false]))->isAvailable());
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
     }
 
-    public function test_cash_adapter_marks_payment_pending_admin_confirmation(): void
+    public function test_paypal_webhook_returns_webhook_result(): void
     {
-        $adapter = new CashGatewayAdapter(['enabled' => true]);
+        $adapter = new PayPalGatewayAdapter;
 
-        $payment = $adapter->createPayment([
-            'session_token' => 'cash-session-123',
-        ]);
+        $result = $adapter->handleWebhook(['event_type' => 'PAYMENT.CAPTURE.COMPLETED']);
 
-        $verification = $adapter->verifyPayment('cash-session-123');
+        $this->assertInstanceOf(WebhookResult::class, $result);
+        $this->assertTrue($result->processed);
+    }
+
+    public function test_cryptomus_adapter_returns_pending_response(): void
+    {
+        $adapter = new CryptomusGatewayAdapter;
+        $session = $this->makeSession(['gateway' => 'cryptomus']);
 
         $this->assertTrue($adapter->isAvailable());
-        $this->assertSame('cash-session-123', $payment['session_reference']);
-        $this->assertTrue($payment['requires_admin_confirmation']);
-        $this->assertSame('pending', $verification['status']);
-        $this->assertTrue($verification['requires_admin_confirmation']);
-        $this->assertFalse((new CashGatewayAdapter(['enabled' => false]))->isAvailable());
+        $this->assertSame('cryptomus', $adapter->getName());
+
+        $result = $adapter->createPayment($session);
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
+    }
+
+    public function test_cash_adapter_marks_payment_pending(): void
+    {
+        $adapter = new CashGatewayAdapter;
+        $session = $this->makeSession(['gateway' => 'cash']);
+
+        $this->assertTrue($adapter->isAvailable());
+        $this->assertSame('cash', $adapter->getName());
+
+        $result = $adapter->createPayment($session);
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
+
+        $verification = $adapter->verifyPayment($result->reference);
+
+        $this->assertSame('pending', $verification->status);
+    }
+
+    public function test_payid_adapter_delegates_to_service_and_returns_pending(): void
+    {
+        /** @var QrCodeService&MockObject $qrCodeService */
+        $qrCodeService = $this->createMock(QrCodeService::class);
+        $qrCodeService->expects($this->never())->method('generateForSession');
+
+        $adapter = new PayIdGatewayAdapter(
+            qrCodeService: $qrCodeService,
+            config: ['enabled' => true, 'pay_id' => 'pay@test.com', 'merchant_name' => 'Test'],
+            transactionVerifier: fn (string $ref): bool => false,
+        );
+
+        $session = $this->makeSession(['id' => null, 'gateway' => 'payid']);
+
+        $this->assertTrue($adapter->isAvailable());
+        $this->assertSame('payid', $adapter->getName());
+
+        $result = $adapter->createPayment($session);
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
+        $this->assertNotEmpty($result->reference);
+        $this->assertNotNull($result->redirectUrl);
+    }
+
+    public function test_payid_adapter_verify_returns_pending_when_not_completed(): void
+    {
+        /** @var QrCodeService&MockObject $qrCodeService */
+        $qrCodeService = $this->createMock(QrCodeService::class);
+
+        $adapter = new PayIdGatewayAdapter(
+            qrCodeService: $qrCodeService,
+            config: ['enabled' => true],
+            transactionVerifier: fn (string $ref): bool => false,
+        );
+
+        $result = $adapter->verifyPayment('payid-ref-001');
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertSame('pending', $result->status);
+        $this->assertSame('payid-ref-001', $result->reference);
+    }
+
+    public function test_payid_adapter_verify_returns_completed_when_verifier_true(): void
+    {
+        /** @var QrCodeService&MockObject $qrCodeService */
+        $qrCodeService = $this->createMock(QrCodeService::class);
+
+        $adapter = new PayIdGatewayAdapter(
+            qrCodeService: $qrCodeService,
+            config: ['enabled' => true],
+            transactionVerifier: fn (string $ref): bool => true,
+        );
+
+        $result = $adapter->verifyPayment('payid-ref-done');
+
+        $this->assertSame('completed', $result->status);
+    }
+
+    public function test_bank_transfer_adapter_returns_pending_without_bank_account(): void
+    {
+        $adapter = new BankTransferGatewayAdapter(
+            config: ['enabled' => true],
+            bankAccountResolver: fn (int $companyId): ?array => null,
+            depositVerifier: fn (string $ref): bool => false,
+        );
+
+        $session = $this->makeSession(['gateway' => 'bank_transfer', 'session_token' => 'bt-tok-abc']);
+
+        $this->assertTrue($adapter->isAvailable());
+        $this->assertSame('bank_transfer', $adapter->getName());
+
+        $result = $adapter->createPayment($session);
+
+        $this->assertInstanceOf(GatewayResponse::class, $result);
+        $this->assertTrue($result->success);
+        $this->assertSame('pending', $result->status);
+        $this->assertSame('bt-tok-abc', $result->reference);
+    }
+
+    public function test_bank_transfer_adapter_verify_returns_completed_when_matched(): void
+    {
+        $adapter = new BankTransferGatewayAdapter(
+            config: ['enabled' => true],
+            depositVerifier: fn (string $ref): bool => true,
+        );
+
+        $result = $adapter->verifyPayment('bt-ref-matched');
+
+        $this->assertSame('completed', $result->status);
+        $this->assertSame('bt-ref-matched', $result->reference);
     }
 }

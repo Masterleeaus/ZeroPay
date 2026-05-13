@@ -2,7 +2,6 @@
 
 namespace Modules\ZeroPayModule\UI\Cards;
 
-
 final class TenantCard
 {
     public function __construct(public string $title = '', public mixed $value = null, public array $meta = []) {}
@@ -11,5 +10,4 @@ final class TenantCard
     {
         return ['title' => $this->title, 'value' => $this->value, 'meta' => $this->meta];
     }
-
 }

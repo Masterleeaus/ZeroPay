@@ -40,15 +40,15 @@ class QrPayloadValidator
             throw new \InvalidArgumentException('QR payload expiry_timestamp must be a numeric Unix timestamp.');
         }
 
-        $payload                = new QrPayload();
-        $payload->payid         = (string) $data['payid'];
-        $payload->merchantName  = (string) $data['merchant_name'];
-        $payload->amount        = isset($data['amount']) && $data['amount'] !== null
+        $payload = new QrPayload;
+        $payload->payid = (string) $data['payid'];
+        $payload->merchantName = (string) $data['merchant_name'];
+        $payload->amount = isset($data['amount']) && $data['amount'] !== null
             ? (float) $data['amount']
             : null;
-        $payload->currency      = (string) $data['currency'];
-        $payload->reference     = (string) $data['reference'];
-        $payload->sessionToken  = (string) $data['session_token'];
+        $payload->currency = (string) $data['currency'];
+        $payload->reference = (string) $data['reference'];
+        $payload->sessionToken = (string) $data['session_token'];
         $payload->expiryTimestamp = (int) $data['expiry_timestamp'];
 
         return $payload;

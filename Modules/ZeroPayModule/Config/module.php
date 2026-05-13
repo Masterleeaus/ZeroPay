@@ -36,7 +36,7 @@ return [
     | does not carry its own payid / merchant_name keys.
     |
     */
-    'payid'         => env('ZEROPAY_PAYID', ''),
+    'payid' => env('ZEROPAY_PAYID', ''),
     'merchant_name' => env('ZEROPAY_MERCHANT_NAME', ''),
 
     /*
@@ -56,6 +56,14 @@ return [
     |--------------------------------------------------------------------------
     */
     'gateways' => [
+        'payid' => [
+            'enabled' => env('ZEROPAY_PAYID_ENABLED', true),
+            'pay_id' => env('ZEROPAY_PAYID', 'payments@merchant.com'),
+            'merchant_name' => env('ZEROPAY_MERCHANT_NAME', 'ZeroPay Merchant'),
+        ],
+        'bank_transfer' => [
+            'enabled' => env('ZEROPAY_BANK_TRANSFER_ENABLED', true),
+        ],
         'stripe' => [
             'enabled' => env('ZEROPAY_STRIPE_ENABLED', false),
             'key' => env('STRIPE_KEY'),

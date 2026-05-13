@@ -76,8 +76,8 @@ class ZeroPayTransactionsExport
 
             fclose($handle);
         }, 200, [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 }

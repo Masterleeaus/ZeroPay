@@ -15,7 +15,7 @@ class ZeroPayNotification extends Model
         'company_id',
         'user_id',
         'session_id',
-        'event_type',
+        'event',
         'channel',
         'payload',
         'status',
@@ -23,10 +23,23 @@ class ZeroPayNotification extends Model
     ];
 
     protected $casts = [
-        'event_type' => NotificationEventType::class,
+        'event' => NotificationEventType::class,
         'payload' => 'array',
         'sent_at' => 'datetime',
     ];
+
+    /**
+     * Virtual alias: `event_type` reads and writes the `event` attribute.
+     */
+    public function getEventTypeAttribute(): ?NotificationEventType
+    {
+        return $this->event;
+    }
+
+    public function setEventTypeAttribute(NotificationEventType $value): void
+    {
+        $this->event = $value;
+    }
 
     protected static function booted(): void
     {
