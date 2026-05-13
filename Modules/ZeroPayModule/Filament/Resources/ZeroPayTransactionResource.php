@@ -7,16 +7,22 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource\Pages;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 
 class ZeroPayTransactionResource extends Resource
 {
     protected static ?string $model = ZeroPayTransaction::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+
     protected static ?string $navigationGroup = 'ZeroPay';
+
     protected static ?string $navigationLabel = 'Transactions';
+
     protected static ?int $navigationSort = 2;
 
     public static function canViewAny(): bool
@@ -32,10 +38,10 @@ class ZeroPayTransactionResource extends Resource
             TextInput::make('amount')->numeric(),
             TextInput::make('currency')->default('AUD')->maxLength(3),
             Select::make('status')->options([
-                'pending'   => 'Pending',
+                'pending' => 'Pending',
                 'completed' => 'Completed',
-                'failed'    => 'Failed',
-                'refunded'  => 'Refunded',
+                'failed' => 'Failed',
+                'refunded' => 'Refunded',
             ]),
             TextInput::make('fee')->numeric(),
             TextInput::make('net_amount')->numeric(),
@@ -51,7 +57,14 @@ class ZeroPayTransactionResource extends Resource
             TextColumn::make('fee')->label('Fee')->money('AUD'),
             TextColumn::make('status')->label('Status')->badge(),
             TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
-        ])->defaultSort('created_at', 'desc');
+        ])
+            ->filters([
+                SelectFilter::make('session_id')
+                    ->label('Session')
+                    ->options(fn () => ZeroPaySession::query()->pluck('session_token', 'id'))
+                    ->searchable(),
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getPages(): array
