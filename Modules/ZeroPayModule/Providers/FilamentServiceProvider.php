@@ -51,13 +51,18 @@ class FilamentServiceProvider extends ServiceProvider
     protected function pages(): array
     {
         return [
-            \Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage::class,
+            \Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboard::class,
             \Modules\ZeroPayModule\Filament\Pages\ZeroPayControlPanel::class,
         ];
     }
 
     protected function widgets(): array
     {
-        return [];
+        return [
+            \Modules\ZeroPayModule\Filament\Widgets\ZeroPayStatsWidget::class,
+            \Modules\ZeroPayModule\Filament\Widgets\ZeroPayRevenueChartWidget::class,
+            \Modules\ZeroPayModule\Filament\Widgets\ZeroPayGatewayBreakdownWidget::class,
+            \Modules\ZeroPayModule\Filament\Widgets\ZeroPayRecentSessionsWidget::class,
+        ];
     }
 }
