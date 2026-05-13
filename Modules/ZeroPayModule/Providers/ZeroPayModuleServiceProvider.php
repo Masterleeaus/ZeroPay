@@ -3,15 +3,21 @@
 namespace Modules\ZeroPayModule\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\ZeroPayModule\Adapters\BankTransferGatewayAdapter;
+use Modules\ZeroPayModule\Adapters\CashGatewayAdapter;
+use Modules\ZeroPayModule\Adapters\CryptomusGatewayAdapter;
 use Modules\ZeroPayModule\Adapters\DefaultGatewayAdapter;
-use Modules\ZeroPayModule\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Adapters\PayIdGatewayAdapter;
+use Modules\ZeroPayModule\Adapters\PayPalGatewayAdapter;
+use Modules\ZeroPayModule\Adapters\StripeGatewayAdapter;
 use Modules\ZeroPayModule\Services\BankTransferMatchingService;
+use Modules\ZeroPayModule\Services\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Services\GatewayFactory;
 use Modules\ZeroPayModule\Services\GatewayRegistry;
-use Modules\ZeroPayModule\Services\Gateways\BankTransferGateway;
-use Modules\ZeroPayModule\Services\Gateways\PayIdGateway;
 use Modules\ZeroPayModule\Services\PaymentSessionService;
 use Modules\ZeroPayModule\Services\QrCodeService;
+use Modules\ZeroPayModule\Services\QrPayloadBuilder;
+use Modules\ZeroPayModule\Services\QrPayloadValidator;
 use Modules\ZeroPayModule\Services\WebPushService;
 
 class ZeroPayModuleServiceProvider extends ServiceProvider
@@ -26,15 +32,53 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerConfig();
-        $this->app->bind(GatewayContract::class, DefaultGatewayAdapter::class);
+        $this->app->singleton(GatewayRegistry::class, function ($app): GatewayRegistry {
+            $registry = new GatewayRegistry;
+
+            $gateways = [
+                'default' => DefaultGatewayAdapter::class,
+                'payid' => PayIdGatewayAdapter::class,
+                'bank_transfer' => BankTransferGatewayAdapter::class,
+                'cash' => CashGatewayAdapter::class,
+                'stripe' => StripeGatewayAdapter::class,
+                'paypal' => PayPalGatewayAdapter::class,
+                'cryptomus' => CryptomusGatewayAdapter::class,
+            ];
+
+            foreach ($gateways as $name => $adapterClass) {
+                $registry->register($name, $app->make($adapterClass));
+            }
+
+            return $registry;
+        });
+
+        $this->app->bind(GatewayContract::class, function ($app): GatewayContract {
+            $defaultGateway = config('zeropay-module.gateway', 'default');
+
+            if (is_string($defaultGateway) && class_exists($defaultGateway)) {
+                return $app->make($defaultGateway);
+            }
+
+            return $app->make(GatewayRegistry::class)->resolve((string) $defaultGateway);
+        });
+
+        $this->app->alias(GatewayContract::class, \Modules\ZeroPayModule\Contracts\GatewayContract::class);
         $this->app->singleton(GatewayFactory::class);
         $this->app->singleton(GatewayRegistry::class);
         $this->app->singleton(BankTransferMatchingService::class);
         $this->app->singleton(PaymentSessionService::class);
         $this->app->singleton(QrCodeService::class);
         $this->app->singleton(WebPushService::class);
-        $this->app->singleton(PayIdGateway::class);
-        $this->app->singleton(BankTransferGateway::class);
+        $this->app->singleton(QrPayloadBuilder::class, function ($app) {
+            $config = $app['config']['zeropay-module'] ?? [];
+
+            return new QrPayloadBuilder(
+                defaultPayId: (string) ($config['payid'] ?? ''),
+                defaultMerchantName: (string) ($config['merchant_name'] ?? ''),
+                sessionTtlMinutes: (int) ($config['session_ttl_minutes'] ?? 15),
+            );
+        });
+        $this->app->singleton(QrPayloadValidator::class);
     }
 
     /**

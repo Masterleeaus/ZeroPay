@@ -44,6 +44,6 @@ class ZeroPayWebhookController extends Controller
 
         $event->update(['status' => 'processed', 'processed_at' => now()]);
 
-        return response()->json(['processed' => true, 'result' => $result]);
+        return response()->json(['processed' => $result->processed, 'result' => $result->toArray()]);
     }
 }

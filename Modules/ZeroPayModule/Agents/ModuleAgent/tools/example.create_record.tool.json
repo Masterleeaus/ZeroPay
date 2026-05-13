@@ -1,8 +1,0 @@
-{
-  "name": "zeropay.create_record",
-  "type": "write",
-  "action": "Modules\\ZeroPayModule\\Actions\\CreateZeroPaySessionAction",
-  "requires_permission": "zeropay.create",
-  "tenant_scoped": true,
-  "requires_confirmation": true
-}

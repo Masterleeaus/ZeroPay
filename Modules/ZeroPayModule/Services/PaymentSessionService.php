@@ -28,11 +28,11 @@ class PaymentSessionService
             $session = $this->createAction->execute($sessionData);
 
             $gateway = $this->gatewayFactory->make($session->gateway);
-            $result = $gateway->createPayment($session->toArray());
+            $result = $gateway->createPayment($session);
 
             $session->update([
                 'status' => 'open',
-                'meta' => array_merge($session->meta ?? [], ['gateway_response' => $result]),
+                'meta' => array_merge($session->meta ?? [], ['gateway_response' => $result->toArray()]),
             ]);
 
             return $session->refresh();
@@ -45,7 +45,7 @@ class PaymentSessionService
         $verification = $gateway->verifyPayment($reference);
 
         $fee = $gateway->calculateFee((float) $session->amount);
-        $status = ($verification['status'] ?? '') === 'completed' ? 'completed' : 'pending';
+        $status = $verification->status === 'completed' ? 'completed' : 'pending';
 
         $transaction = ZeroPayTransaction::create([
             'company_id' => $session->company_id,
@@ -71,7 +71,7 @@ class PaymentSessionService
     public function pay(ZeroPaySession $session, string $gateway, int $payerUserId): ZeroPayTransaction
     {
         $gatewayInstance = $this->gatewayFactory->make($gateway);
-        $result = $gatewayInstance->createPayment($session->toArray());
+        $result = $gatewayInstance->createPayment($session);
         $fee = $gatewayInstance->calculateFee((float) $session->amount);
 
         $qrCode = $session->qrCodes()->latest()->first();
@@ -81,14 +81,14 @@ class PaymentSessionService
             'session_id' => $session->id,
             'user_id' => $payerUserId,
             'gateway' => $gateway,
-            'gateway_reference' => $result['reference'] ?? null,
+            'gateway_reference' => $result->reference,
             'amount' => $session->amount,
             'currency' => $session->currency,
             'status' => 'pending',
             'fee' => $fee,
             'net_amount' => (float) $session->amount - $fee,
             'meta' => [
-                'gateway_response' => $result,
+                'gateway_response' => $result->toArray(),
                 'merchant_name' => $qrCode?->merchant_name,
             ],
         ]);

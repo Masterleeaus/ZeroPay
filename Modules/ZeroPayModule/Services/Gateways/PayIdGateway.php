@@ -2,14 +2,13 @@
 
 namespace Modules\ZeroPayModule\Services\Gateways;
 
-use Modules\ZeroPayModule\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 use Modules\ZeroPayModule\Services\QrCodeService;
 use Modules\ZeroPayModule\ValueObjects\GatewayResponse;
 use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
-class PayIdGateway extends AbstractGateway implements GatewayContract
+class PayIdGateway extends AbstractGateway
 {
     /**
      * @param  callable(string): bool|null  $transactionVerifier  Returns true when reference has a completed transaction.

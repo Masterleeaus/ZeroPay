@@ -2,13 +2,12 @@
 
 namespace Modules\ZeroPayModule\Services\Gateways;
 
-use Modules\ZeroPayModule\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Models\ZeroPayBankAccount;
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 use Modules\ZeroPayModule\ValueObjects\GatewayResponse;
 use Modules\ZeroPayModule\ValueObjects\WebhookResult;
 
-class BankTransferGateway extends AbstractGateway implements GatewayContract
+class BankTransferGateway extends AbstractGateway
 {
     /**
      * @param  callable(int): ?array|null  $bankAccountResolver  Returns bank account details for a company ID, or null if none.
