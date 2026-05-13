@@ -3,18 +3,18 @@
 namespace Modules\ZeroPayModule\Services;
 
 use Illuminate\Container\Container;
+use Modules\ZeroPayModule\Exceptions\GatewayNotFoundException;
+use Modules\ZeroPayModule\Services\Contracts\GatewayContract;
 use Modules\ZeroPayModule\Settings\ZeroPaySettings;
 
-/**
- * Central gateway availability registry.
- *
- * Checks the persisted ZeroPaySettings first (if available), then falls back
- * to the module config array so the registry works even before the settings
- * migration has been run.
- */
 class GatewayRegistry
 {
-    /** @var array<string, string> Maps gateway key → ZeroPaySettings property name */
+    /**
+     * @var array<string, GatewayContract>
+     */
+    protected array $gateways = [];
+
+    /** @var array<string, string> */
     protected const SETTING_MAP = [
         'payid' => 'gateway_payid_enabled',
         'bank_transfer' => 'gateway_bank_transfer_enabled',
@@ -26,41 +26,61 @@ class GatewayRegistry
 
     public function __construct(protected ?object $settings = null) {}
 
-    /**
-     * Returns true when the given gateway is enabled.
-     */
+    public function register(string $name, GatewayContract $gateway): void
+    {
+        $this->gateways[strtolower($name)] = $gateway;
+    }
+
+    public function resolve(string $name): GatewayContract
+    {
+        $key = strtolower($name);
+
+        if (!isset($this->gateways[$key])) {
+            throw GatewayNotFoundException::forName($name);
+        }
+
+        return $this->gateways[$key];
+    }
+
     public function isAvailable(string $gateway): bool
     {
-        $property = self::SETTING_MAP[$gateway] ?? null;
+        $key = strtolower($gateway);
+        $property = self::SETTING_MAP[$key] ?? null;
 
         if ($property !== null && $this->settings !== null) {
             return (bool) ($this->settings->{$property} ?? false);
         }
 
-        // Fall back to module config
-        return (bool) $this->configValue("zeropay-module.gateways.{$gateway}.enabled", false);
+        if (isset($this->gateways[$key])) {
+            return $this->gateways[$key]->isAvailable();
+        }
+
+        return (bool) $this->configValue("zeropay-module.gateways.{$key}.enabled", false);
     }
 
     /**
-     * Returns all gateway keys that are currently enabled.
-     *
-     * @return array<string>
+     * @return array<int, string>
      */
     public function available(): array
     {
-        return array_values(
-            array_filter(array_keys(self::SETTING_MAP), fn (string $key) => $this->isAvailable($key))
-        );
+        $available = array_keys($this->gateways);
+
+        if ($available === []) {
+            $available = $this->all();
+        }
+
+        return array_values(array_filter($available, fn (string $name): bool => $this->isAvailable($name)));
     }
 
     /**
-     * Returns every registered gateway key regardless of enabled state.
-     *
-     * @return array<string>
+     * @return array<int, string>
      */
     public function all(): array
     {
-        return array_keys(self::SETTING_MAP);
+        $names = array_unique(array_merge(array_keys(self::SETTING_MAP), array_keys($this->gateways)));
+        sort($names);
+
+        return $names;
     }
 
     protected function configValue(string $key, mixed $default = null): mixed
@@ -72,7 +92,7 @@ class GatewayRegistry
                 return $container->make('config')->get($key, $default);
             }
         } catch (\Throwable) {
-            // container not available (e.g. standalone unit test)
+            return $default;
         }
 
         return $default;
