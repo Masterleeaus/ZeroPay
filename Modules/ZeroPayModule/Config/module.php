@@ -18,6 +18,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Session TTL
+    |--------------------------------------------------------------------------
+    |
+    | Default lifetime (in minutes) for a ZeroPay payment session / QR code.
+    | Override via ZEROPAY_SESSION_TTL environment variable.
+    |
+    */
+    'session_ttl_minutes' => env('ZEROPAY_SESSION_TTL', 15),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Merchant PayID & Name
+    |--------------------------------------------------------------------------
+    |
+    | These values are embedded into every QR payload when the session meta
+    | does not carry its own payid / merchant_name keys.
+    |
+    */
+    'payid'         => env('ZEROPAY_PAYID', ''),
+    'merchant_name' => env('ZEROPAY_MERCHANT_NAME', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Gateway
     |--------------------------------------------------------------------------
     |

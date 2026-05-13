@@ -61,6 +61,16 @@ class ZeroPayModuleServiceProvider extends ServiceProvider
         $this->app->singleton(\Modules\ZeroPayModule\Services\PaymentSessionService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\QrCodeService::class);
         $this->app->singleton(\Modules\ZeroPayModule\Services\WebPushService::class);
+        $this->app->singleton(\Modules\ZeroPayModule\Services\QrPayloadBuilder::class, function ($app) {
+            $config = $app['config']['zeropay-module'] ?? [];
+
+            return new \Modules\ZeroPayModule\Services\QrPayloadBuilder(
+                defaultPayId:      (string) ($config['payid'] ?? ''),
+                defaultMerchantName: (string) ($config['merchant_name'] ?? ''),
+                sessionTtlMinutes: (int) ($config['session_ttl_minutes'] ?? 15),
+            );
+        });
+        $this->app->singleton(\Modules\ZeroPayModule\Services\QrPayloadValidator::class);
     }
 
     /**
