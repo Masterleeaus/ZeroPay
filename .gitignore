@@ -5,3 +5,7 @@ PWA/.env
 
 # macOS
 .DS_Store
+
+# ZeroPayModule build artifacts & dependencies
+Modules/ZeroPayModule/vendor/
+Modules/ZeroPayModule/.phpunit.result.cache
