@@ -15,11 +15,12 @@
         "minishlink/web-push": "^9.0",
         "srmklive/paypal": "^3.0",
         "stripe/stripe-php": "^10.21",
-        "chillerlan/php-qrcode": "^5.0"
+        "chillerlan/php-qrcode": "^5.0",
+        "illuminate/queue": "^13.0"
     },
     "require-dev": {
         "laravel/pint": "^1.21",
-        "phpunit/phpunit": "^11.5.50"
+        "phpunit/phpunit": "^11.5"
     },
     "autoload": {
         "psr-4": {
