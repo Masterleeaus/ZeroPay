@@ -7,6 +7,7 @@ use Filament\Panel;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayBankDepositResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPaySessionResource;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource;
+use Modules\ZeroPayModule\Filament\Pages\ZeroPayControlPanel;
 use Modules\ZeroPayModule\Filament\Pages\ZeroPayDashboardPage;
 
 class ZeroPayModulePlugin implements Plugin
@@ -31,6 +32,7 @@ class ZeroPayModulePlugin implements Plugin
 
         $panel->pages([
             ZeroPayDashboardPage::class,
+            ZeroPayControlPanel::class,
         ]);
     }
 
