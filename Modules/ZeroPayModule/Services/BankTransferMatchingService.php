@@ -3,8 +3,6 @@
 namespace Modules\ZeroPayModule\Services;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
@@ -13,7 +11,9 @@ use Modules\ZeroPayModule\ValueObjects\MatchResult;
 class BankTransferMatchingService
 {
     private const CUSTOMER_MATCH_THRESHOLD = 0.8;
+
     private const AMOUNT_TOLERANCE = 0.01;
+
     private const DEPOSIT_REFERENCE_PREFIX = 'bank_deposit_';
 
     public function match(ZeroPayBankDeposit $deposit): MatchResult
@@ -27,7 +27,7 @@ class BankTransferMatchingService
             $criteria = $this->evaluateCriteria($deposit, $session);
             $criteriaCount = count($criteria);
             $confidence = $criteriaCount > 0
-                ? array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / $criteriaCount
+                ? (float) (array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / $criteriaCount)
                 : 0.0;
 
             if ($confidence > $bestConfidence) {
@@ -36,7 +36,7 @@ class BankTransferMatchingService
                 $bestConfidence = $confidence;
             }
 
-            if ($confidence === 1.0) {
+            if ($confidence >= 1.0) {
                 return $this->applyMatch($deposit, $session, $criteria, 1.0);
             }
         }
@@ -138,13 +138,13 @@ class BankTransferMatchingService
         array $criteria,
         float $confidence
     ): MatchResult {
-        return DB::transaction(function () use ($deposit, $session, $criteria, $confidence): MatchResult {
+        return ZeroPayBankDeposit::query()->getConnection()->transaction(function () use ($deposit, $session, $criteria, $confidence): MatchResult {
             $transactionQuery = ZeroPayTransaction::query()
                 ->where('company_id', $session->company_id)
                 ->where('session_id', $session->id)
                 ->where('gateway', 'bank_transfer');
 
-            if (!empty($deposit->reference)) {
+            if (! empty($deposit->reference)) {
                 $transactionQuery->where('gateway_reference', $deposit->reference);
             }
 
@@ -170,7 +170,7 @@ class BankTransferMatchingService
 
             $session->update($this->filterColumns('zeropay_sessions', [
                 'status' => ZeroPaySession::STATUS_COMPLETED,
-                'completed_at' => now(),
+                'completed_at' => Carbon::now(),
             ]));
 
             $depositUpdate = [
@@ -216,7 +216,7 @@ class BankTransferMatchingService
             ]);
         }
 
-        if (!empty($deposit->reference)) {
+        if (! empty($deposit->reference)) {
             $query->where(function ($nested) use ($deposit): void {
                 if ($this->hasColumn('zeropay_sessions', 'reference')) {
                     $nested->orWhere('reference', $deposit->reference);
@@ -300,7 +300,7 @@ class BankTransferMatchingService
 
     private function sessionReference(ZeroPaySession $session): string
     {
-        if ($this->hasColumn('zeropay_sessions', 'reference') && !empty($session->reference)) {
+        if ($this->hasColumn('zeropay_sessions', 'reference') && ! empty($session->reference)) {
             return (string) $session->reference;
         }
 
@@ -350,8 +350,8 @@ class BankTransferMatchingService
         static $cache = [];
         $key = $table.'.'.$column;
 
-        if (!array_key_exists($key, $cache)) {
-            $cache[$key] = Schema::hasColumn($table, $column);
+        if (! array_key_exists($key, $cache)) {
+            $cache[$key] = ZeroPayBankDeposit::query()->getConnection()->getSchemaBuilder()->hasColumn($table, $column);
         }
 
         return $cache[$key];
