@@ -30,6 +30,8 @@ class ZeroPaySession extends Model
         'company_id',
         'user_id',
         'session_token',
+        'reference',
+        'merchant_name',
         'gateway',
         'amount',
         'currency',
