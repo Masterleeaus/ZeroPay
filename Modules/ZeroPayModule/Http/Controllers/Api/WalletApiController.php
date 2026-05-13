@@ -46,6 +46,8 @@ class WalletApiController extends Controller
         $bankAccount = null;
 
         if ($companyId) {
+            // orderByDesc('is_default') sorts default accounts first (true=1 > false=0 in
+            // DESC order), so the first result is always the preferred account.
             $bankAccount = ZeroPayBankAccount::query()
                 ->where('company_id', $companyId)
                 ->orderByDesc('is_default')

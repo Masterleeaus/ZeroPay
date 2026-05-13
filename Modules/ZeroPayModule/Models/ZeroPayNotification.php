@@ -63,7 +63,10 @@ class ZeroPayNotification extends Model
 
     /**
      * Exclude the virtual 'event' alias from database writes — the real column
-     * is 'event_type'; 'event' is an in-memory convenience attribute only.
+     * is 'event_type'; 'event' is an in-memory convenience attribute that is
+     * kept in sync with 'event_type' via the setEventAttribute /
+     * setEventTypeAttribute mutators. Writing it to the DB would fail because
+     * no 'event' column exists in the zeropay_notifications table.
      */
     public function getDirty(): array
     {
