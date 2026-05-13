@@ -21,8 +21,8 @@ class SendPushForSessionExpiring implements ShouldQueue
         $this->pushService->notifyUser((int) $session->user_id, [
             'event' => 'session.expiring',
             'title' => '⏰ Session Expiring Soon',
-            'body'  => 'Your payment QR code will expire in 5 minutes.',
-            'url'   => '/receive',
+            'body' => 'Your payment QR code will expire in 5 minutes.',
+            'url' => '/receive',
         ]);
     }
 }

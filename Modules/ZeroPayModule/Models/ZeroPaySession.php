@@ -66,6 +66,11 @@ class ZeroPaySession extends Model
         return $query->where('company_id', $companyId);
     }
 
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', self::STATUS_COMPLETED);
+    }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(ZeroPayTransaction::class, 'session_id');

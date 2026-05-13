@@ -1,2 +1,3 @@
 <?php
-return ['group'=>'Operations','sort'=>100,'icon'=>'heroicon-o-squares-2x2','permission'=>'zeropay.view'];
+
+return ['group' => 'Operations', 'sort' => 100, 'icon' => 'heroicon-o-squares-2x2', 'permission' => 'zeropay.view'];

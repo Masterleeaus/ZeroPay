@@ -55,6 +55,8 @@ class ZeroPayWebhookController extends Controller
         ]);
 
         // Always record the raw event before any processing so it is auditable.
+        // The company_id from the payload is untrusted at this stage; it is
+        // stored as-is for later reconciliation once the signature is verified.
         $event = ZeroPayWebhookEvent::create([
             'company_id' => isset($parsedPayload['company_id']) ? (int) $parsedPayload['company_id'] : 0,
             'gateway' => $gateway,
@@ -73,6 +75,6 @@ class ZeroPayWebhookController extends Controller
 
         $event->update(['status' => 'processed', 'processed_at' => now()]);
 
-        return response()->json(['processed' => true, 'result' => $result]);
+        return response()->json(['processed' => $result->processed, 'result' => $result->toArray()]);
     }
 }

@@ -3,8 +3,8 @@
 namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
 class ZeroPayQrCode extends Model
@@ -29,14 +29,14 @@ class ZeroPayQrCode extends Model
     ];
 
     protected $casts = [
-        'payload'          => 'array',
-        'amount'           => 'decimal:2',
+        'payload' => 'array',
+        'amount' => 'decimal:2',
         'expiry_timestamp' => 'datetime',
     ];
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenantScope());
+        static::addGlobalScope(new TenantScope);
     }
 
     public function session(): BelongsTo

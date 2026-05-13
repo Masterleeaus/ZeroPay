@@ -1,2 +1,3 @@
 <?php
-return ['title'=>'Example Module'];
+
+return ['title' => 'Example Module'];

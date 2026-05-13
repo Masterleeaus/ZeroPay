@@ -19,7 +19,6 @@ class PaymentCompletedNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * @param  mixed $notifiable
      * @return array<int, string>
      */
     public function via(mixed $notifiable): array
@@ -39,17 +38,16 @@ class PaymentCompletedNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  mixed $notifiable
      * @return array<string, mixed>
      */
     public function toArray(mixed $notifiable): array
     {
         return [
-            'event'     => 'payment.completed',
+            'event' => 'payment.completed',
             'reference' => $this->reference,
-            'amount'    => $this->amount,
-            'currency'  => $this->currency,
-            'message'   => "Payment of {$this->currency} {$this->amount} received.",
+            'amount' => $this->amount,
+            'currency' => $this->currency,
+            'message' => "Payment of {$this->currency} {$this->amount} received.",
         ];
     }
 }

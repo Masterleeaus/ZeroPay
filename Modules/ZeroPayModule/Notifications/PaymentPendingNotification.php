@@ -16,7 +16,6 @@ class PaymentPendingNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * @param  mixed $notifiable
      * @return array<int, string>
      */
     public function via(mixed $notifiable): array
@@ -25,20 +24,19 @@ class PaymentPendingNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  mixed $notifiable
      * @return array<string, mixed>
      */
     public function toArray(mixed $notifiable): array
     {
-        $amount   = number_format((float) $this->session->amount, 2);
+        $amount = number_format((float) $this->session->amount, 2);
         $currency = $this->session->currency ?? 'AUD';
 
         return [
-            'event'      => 'payment.pending',
+            'event' => 'payment.pending',
             'session_id' => $this->session->id,
-            'amount'     => $amount,
-            'currency'   => $currency,
-            'message'    => "Payment of {$currency} {$amount} is being processed.",
+            'amount' => $amount,
+            'currency' => $currency,
+            'message' => "Payment of {$currency} {$amount} is being processed.",
         ];
     }
 }

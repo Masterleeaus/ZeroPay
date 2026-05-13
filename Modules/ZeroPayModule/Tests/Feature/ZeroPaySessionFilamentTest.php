@@ -2,7 +2,4 @@
 
 namespace Modules\ZeroPayModule\Tests\Feature;
 
-class ZeroPaySessionFilamentTest
-{
-
-}
+class ZeroPaySessionFilamentTest {}

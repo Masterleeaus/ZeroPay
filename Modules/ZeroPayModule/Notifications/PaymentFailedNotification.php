@@ -18,7 +18,6 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * @param  mixed $notifiable
      * @return array<int, string>
      */
     public function via(mixed $notifiable): array
@@ -41,16 +40,15 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  mixed $notifiable
      * @return array<string, mixed>
      */
     public function toArray(mixed $notifiable): array
     {
         return [
-            'event'     => 'payment.failed',
+            'event' => 'payment.failed',
             'reference' => $this->reference,
-            'reason'    => $this->reason,
-            'message'   => 'Payment failed. ' . ($this->reason ?: 'Please try again.'),
+            'reason' => $this->reason,
+            'message' => 'Payment failed. '.($this->reason ?: 'Please try again.'),
         ];
     }
 }

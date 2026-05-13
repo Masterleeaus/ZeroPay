@@ -20,8 +20,8 @@ class WebPushService
     {
         $auth = [
             'VAPID' => [
-                'subject'    => config('zeropay-module.vapid.subject', 'mailto:admin@zeropay.io'),
-                'publicKey'  => config('zeropay-module.vapid.public_key', ''),
+                'subject' => config('zeropay-module.vapid.subject', 'mailto:admin@zeropay.io'),
+                'publicKey' => config('zeropay-module.vapid.public_key', ''),
                 'privateKey' => config('zeropay-module.vapid.private_key', ''),
             ],
         ];
@@ -33,8 +33,7 @@ class WebPushService
     /**
      * Send a notification to every push subscription owned by $userId.
      *
-     * @param  int                 $userId
-     * @param  array<string,mixed> $payload  Keys: title, body, url (optional), event (optional)
+     * @param  array<string,mixed>  $payload  Keys: title, body, url (optional), event (optional)
      */
     public function notifyUser(int $userId, array $payload): void
     {
@@ -49,11 +48,11 @@ class WebPushService
         foreach ($subscriptions as $sub) {
             $this->webPush->queueNotification(
                 Subscription::create([
-                    'endpoint'        => $sub->endpoint,
+                    'endpoint' => $sub->endpoint,
                     'contentEncoding' => $sub->content_encoding,
-                    'keys'            => [
+                    'keys' => [
                         'p256dh' => $sub->p256dh_key,
-                        'auth'   => $sub->auth_key,
+                        'auth' => $sub->auth_key,
                     ],
                 ]),
                 $json
@@ -64,9 +63,9 @@ class WebPushService
         foreach ($this->webPush->flush() as $report) {
             if (! $report->isSuccess()) {
                 $this->logger->warning('[WebPush] Delivery failed', [
-                    'endpoint'  => $report->getEndpoint(),
-                    'reason'    => $report->getReason(),
-                    'expired'   => $report->isSubscriptionExpired(),
+                    'endpoint' => $report->getEndpoint(),
+                    'reason' => $report->getReason(),
+                    'expired' => $report->isSubscriptionExpired(),
                 ]);
 
                 // Remove stale / invalid subscriptions automatically.
@@ -80,8 +79,7 @@ class WebPushService
     /**
      * Send a notification to every push subscription owned by a company.
      *
-     * @param  int                 $companyId
-     * @param  array<string,mixed> $payload
+     * @param  array<string,mixed>  $payload
      */
     public function notifyCompany(int $companyId, array $payload): void
     {

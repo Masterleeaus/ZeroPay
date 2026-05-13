@@ -3,8 +3,8 @@
 namespace Modules\ZeroPayModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\ZeroPayModule\Models\Scopes\TenantScope;
 
 class ZeroPayBankDeposit extends Model
@@ -34,15 +34,20 @@ class ZeroPayBankDeposit extends Model
     ];
 
     protected $casts = [
-        'meta'         => 'array',
-        'raw_data'     => 'array',
-        'amount'       => 'decimal:2',
+        'meta' => 'array',
+        'raw_data' => 'array',
+        'amount' => 'decimal:2',
         'deposited_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenantScope());
+        static::addGlobalScope(new TenantScope);
+    }
+
+    public function scopePendingReview($query)
+    {
+        return $query->where('status', 'pending_review');
     }
 
     public function bankAccount(): BelongsTo

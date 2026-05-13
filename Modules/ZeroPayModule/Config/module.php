@@ -18,11 +18,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Session TTL
+    |--------------------------------------------------------------------------
+    |
+    | Default lifetime (in minutes) for a ZeroPay payment session / QR code.
+    | Override via ZEROPAY_SESSION_TTL environment variable.
+    |
+    */
+    'session_ttl_minutes' => env('ZEROPAY_SESSION_TTL', 15),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Merchant PayID & Name
+    |--------------------------------------------------------------------------
+    |
+    | These values are embedded into every QR payload when the session meta
+    | does not carry its own payid / merchant_name keys.
+    |
+    */
+    'payid' => env('ZEROPAY_PAYID', ''),
+    'merchant_name' => env('ZEROPAY_MERCHANT_NAME', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Gateway
     |--------------------------------------------------------------------------
     |
     | The gateway adapter that will be resolved when GatewayContract is
-    | injected. Must implement Modules\ZeroPayModule\Contracts\GatewayContract.
+    | injected. Must implement Modules\ZeroPayModule\Services\Contracts\GatewayContract.
     |
     */
     'gateway' => DefaultGatewayAdapter::class,
@@ -33,6 +56,14 @@ return [
     |--------------------------------------------------------------------------
     */
     'gateways' => [
+        'payid' => [
+            'enabled' => env('ZEROPAY_PAYID_ENABLED', true),
+            'pay_id' => env('ZEROPAY_PAYID', 'payments@merchant.com'),
+            'merchant_name' => env('ZEROPAY_MERCHANT_NAME', 'ZeroPay Merchant'),
+        ],
+        'bank_transfer' => [
+            'enabled' => env('ZEROPAY_BANK_TRANSFER_ENABLED', true),
+        ],
         'stripe' => [
             'enabled' => env('ZEROPAY_STRIPE_ENABLED', false),
             'key' => env('STRIPE_KEY'),

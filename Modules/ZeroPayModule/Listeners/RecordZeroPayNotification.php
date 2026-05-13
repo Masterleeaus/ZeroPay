@@ -11,6 +11,7 @@ use Modules\ZeroPayModule\Events\SessionExpiring;
 use Modules\ZeroPayModule\Events\SessionOpened;
 use Modules\ZeroPayModule\Events\ZeroPaySessionCreated;
 use Modules\ZeroPayModule\Models\ZeroPayNotification;
+use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
 
 class RecordZeroPayNotification implements ShouldQueue
@@ -68,9 +69,9 @@ class RecordZeroPayNotification implements ShouldQueue
 
         if ($event instanceof PaymentCompleted) {
             $transaction = ZeroPayTransaction::where('gateway_reference', $event->reference)->first();
-            $userId      = $transaction?->user_id ?? ($event->paymentData['user_id'] ?? null);
-            $companyId   = $transaction?->company_id ?? ($event->paymentData['company_id'] ?? null);
-            $sessionId   = $transaction?->session_id ?? null;
+            $userId = $transaction?->user_id ?? ($event->paymentData['user_id'] ?? null);
+            $companyId = $transaction?->company_id ?? ($event->paymentData['company_id'] ?? null);
+            $sessionId = $transaction?->session_id ?? null;
 
             if (! $userId || ! $companyId) {
                 return [];
@@ -88,9 +89,9 @@ class RecordZeroPayNotification implements ShouldQueue
 
         if ($event instanceof PaymentFailed) {
             $transaction = ZeroPayTransaction::where('gateway_reference', $event->reference)->first();
-            $userId      = $transaction?->user_id ?? ($event->paymentData['user_id'] ?? null);
-            $companyId   = $transaction?->company_id ?? ($event->paymentData['company_id'] ?? null);
-            $sessionId   = $transaction?->session_id ?? null;
+            $userId = $transaction?->user_id ?? ($event->paymentData['user_id'] ?? null);
+            $companyId = $transaction?->company_id ?? ($event->paymentData['company_id'] ?? null);
+            $sessionId = $transaction?->session_id ?? null;
 
             if (! $userId || ! $companyId) {
                 return [];
@@ -120,9 +121,8 @@ class RecordZeroPayNotification implements ShouldQueue
     /**
      * Build records from a ZeroPaySession model.
      *
-     * @param  \Modules\ZeroPayModule\Models\ZeroPaySession $session
-     * @param  string                                        $eventType
-     * @param  array<int, string>                            $channels
+     * @param  ZeroPaySession  $session
+     * @param  array<int, string>  $channels
      * @return array<int, array<string, mixed>>
      */
     private function recordsFromSession(mixed $session, string $eventType, array $channels): array
@@ -144,14 +144,13 @@ class RecordZeroPayNotification implements ShouldQueue
     /**
      * Build records from raw session data array (ZeroPaySessionCreated).
      *
-     * @param  array<string, mixed> $sessionData
-     * @param  string               $eventType
-     * @param  array<int, string>   $channels
+     * @param  array<string, mixed>  $sessionData
+     * @param  array<int, string>  $channels
      * @return array<int, array<string, mixed>>
      */
     private function recordsFromSessionData(array $sessionData, string $eventType, array $channels): array
     {
-        $userId    = $sessionData['user_id'] ?? null;
+        $userId = $sessionData['user_id'] ?? null;
         $companyId = $sessionData['company_id'] ?? null;
         $sessionId = $sessionData['id'] ?? null;
 
@@ -172,8 +171,8 @@ class RecordZeroPayNotification implements ShouldQueue
     /**
      * Build one record per channel.
      *
-     * @param  array<int, string>   $channels
-     * @param  array<string, mixed> $payload
+     * @param  array<int, string>  $channels
+     * @param  array<string, mixed>  $payload
      * @return array<int, array<string, mixed>>
      */
     private function buildRecordSet(
@@ -184,19 +183,19 @@ class RecordZeroPayNotification implements ShouldQueue
         array $channels,
         array $payload
     ): array {
-        $now     = now();
+        $now = now();
         $records = [];
 
         foreach ($channels as $channel) {
             $records[] = [
                 'company_id' => $companyId,
-                'user_id'    => $userId,
+                'user_id' => $userId,
                 'session_id' => $sessionId,
-                'event_type' => $eventType,
-                'channel'    => $channel,
-                'status'     => 'sent',
-                'payload'    => $payload,
-                'sent_at'    => $now,
+                'event' => $eventType,
+                'channel' => $channel,
+                'status' => 'sent',
+                'payload' => $payload,
+                'sent_at' => $now,
             ];
         }
 

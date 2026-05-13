@@ -27,8 +27,8 @@ class SendPushForPaymentFailed implements ShouldQueue
         $this->pushService->notifyUser((int) $userId, [
             'event' => 'payment.failed',
             'title' => '❌ Payment Failed',
-            'body'  => $reason,
-            'url'   => '/transactions',
+            'body' => $reason,
+            'url' => '/transactions',
         ]);
     }
 }
