@@ -3,10 +3,6 @@
 namespace Modules\ZeroPayModule\Services;
 
 use Carbon\Carbon;
-use Illuminate\Database\Capsule\Manager;
-use Illuminate\Database\ConnectionInterface;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\Models\ZeroPayTransaction;
@@ -31,7 +27,7 @@ class BankTransferMatchingService
             $criteria = $this->evaluateCriteria($deposit, $session);
             $criteriaCount = count($criteria);
             $confidence = $criteriaCount > 0
-                ? (float) array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / $criteriaCount
+                ? (float) (array_sum(array_map(static fn (bool $ok): int => $ok ? 1 : 0, $criteria)) / $criteriaCount)
                 : 0.0;
 
             if ($confidence > $bestConfidence) {
@@ -40,7 +36,7 @@ class BankTransferMatchingService
                 $bestConfidence = $confidence;
             }
 
-            if ($confidence === 1.0) {
+            if ($confidence >= 1.0) {
                 return $this->applyMatch($deposit, $session, $criteria, 1.0);
             }
         }
@@ -142,9 +138,7 @@ class BankTransferMatchingService
         array $criteria,
         float $confidence
     ): MatchResult {
-        $connection = $this->resolveDbConnection();
-
-        return $connection->transaction(function () use ($deposit, $session, $criteria, $confidence): MatchResult {
+        return ZeroPayBankDeposit::query()->getConnection()->transaction(function () use ($deposit, $session, $criteria, $confidence): MatchResult {
             $transactionQuery = ZeroPayTransaction::query()
                 ->where('company_id', $session->company_id)
                 ->where('session_id', $session->id)
@@ -351,31 +345,13 @@ class BankTransferMatchingService
         return $filtered;
     }
 
-    private function resolveDbConnection(): ConnectionInterface
-    {
-        try {
-            return DB::connection();
-        } catch (\Throwable) {
-            return Manager::connection();
-        }
-    }
-
     private function hasColumn(string $table, string $column): bool
     {
         static $cache = [];
         $key = $table.'.'.$column;
 
         if (! array_key_exists($key, $cache)) {
-            try {
-                $cache[$key] = Schema::hasColumn($table, $column);
-            } catch (\Throwable) {
-                // Fallback when no facade root is set (e.g. standalone unit tests with Capsule).
-                try {
-                    $cache[$key] = Manager::schema()->hasColumn($table, $column);
-                } catch (\Throwable) {
-                    $cache[$key] = true;
-                }
-            }
+            $cache[$key] = ZeroPayBankDeposit::query()->getConnection()->getSchemaBuilder()->hasColumn($table, $column);
         }
 
         return $cache[$key];

@@ -2,11 +2,19 @@
 
 namespace Modules\ZeroPayModule\Jobs;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Modules\ZeroPayModule\Services\BankTransferMatchingService;
 
-class ProcessBankDepositJob
+class ProcessBankDepositJob implements ShouldQueue
 {
-    public function __construct(public readonly array $rawDepositData) {}
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+
+    public function __construct(public array $rawDepositData) {}
 
     public function handle(BankTransferMatchingService $matchingService): void
     {
