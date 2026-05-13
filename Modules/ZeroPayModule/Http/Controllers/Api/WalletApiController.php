@@ -48,11 +48,8 @@ class WalletApiController extends Controller
         if ($companyId) {
             $bankAccount = ZeroPayBankAccount::query()
                 ->where('company_id', $companyId)
-                ->where('is_default', true)
-                ->first()
-                ?? ZeroPayBankAccount::query()
-                    ->where('company_id', $companyId)
-                    ->first();
+                ->orderByDesc('is_default')
+                ->first();
         }
 
         return [

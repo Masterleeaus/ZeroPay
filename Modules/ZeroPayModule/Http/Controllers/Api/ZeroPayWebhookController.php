@@ -40,19 +40,28 @@ class ZeroPayWebhookController extends Controller
             return response()->json(['error' => 'Unsupported gateway'], 400);
         }
 
-        $payload = $request->all();
-        $signature = $request->header('X-Signature');
+        $rawBody = $request->getContent();
+        $parsedPayload = $request->all();
+
+        // Merge in the raw body and gateway-specific signature headers so that
+        // each adapter can perform its own signature verification against the
+        // untampered request body.
+        $payload = array_merge($parsedPayload, [
+            'body' => $rawBody,
+            'payload' => $rawBody,
+            'signature' => $request->header('X-Signature') ?? $parsedPayload['signature'] ?? null,
+            'stripe_signature' => $request->header('Stripe-Signature'),
+            'sign' => $parsedPayload['sign'] ?? null,
+        ]);
 
         // Always record the raw event before any processing so it is auditable.
-        // The company_id from the payload is untrusted at this stage; it is
-        // stored as-is for later reconciliation once the signature is verified.
         $event = ZeroPayWebhookEvent::create([
-            'company_id' => isset($payload['company_id']) ? (int) $payload['company_id'] : 0,
+            'company_id' => isset($parsedPayload['company_id']) ? (int) $parsedPayload['company_id'] : 0,
             'gateway' => $gateway,
-            'event_type' => $payload['event'] ?? 'unknown',
-            'payload' => $payload,
-            'signature' => $signature,
-            'idempotency_key' => $payload['idempotency_key'] ?? null,
+            'event_type' => $parsedPayload['event'] ?? $parsedPayload['event_type'] ?? 'unknown',
+            'payload' => $parsedPayload,
+            'signature' => $payload['signature'],
+            'idempotency_key' => $parsedPayload['idempotency_key'] ?? null,
             'status' => 'received',
         ]);
 

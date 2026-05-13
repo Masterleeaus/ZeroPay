@@ -33,7 +33,7 @@ class NotificationApiController extends Controller
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        $notification->update(['status' => 'read']);
+        $notification->update(['status' => 'read', 'read_at' => now()]);
 
         return response()->json($notification->fresh());
     }
