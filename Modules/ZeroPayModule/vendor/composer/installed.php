@@ -3,7 +3,7 @@
         'name' => 'modules/zeropay-module',
         'pretty_version' => 'dev-copilot/add-rest-api-routes',
         'version' => 'dev-copilot/add-rest-api-routes',
-        'reference' => 'f370887ad4d8bc98a25cc40be77b72e3e4fe6f7f',
+        'reference' => '37f49abaad1abde6c246b235cf316450299f8e23',
         'type' => 'laravel-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -517,7 +517,7 @@
         'modules/zeropay-module' => array(
             'pretty_version' => 'dev-copilot/add-rest-api-routes',
             'version' => 'dev-copilot/add-rest-api-routes',
-            'reference' => 'f370887ad4d8bc98a25cc40be77b72e3e4fe6f7f',
+            'reference' => '37f49abaad1abde6c246b235cf316450299f8e23',
             'type' => 'laravel-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
