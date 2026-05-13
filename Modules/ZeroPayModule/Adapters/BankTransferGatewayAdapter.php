@@ -3,6 +3,7 @@
 namespace Modules\ZeroPayModule\Adapters;
 
 use Modules\ZeroPayModule\Contracts\GatewayContract;
+use Modules\ZeroPayModule\Jobs\ProcessBankDepositJob;
 
 class BankTransferGatewayAdapter implements GatewayContract
 {
@@ -22,7 +23,9 @@ class BankTransferGatewayAdapter implements GatewayContract
 
     public function handleWebhook(array $payload): array
     {
-        return ['processed' => true, 'gateway' => 'bank_transfer', 'payload' => $payload];
+        ProcessBankDepositJob::dispatch($payload);
+
+        return ['processed' => true, 'queued' => true, 'gateway' => 'bank_transfer'];
     }
 
     public function calculateFee(float $amount): float

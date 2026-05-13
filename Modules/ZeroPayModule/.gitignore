@@ -1,4 +1,1 @@
-# Packages that are not submodule pointers but full local git repos
-vendor/spomky-labs/
-vendor/symfony/polyfill-php82/
-vendor/web-token/
+vendor/

@@ -105,8 +105,7 @@ class ZeroPayBankDepositResource extends Resource
                             ->required(),
                     ])
                     ->action(function (ZeroPayBankDeposit $record, array $data): void {
-                        $session = ZeroPaySession::findOrFail($data['session_id']);
-                        app(BankTransferMatchingService::class)->confirmMatch($record, $session);
+                        app(BankTransferMatchingService::class)->confirmMatch($record->id, (int) $data['session_id']);
 
                         Notification::make()
                             ->title('Deposit matched successfully')
@@ -127,12 +126,7 @@ class ZeroPayBankDepositResource extends Resource
                             ->rows(3),
                     ])
                     ->action(function (ZeroPayBankDeposit $record, array $data): void {
-                        $record->update([
-                            'status' => 'unmatched',
-                            'meta'   => array_merge($record->meta ?? [], [
-                                'rejection_reason' => $data['reason'],
-                            ]),
-                        ]);
+                        app(BankTransferMatchingService::class)->rejectMatch($record->id, $data['reason']);
 
                         Notification::make()
                             ->title('Deposit marked as unmatched')

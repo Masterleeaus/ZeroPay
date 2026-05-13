@@ -17,6 +17,7 @@ class ZeroPayBankDeposit extends Model
         'company_id',
         'bank_account_id',
         'transaction_id',
+        'matched_transaction_id',
         'amount',
         'currency',
         'depositor_name',
