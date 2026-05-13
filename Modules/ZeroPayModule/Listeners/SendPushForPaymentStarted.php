@@ -21,8 +21,8 @@ class SendPushForPaymentStarted implements ShouldQueue
         $this->pushService->notifyUser((int) $session->user_id, [
             'event' => 'payment.started',
             'title' => 'Payer Scanning QR',
-            'body'  => 'Someone is scanning your QR code to make a payment.',
-            'url'   => '/receive',
+            'body' => 'Someone is scanning your QR code to make a payment.',
+            'url' => '/receive',
         ]);
     }
 }

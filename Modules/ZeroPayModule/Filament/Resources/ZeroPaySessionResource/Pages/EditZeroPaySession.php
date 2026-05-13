@@ -15,8 +15,8 @@ class EditZeroPaySession extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $data['company_id'] = $record->company_id;
-        $data['user_id']    = $record->user_id;
-        $data['name']       = $record->name ?? $record->session_token;
+        $data['user_id'] = $record->user_id;
+        $data['name'] = $record->name ?? $record->session_token;
 
         return app(UpdateZeroPaySessionAction::class)->execute($record, ZeroPaySessionData::fromArray($data));
     }

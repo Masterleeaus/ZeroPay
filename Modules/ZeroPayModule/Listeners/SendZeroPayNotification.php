@@ -2,7 +2,9 @@
 
 namespace Modules\ZeroPayModule\Listeners;
 
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Modules\ZeroPayModule\Events\PaymentCompleted;
 use Modules\ZeroPayModule\Events\PaymentFailed;
@@ -32,7 +34,7 @@ class SendZeroPayNotification implements ShouldQueue
     }
 
     /**
-     * @return array{0: \Illuminate\Notifications\Notifiable|null, 1: Notification|null}
+     * @return array{0: Notifiable|null, 1: Notification|null}
      */
     private function resolveNotification(object $event): array
     {
@@ -44,8 +46,8 @@ class SendZeroPayNotification implements ShouldQueue
                 return [null, null];
             }
 
-            $user     = $this->findUser($userId);
-            $amount   = number_format((float) ($event->paymentData['amount'] ?? 0), 2);
+            $user = $this->findUser($userId);
+            $amount = number_format((float) ($event->paymentData['amount'] ?? 0), 2);
             $currency = $event->paymentData['currency'] ?? 'AUD';
 
             return [$user, new PaymentCompletedNotification($event->reference, $amount, $currency, $event->paymentData)];
@@ -86,14 +88,11 @@ class SendZeroPayNotification implements ShouldQueue
 
     /**
      * Resolve the user model instance for the given user ID.
-     *
-     * @param  int|string $userId
-     * @return mixed
      */
     private function findUser(int|string $userId): mixed
     {
         /** @var class-string $userClass */
-        $userClass = config('auth.providers.users.model', \App\Models\User::class);
+        $userClass = config('auth.providers.users.model', User::class);
 
         return $userClass::find($userId);
     }

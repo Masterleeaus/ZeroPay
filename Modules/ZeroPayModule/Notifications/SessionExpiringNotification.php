@@ -16,7 +16,6 @@ class SessionExpiringNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * @param  mixed $notifiable
      * @return array<int, string>
      */
     public function via(mixed $notifiable): array
@@ -25,15 +24,14 @@ class SessionExpiringNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  mixed $notifiable
      * @return array<string, mixed>
      */
     public function toArray(mixed $notifiable): array
     {
         return [
-            'event'      => 'session.expiring',
+            'event' => 'session.expiring',
             'session_id' => $this->session->id,
-            'message'    => 'Your payment QR code will expire soon.',
+            'message' => 'Your payment QR code will expire soon.',
         ];
     }
 }

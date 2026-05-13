@@ -11,6 +11,7 @@ namespace Modules\ZeroPayModule\UI\ControlPanel;
 class DemoControlPanel
 {
     public string $assistantName = 'Zero';
+
     public string $agent = 'demo.agent';
 
     public function layout(): array

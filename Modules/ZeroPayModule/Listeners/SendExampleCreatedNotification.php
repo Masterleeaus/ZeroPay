@@ -2,7 +2,9 @@
 
 namespace Modules\ZeroPayModule\Listeners;
 
+use Modules\ZeroPayModule\Events\ExampleCreated;
+
 class SendExampleCreatedNotification
 {
-    public function handle(\Modules\ZeroPayModule\Events\ExampleCreated $event): void {}
+    public function handle(ExampleCreated $event): void {}
 }

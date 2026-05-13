@@ -17,7 +17,7 @@ class ZeroPayStatsWidget extends BaseWidget
         return [
             Stat::make('Sessions Today', ZeroPaySession::whereDate('created_at', today())->count()),
             Stat::make('Completed Today', ZeroPaySession::completed()->whereDate('updated_at', today())->count()),
-            Stat::make('Revenue Today', '$' . number_format((float) ZeroPayTransaction::whereDate('created_at', today())->sum('amount'), 2)),
+            Stat::make('Revenue Today', '$'.number_format((float) ZeroPayTransaction::whereDate('created_at', today())->sum('amount'), 2)),
             Stat::make('Pending Deposits', ZeroPayBankDeposit::pendingReview()->count())->color('warning'),
         ];
     }

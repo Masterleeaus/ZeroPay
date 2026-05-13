@@ -2,20 +2,23 @@
 
 namespace Modules\ZeroPayModule\Services;
 
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Modules\ZeroPayModule\Models\ZeroPaySession;
 use Modules\ZeroPayModule\ValueObjects\QrPayload;
 
 class QrPayloadBuilder
 {
     /**
-     * @param  string        $defaultPayId       Merchant PayID (e.g. "merchant@zeropay.io"), used when the
-     *                                           session meta does not carry a "payid" key.
-     * @param  string        $defaultMerchantName Merchant display name, used when session meta does not carry
-     *                                            a "merchant_name" key.
-     * @param  int           $sessionTtlMinutes  Default TTL when the session has no explicit expiry.
-     * @param  callable|null $qrRenderer         Optional QR-image renderer: fn(string $content, int $size): string.
-     *                                           Must return a base64-encoded PNG string.
-     *                                           When null the builder falls back to chillerlan/php-qrcode.
+     * @param  string  $defaultPayId  Merchant PayID (e.g. "merchant@zeropay.io"), used when the
+     *                                session meta does not carry a "payid" key.
+     * @param  string  $defaultMerchantName  Merchant display name, used when session meta does not carry
+     *                                       a "merchant_name" key.
+     * @param  int  $sessionTtlMinutes  Default TTL when the session has no explicit expiry.
+     * @param  callable|null  $qrRenderer  Optional QR-image renderer: fn(string $content, int $size): string.
+     *                                     Must return a base64-encoded PNG string.
+     *                                     When null the builder falls back to chillerlan/php-qrcode.
      */
     public function __construct(
         private string $defaultPayId = '',
@@ -32,13 +35,13 @@ class QrPayloadBuilder
     {
         $meta = (array) ($session->meta ?? []);
 
-        $payload                = new QrPayload();
-        $payload->payid         = (string) ($meta['payid'] ?? $this->defaultPayId);
-        $payload->merchantName  = (string) ($meta['merchant_name'] ?? $this->defaultMerchantName);
-        $payload->amount        = $session->amount !== null ? (float) $session->amount : null;
-        $payload->currency      = (string) ($session->currency ?: 'AUD');
-        $payload->reference     = (string) ($meta['reference'] ?? $session->session_token);
-        $payload->sessionToken  = (string) $session->session_token;
+        $payload = new QrPayload;
+        $payload->payid = (string) ($meta['payid'] ?? $this->defaultPayId);
+        $payload->merchantName = (string) ($meta['merchant_name'] ?? $this->defaultMerchantName);
+        $payload->amount = $session->amount !== null ? (float) $session->amount : null;
+        $payload->currency = (string) ($session->currency ?: 'AUD');
+        $payload->reference = (string) ($meta['reference'] ?? $session->session_token);
+        $payload->sessionToken = (string) $session->session_token;
 
         if ($session->expires_at !== null) {
             $payload->expiryTimestamp = $session->expires_at->getTimestamp();
@@ -54,7 +57,7 @@ class QrPayloadBuilder
      */
     public function buildFallbackUrl(string $token): string
     {
-        return '/pay/session/' . $token;
+        return '/pay/session/'.$token;
     }
 
     /**
@@ -63,24 +66,23 @@ class QrPayloadBuilder
     public function toJson(QrPayload $payload): string
     {
         return json_encode([
-            'payid'             => $payload->payid,
-            'merchant_name'     => $payload->merchantName,
-            'amount'            => $payload->amount,
-            'currency'          => $payload->currency,
-            'reference'         => $payload->reference,
-            'session_token'     => $payload->sessionToken,
-            'expiry_timestamp'  => $payload->expiryTimestamp,
+            'payid' => $payload->payid,
+            'merchant_name' => $payload->merchantName,
+            'amount' => $payload->amount,
+            'currency' => $payload->currency,
+            'reference' => $payload->reference,
+            'session_token' => $payload->sessionToken,
+            'expiry_timestamp' => $payload->expiryTimestamp,
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     /**
      * Generate a base64-encoded PNG QR code image for the given payload.
      *
-     * @param  QrPayload $payload
-     * @param  int       $size    Desired pixel size of the output image.
-     * @return string             Base64-encoded PNG (without the data-URI prefix).
+     * @param  int  $size  Desired pixel size of the output image.
+     * @return string Base64-encoded PNG (without the data-URI prefix).
      *
-     * @throws \RuntimeException  When no QR renderer is available.
+     * @throws \RuntimeException When no QR renderer is available.
      */
     public function toQrImage(QrPayload $payload, int $size = 400): string
     {
@@ -90,19 +92,19 @@ class QrPayloadBuilder
             return ($this->qrRenderer)($content, $size);
         }
 
-        if (! class_exists(\chillerlan\QRCode\QRCode::class)) {
+        if (! class_exists(QRCode::class)) {
             throw new \RuntimeException(
-                'chillerlan/php-qrcode is required for QR image generation. ' .
+                'chillerlan/php-qrcode is required for QR image generation. '.
                 'Add it with: composer require chillerlan/php-qrcode'
             );
         }
 
-        $options = new \chillerlan\QRCode\QROptions([
-            'outputType'  => \chillerlan\QRCode\Output\QROutputInterface::GDIMAGE_PNG,
-            'scale'       => max(1, (int) ($size / 21)),
+        $options = new QROptions([
+            'outputType' => QROutputInterface::GDIMAGE_PNG,
+            'scale' => max(1, (int) ($size / 21)),
             'imageBase64' => true,
         ]);
 
-        return (new \chillerlan\QRCode\QRCode($options))->render($content);
+        return (new QRCode($options))->render($content);
     }
 }

@@ -21,8 +21,8 @@ class SendPushForSessionOpened implements ShouldQueue
         $this->pushService->notifyUser((int) $session->user_id, [
             'event' => 'session.created',
             'title' => 'Payment Session Opened',
-            'body'  => 'Your payment session is ready. Share your QR to receive payment.',
-            'url'   => '/receive',
+            'body' => 'Your payment session is ready. Share your QR to receive payment.',
+            'url' => '/receive',
         ]);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Modules\ZeroPayModule\UI\Cards;
 
-
 final class ShortcutCard
 {
     public function __construct(public string $title = '', public mixed $value = null, public array $meta = []) {}
@@ -11,5 +10,4 @@ final class ShortcutCard
     {
         return ['title' => $this->title, 'value' => $this->value, 'meta' => $this->meta];
     }
-
 }

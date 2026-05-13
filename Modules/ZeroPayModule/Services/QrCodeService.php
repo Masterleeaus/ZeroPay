@@ -13,28 +13,28 @@ class QrCodeService
         $expiry = $session->expires_at ?? Carbon::now()->addHours(24);
 
         $payload = [
-            'payid'            => $payId,
-            'merchant_name'    => $merchantName,
-            'amount'           => $session->amount,
-            'currency'         => $session->currency ?? 'AUD',
-            'reference'        => $session->session_token,
-            'session_token'    => $session->session_token,
+            'payid' => $payId,
+            'merchant_name' => $merchantName,
+            'amount' => $session->amount,
+            'currency' => $session->currency ?? 'AUD',
+            'reference' => $session->session_token,
+            'session_token' => $session->session_token,
             'expiry_timestamp' => $expiry->timestamp,
-            'fallback_url'     => url('/pay/session/' . $session->session_token),
+            'fallback_url' => url('/pay/session/'.$session->session_token),
         ];
 
         return ZeroPayQrCode::create([
-            'company_id'       => $session->company_id,
-            'session_id'       => $session->id,
-            'pay_id'           => $payId,
-            'merchant_name'    => $merchantName,
-            'amount'           => $session->amount,
-            'currency'         => $session->currency ?? 'AUD',
-            'reference'        => $session->session_token,
-            'session_token'    => $session->session_token,
-            'payload'          => $payload,
+            'company_id' => $session->company_id,
+            'session_id' => $session->id,
+            'pay_id' => $payId,
+            'merchant_name' => $merchantName,
+            'amount' => $session->amount,
+            'currency' => $session->currency ?? 'AUD',
+            'reference' => $session->session_token,
+            'session_token' => $session->session_token,
+            'payload' => $payload,
             'expiry_timestamp' => $expiry,
-            'status'           => 'active',
+            'status' => 'active',
         ]);
     }
 }

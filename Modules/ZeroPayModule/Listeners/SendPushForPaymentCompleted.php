@@ -23,17 +23,17 @@ class SendPushForPaymentCompleted implements ShouldQueue
             return;
         }
 
-        $amount   = isset($event->paymentData['amount'])
+        $amount = isset($event->paymentData['amount'])
             ? number_format((float) $event->paymentData['amount'], 2)
             : '';
         $currency = $event->paymentData['currency'] ?? 'AUD';
-        $body     = $amount ? "You received {$currency} {$amount}." : 'Payment received successfully.';
+        $body = $amount ? "You received {$currency} {$amount}." : 'Payment received successfully.';
 
         $this->pushService->notifyUser((int) $userId, [
             'event' => 'payment.completed',
             'title' => '✅ Payment Received',
-            'body'  => $body,
-            'url'   => '/transactions',
+            'body' => $body,
+            'url' => '/transactions',
         ]);
     }
 }

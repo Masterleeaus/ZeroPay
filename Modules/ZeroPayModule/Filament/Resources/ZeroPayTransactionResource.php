@@ -3,14 +3,14 @@
 namespace Modules\ZeroPayModule\Filament\Resources;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\ZeroPayModule\Exports\ZeroPayTransactionsExport;
 use Modules\ZeroPayModule\Filament\Resources\ZeroPayTransactionResource\Pages;
@@ -61,8 +61,8 @@ class ZeroPayTransactionResource extends Resource
                     ->badge()
                     ->color(fn (?string $state): string => match ($state) {
                         'refund' => 'warning',
-                        'fee'    => 'gray',
-                        default  => 'primary',
+                        'fee' => 'gray',
+                        default => 'primary',
                     }),
 
                 TextColumn::make('gateway')
@@ -88,10 +88,10 @@ class ZeroPayTransactionResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'completed' => 'success',
-                        'pending'   => 'warning',
-                        'failed'    => 'danger',
-                        'refunded'  => 'info',
-                        default     => 'gray',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                        'refunded' => 'info',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('payer_name')
@@ -117,29 +117,29 @@ class ZeroPayTransactionResource extends Resource
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'pending'   => 'Pending',
+                        'pending' => 'Pending',
                         'completed' => 'Completed',
-                        'failed'    => 'Failed',
-                        'refunded'  => 'Refunded',
+                        'failed' => 'Failed',
+                        'refunded' => 'Refunded',
                     ]),
 
                 SelectFilter::make('type')
                     ->label('Type')
                     ->options([
                         'payment' => 'Payment',
-                        'refund'  => 'Refund',
-                        'fee'     => 'Fee',
+                        'refund' => 'Refund',
+                        'fee' => 'Fee',
                     ]),
 
                 SelectFilter::make('gateway')
                     ->label('Gateway')
                     ->options([
-                        'payid'         => 'PayID',
+                        'payid' => 'PayID',
                         'bank_transfer' => 'Bank Transfer',
-                        'cash'          => 'Cash',
-                        'stripe'        => 'Stripe',
-                        'paypal'        => 'PayPal',
-                        'cryptomus'     => 'Cryptomus',
+                        'cash' => 'Cash',
+                        'stripe' => 'Stripe',
+                        'paypal' => 'PayPal',
+                        'cryptomus' => 'Cryptomus',
                     ]),
 
                 Filter::make('created_at')
@@ -176,7 +176,7 @@ class ZeroPayTransactionResource extends Resource
                             ZeroPayTransaction::query()
                         );
 
-                        $filename = 'transactions-' . now()->format('Y-m-d') . '.csv';
+                        $filename = 'transactions-'.now()->format('Y-m-d').'.csv';
 
                         return $export->download($filename);
                     }),
@@ -191,7 +191,7 @@ class ZeroPayTransactionResource extends Resource
     {
         return [
             'index' => Pages\ListZeroPayTransactions::route('/'),
-            'view'  => Pages\ViewZeroPayTransaction::route('/{record}'),
+            'view' => Pages\ViewZeroPayTransaction::route('/{record}'),
         ];
     }
 }

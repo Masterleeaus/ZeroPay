@@ -13,9 +13,7 @@ class PaymentFailed
     /**
      * Create a new event instance.
      *
-     * @param string               $reference
-     * @param string               $reason
-     * @param array<string, mixed> $paymentData
+     * @param  array<string, mixed>  $paymentData
      */
     public function __construct(
         public readonly string $reference,

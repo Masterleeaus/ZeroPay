@@ -14,7 +14,6 @@ use Filament\Pages\Page;
 use Modules\ZeroPayModule\Models\ZeroPayBankDeposit;
 use Modules\ZeroPayModule\Models\ZeroPayGatewayLog;
 use Modules\ZeroPayModule\Models\ZeroPayWebhookEvent;
-use Modules\ZeroPayModule\Services\GatewayRegistry;
 use Modules\ZeroPayModule\Settings\ZeroPaySettings;
 
 class ZeroPayControlPanel extends Page implements HasForms
@@ -22,48 +21,80 @@ class ZeroPayControlPanel extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationLabel = 'Settings';
-    protected static ?string $navigationIcon  = 'heroicon-o-cog-6-tooth';
+
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+
     protected static ?string $navigationGroup = 'ZeroPay';
-    protected static ?string $slug            = 'zeropay/settings';
-    protected static ?string $title           = 'ZeroPay Control Panel';
-    protected static ?int    $navigationSort  = 99;
-    protected static string  $view            = 'zeropay-module::filament.pages.zeropay-control-panel';
+
+    protected static ?string $slug = 'zeropay/settings';
+
+    protected static ?string $title = 'ZeroPay Control Panel';
+
+    protected static ?int $navigationSort = 99;
+
+    protected static string $view = 'zeropay-module::filament.pages.zeropay-control-panel';
 
     // -----------------------------------------------------------------------
     // Form state (mirrors ZeroPaySettings fields)
     // -----------------------------------------------------------------------
-    public bool   $gateway_payid_enabled         = false;
-    public bool   $gateway_bank_transfer_enabled = false;
-    public bool   $gateway_stripe_enabled        = false;
-    public bool   $gateway_paypal_enabled        = false;
-    public bool   $gateway_cryptomus_enabled     = false;
-    public bool   $gateway_cash_enabled          = true;
-    public string $payid_identifier              = '';
-    public string $stripe_key                    = '';
-    public string $stripe_secret                 = '';
-    public string $stripe_webhook_secret         = '';
-    public string $paypal_client_id              = '';
-    public string $paypal_client_secret          = '';
-    public string $paypal_mode                   = 'sandbox';
-    public string $paypal_webhook_id             = '';
-    public string $cryptomus_merchant_id         = '';
-    public string $cryptomus_api_key             = '';
-    public string $cryptomus_webhook_secret      = '';
-    public int    $session_ttl_minutes           = 15;
-    public int    $qr_expiry_warning_minutes     = 2;
-    public bool   $session_auto_expire           = true;
-    public string $bank_bsb                      = '';
-    public string $bank_account_number           = '';
-    public float  $bank_matching_confidence      = 0.8;
-    public bool   $bank_notify_admin_on_pending_review = true;
+    public bool $gateway_payid_enabled = false;
+
+    public bool $gateway_bank_transfer_enabled = false;
+
+    public bool $gateway_stripe_enabled = false;
+
+    public bool $gateway_paypal_enabled = false;
+
+    public bool $gateway_cryptomus_enabled = false;
+
+    public bool $gateway_cash_enabled = true;
+
+    public string $payid_identifier = '';
+
+    public string $stripe_key = '';
+
+    public string $stripe_secret = '';
+
+    public string $stripe_webhook_secret = '';
+
+    public string $paypal_client_id = '';
+
+    public string $paypal_client_secret = '';
+
+    public string $paypal_mode = 'sandbox';
+
+    public string $paypal_webhook_id = '';
+
+    public string $cryptomus_merchant_id = '';
+
+    public string $cryptomus_api_key = '';
+
+    public string $cryptomus_webhook_secret = '';
+
+    public int $session_ttl_minutes = 15;
+
+    public int $qr_expiry_warning_minutes = 2;
+
+    public bool $session_auto_expire = true;
+
+    public string $bank_bsb = '';
+
+    public string $bank_account_number = '';
+
+    public float $bank_matching_confidence = 0.8;
+
+    public bool $bank_notify_admin_on_pending_review = true;
 
     // -----------------------------------------------------------------------
     // Health metrics (populated in mount)
     // -----------------------------------------------------------------------
-    public int   $webhookQueueDepth    = 0;
-    public int   $pendingReviewCount   = 0;
-    public array $recentErrors         = [];
-    public array $lastGatewayChecks    = [];
+    public int $webhookQueueDepth = 0;
+
+    public int $pendingReviewCount = 0;
+
+    public array $recentErrors = [];
+
+    public array $lastGatewayChecks = [];
 
     public function mount(): void
     {
@@ -71,30 +102,30 @@ class ZeroPayControlPanel extends Page implements HasForms
 
         if ($settings) {
             $this->fill([
-                'gateway_payid_enabled'                 => $settings->gateway_payid_enabled,
-                'gateway_bank_transfer_enabled'         => $settings->gateway_bank_transfer_enabled,
-                'gateway_stripe_enabled'                => $settings->gateway_stripe_enabled,
-                'gateway_paypal_enabled'                => $settings->gateway_paypal_enabled,
-                'gateway_cryptomus_enabled'             => $settings->gateway_cryptomus_enabled,
-                'gateway_cash_enabled'                  => $settings->gateway_cash_enabled,
-                'payid_identifier'                      => $settings->payid_identifier,
-                'stripe_key'                            => $settings->stripe_key,
-                'stripe_secret'                         => $settings->stripe_secret,
-                'stripe_webhook_secret'                 => $settings->stripe_webhook_secret,
-                'paypal_client_id'                      => $settings->paypal_client_id,
-                'paypal_client_secret'                  => $settings->paypal_client_secret,
-                'paypal_mode'                           => $settings->paypal_mode,
-                'paypal_webhook_id'                     => $settings->paypal_webhook_id,
-                'cryptomus_merchant_id'                 => $settings->cryptomus_merchant_id,
-                'cryptomus_api_key'                     => $settings->cryptomus_api_key,
-                'cryptomus_webhook_secret'              => $settings->cryptomus_webhook_secret,
-                'session_ttl_minutes'                   => $settings->session_ttl_minutes,
-                'qr_expiry_warning_minutes'             => $settings->qr_expiry_warning_minutes,
-                'session_auto_expire'                   => $settings->session_auto_expire,
-                'bank_bsb'                              => $settings->bank_bsb,
-                'bank_account_number'                   => $settings->bank_account_number,
-                'bank_matching_confidence'              => $settings->bank_matching_confidence,
-                'bank_notify_admin_on_pending_review'   => $settings->bank_notify_admin_on_pending_review,
+                'gateway_payid_enabled' => $settings->gateway_payid_enabled,
+                'gateway_bank_transfer_enabled' => $settings->gateway_bank_transfer_enabled,
+                'gateway_stripe_enabled' => $settings->gateway_stripe_enabled,
+                'gateway_paypal_enabled' => $settings->gateway_paypal_enabled,
+                'gateway_cryptomus_enabled' => $settings->gateway_cryptomus_enabled,
+                'gateway_cash_enabled' => $settings->gateway_cash_enabled,
+                'payid_identifier' => $settings->payid_identifier,
+                'stripe_key' => $settings->stripe_key,
+                'stripe_secret' => $settings->stripe_secret,
+                'stripe_webhook_secret' => $settings->stripe_webhook_secret,
+                'paypal_client_id' => $settings->paypal_client_id,
+                'paypal_client_secret' => $settings->paypal_client_secret,
+                'paypal_mode' => $settings->paypal_mode,
+                'paypal_webhook_id' => $settings->paypal_webhook_id,
+                'cryptomus_merchant_id' => $settings->cryptomus_merchant_id,
+                'cryptomus_api_key' => $settings->cryptomus_api_key,
+                'cryptomus_webhook_secret' => $settings->cryptomus_webhook_secret,
+                'session_ttl_minutes' => $settings->session_ttl_minutes,
+                'qr_expiry_warning_minutes' => $settings->qr_expiry_warning_minutes,
+                'session_auto_expire' => $settings->session_auto_expire,
+                'bank_bsb' => $settings->bank_bsb,
+                'bank_account_number' => $settings->bank_account_number,
+                'bank_matching_confidence' => $settings->bank_matching_confidence,
+                'bank_notify_admin_on_pending_review' => $settings->bank_notify_admin_on_pending_review,
             ]);
         }
 
@@ -349,30 +380,30 @@ class ZeroPayControlPanel extends Page implements HasForms
     protected function toSettingsArray(): array
     {
         return [
-            'gateway_payid_enabled'                 => $this->gateway_payid_enabled,
-            'gateway_bank_transfer_enabled'         => $this->gateway_bank_transfer_enabled,
-            'gateway_stripe_enabled'                => $this->gateway_stripe_enabled,
-            'gateway_paypal_enabled'                => $this->gateway_paypal_enabled,
-            'gateway_cryptomus_enabled'             => $this->gateway_cryptomus_enabled,
-            'gateway_cash_enabled'                  => $this->gateway_cash_enabled,
-            'payid_identifier'                      => $this->payid_identifier,
-            'stripe_key'                            => $this->stripe_key,
-            'stripe_secret'                         => $this->stripe_secret,
-            'stripe_webhook_secret'                 => $this->stripe_webhook_secret,
-            'paypal_client_id'                      => $this->paypal_client_id,
-            'paypal_client_secret'                  => $this->paypal_client_secret,
-            'paypal_mode'                           => $this->paypal_mode,
-            'paypal_webhook_id'                     => $this->paypal_webhook_id,
-            'cryptomus_merchant_id'                 => $this->cryptomus_merchant_id,
-            'cryptomus_api_key'                     => $this->cryptomus_api_key,
-            'cryptomus_webhook_secret'              => $this->cryptomus_webhook_secret,
-            'session_ttl_minutes'                   => $this->session_ttl_minutes,
-            'qr_expiry_warning_minutes'             => $this->qr_expiry_warning_minutes,
-            'session_auto_expire'                   => $this->session_auto_expire,
-            'bank_bsb'                              => $this->bank_bsb,
-            'bank_account_number'                   => $this->bank_account_number,
-            'bank_matching_confidence'              => $this->bank_matching_confidence,
-            'bank_notify_admin_on_pending_review'   => $this->bank_notify_admin_on_pending_review,
+            'gateway_payid_enabled' => $this->gateway_payid_enabled,
+            'gateway_bank_transfer_enabled' => $this->gateway_bank_transfer_enabled,
+            'gateway_stripe_enabled' => $this->gateway_stripe_enabled,
+            'gateway_paypal_enabled' => $this->gateway_paypal_enabled,
+            'gateway_cryptomus_enabled' => $this->gateway_cryptomus_enabled,
+            'gateway_cash_enabled' => $this->gateway_cash_enabled,
+            'payid_identifier' => $this->payid_identifier,
+            'stripe_key' => $this->stripe_key,
+            'stripe_secret' => $this->stripe_secret,
+            'stripe_webhook_secret' => $this->stripe_webhook_secret,
+            'paypal_client_id' => $this->paypal_client_id,
+            'paypal_client_secret' => $this->paypal_client_secret,
+            'paypal_mode' => $this->paypal_mode,
+            'paypal_webhook_id' => $this->paypal_webhook_id,
+            'cryptomus_merchant_id' => $this->cryptomus_merchant_id,
+            'cryptomus_api_key' => $this->cryptomus_api_key,
+            'cryptomus_webhook_secret' => $this->cryptomus_webhook_secret,
+            'session_ttl_minutes' => $this->session_ttl_minutes,
+            'qr_expiry_warning_minutes' => $this->qr_expiry_warning_minutes,
+            'session_auto_expire' => $this->session_auto_expire,
+            'bank_bsb' => $this->bank_bsb,
+            'bank_account_number' => $this->bank_account_number,
+            'bank_matching_confidence' => $this->bank_matching_confidence,
+            'bank_notify_admin_on_pending_review' => $this->bank_notify_admin_on_pending_review,
         ];
     }
 }

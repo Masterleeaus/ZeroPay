@@ -17,7 +17,7 @@ class BankTransferMatchingServiceTest extends TestCase
     {
         parent::setUp();
 
-        if (!class_exists(Capsule::class)) {
+        if (! class_exists(Capsule::class)) {
             self::markTestSkipped('Illuminate database package is not available in this environment.');
         }
 

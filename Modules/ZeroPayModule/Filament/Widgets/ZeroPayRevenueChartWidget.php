@@ -16,12 +16,12 @@ class ZeroPayRevenueChartWidget extends ChartWidget
     protected function getData(): array
     {
         $gatewayLabels = [
-            'payid'         => 'PayID',
+            'payid' => 'PayID',
             'bank_transfer' => 'Bank Transfer',
-            'stripe'        => 'Stripe',
-            'paypal'        => 'PayPal',
-            'cash'          => 'Cash',
-            'cryptomus'     => 'Cryptomus',
+            'stripe' => 'Stripe',
+            'paypal' => 'PayPal',
+            'cash' => 'Cash',
+            'cryptomus' => 'Cryptomus',
         ];
 
         $colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6366f1'];
@@ -52,12 +52,12 @@ class ZeroPayRevenueChartWidget extends ChartWidget
             if (array_sum($values) > 0) {
                 $color = $colors[$colorIndex % count($colors)];
                 $datasets[] = [
-                    'label'           => $gatewayLabels[$gateway],
-                    'data'            => $values,
-                    'borderColor'     => $color,
-                    'backgroundColor' => $color . '33',
-                    'fill'            => false,
-                    'tension'         => 0.3,
+                    'label' => $gatewayLabels[$gateway],
+                    'data' => $values,
+                    'borderColor' => $color,
+                    'backgroundColor' => $color.'33',
+                    'fill' => false,
+                    'tension' => 0.3,
                 ];
                 $colorIndex++;
             }
@@ -66,13 +66,13 @@ class ZeroPayRevenueChartWidget extends ChartWidget
         if (empty($datasets)) {
             $datasets = [[
                 'label' => 'No data',
-                'data'  => array_fill(0, 30, 0),
+                'data' => array_fill(0, 30, 0),
             ]];
         }
 
         return [
             'datasets' => $datasets,
-            'labels'   => $labels,
+            'labels' => $labels,
         ];
     }
 

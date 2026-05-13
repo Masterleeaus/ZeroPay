@@ -2,6 +2,7 @@
 
 namespace Modules\ZeroPayModule\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -21,9 +22,7 @@ class ZeroPayPushSubscription extends Model
     /**
      * Find or create a subscription record from the JSON data sent by the browser.
      *
-     * @param  int                 $userId
-     * @param  int|null            $companyId
-     * @param  array<string,mixed> $subscriptionJson
+     * @param  array<string,mixed>  $subscriptionJson
      */
     public static function upsertFromJson(int $userId, ?int $companyId, array $subscriptionJson): static
     {
@@ -32,10 +31,10 @@ class ZeroPayPushSubscription extends Model
         return static::updateOrCreate(
             ['endpoint' => $subscriptionJson['endpoint']],
             [
-                'user_id'          => $userId,
-                'company_id'       => $companyId,
-                'p256dh_key'       => $keys['p256dh'] ?? '',
-                'auth_key'         => $keys['auth'] ?? '',
+                'user_id' => $userId,
+                'company_id' => $companyId,
+                'p256dh_key' => $keys['p256dh'] ?? '',
+                'auth_key' => $keys['auth'] ?? '',
                 'content_encoding' => $subscriptionJson['contentEncoding'] ?? 'aesgcm',
             ]
         );
@@ -43,6 +42,6 @@ class ZeroPayPushSubscription extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(config('auth.providers.users.model', \App\Models\User::class));
+        return $this->belongsTo(config('auth.providers.users.model', User::class));
     }
 }
