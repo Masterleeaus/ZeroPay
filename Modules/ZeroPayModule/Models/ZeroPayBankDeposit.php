@@ -29,6 +29,7 @@ class ZeroPayBankDeposit extends Model
         'status',
         'match_score',
         'match_method',
+        'raw_data',
         'meta',
         'raw_data',
     ];
