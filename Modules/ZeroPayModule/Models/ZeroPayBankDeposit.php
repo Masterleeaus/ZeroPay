@@ -29,8 +29,8 @@ class ZeroPayBankDeposit extends Model
         'status',
         'match_score',
         'match_method',
-        'meta',
         'raw_data',
+        'meta',
     ];
 
     protected $casts = [
