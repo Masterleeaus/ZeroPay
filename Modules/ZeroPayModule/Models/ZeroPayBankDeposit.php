@@ -31,6 +31,7 @@ class ZeroPayBankDeposit extends Model
         'match_method',
         'raw_data',
         'meta',
+        'raw_data',
     ];
 
     protected $casts = [

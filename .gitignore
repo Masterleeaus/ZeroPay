@@ -8,3 +8,4 @@ PWA/.env
 
 # Module vendor directories
 Modules/*/vendor/
+Modules/*/.phpunit.result.cache

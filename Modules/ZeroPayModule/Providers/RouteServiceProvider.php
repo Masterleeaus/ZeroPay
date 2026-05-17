@@ -68,5 +68,9 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('zeropay-api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        RateLimiter::for('zeropay-webhooks', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
     }
 }

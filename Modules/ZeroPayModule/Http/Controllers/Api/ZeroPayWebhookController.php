@@ -12,6 +12,26 @@ class ZeroPayWebhookController extends Controller
 {
     public function __construct(protected GatewayFactory $gatewayFactory) {}
 
+    public function stripe(Request $request): JsonResponse
+    {
+        return $this->handle($request, 'stripe');
+    }
+
+    public function paypal(Request $request): JsonResponse
+    {
+        return $this->handle($request, 'paypal');
+    }
+
+    public function cryptomus(Request $request): JsonResponse
+    {
+        return $this->handle($request, 'cryptomus');
+    }
+
+    public function bank(Request $request): JsonResponse
+    {
+        return $this->handle($request, 'bank_transfer');
+    }
+
     public function handle(Request $request, string $gateway): JsonResponse
     {
         $supported = $this->gatewayFactory->supported();

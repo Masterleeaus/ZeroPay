@@ -20,12 +20,14 @@ class ZeroPayNotification extends Model
         'payload',
         'status',
         'sent_at',
+        'read_at',
     ];
 
     protected $casts = [
         'event' => NotificationEventType::class,
         'payload' => 'array',
         'sent_at' => 'datetime',
+        'read_at' => 'datetime',
     ];
 
     /**
