@@ -1,11 +1,40 @@
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
 # PWA build artefacts & dependencies
 PWA/node_modules/
 PWA/dist/
-PWA/.env
 
-# macOS
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+**/build/
+
+# IDE / OS
 .DS_Store
+.idea/
+.vscode/
+*.iml
 
-# Module vendor directories
+# Module dependencies / test state
 Modules/*/vendor/
 Modules/*/.phpunit.result.cache
+
+# Local credentials and signing material
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+**/key.properties
+**/GoogleService-Info.plist
+**/google-services.json
