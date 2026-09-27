@@ -1,6 +1,10 @@
-# ZeroPay
+<p align="center">
+  <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
+</p>
 
-> **Payments without the percentage tax.**
+<h1 align="center">ZeroPay</h1>
+
+<p align="center"><strong>Payments without the percentage tax.</strong></p>
 
 ZeroPay is a payment orchestration platform built around a simple idea: **help sellers get paid through payment rails that can avoid conventional card-processing fees wherever possible.**
 
@@ -11,6 +15,10 @@ For a seller, the difference is structural. ZeroPay is designed to route custome
 The platform coordinates the payment lifecycle across mobile, web, PWA, API and administrative surfaces, combining payment sessions, QR-driven transactions, direct-payment instructions, bank-transfer matching, wallets, gateway adapters, notifications, reconciliation and intelligent automation.
 
 > **ZeroPay does not make an underlying bank, network or cryptocurrency transfer universally free. Fees and availability depend on the customer's and seller's providers, accounts, networks and transaction type. The product's purpose is to prioritise payment rails that can be zero-cost to the seller rather than assuming a percentage-based processor is required.**
+
+<p align="center">
+  <img src="Images/DA3C56B7-DC73-4558-8EB9-569319206B48.png" alt="ZeroPay zero-fee-first payment platform overview" width="900">
+</p>
 
 ## The ZeroPay model
 
