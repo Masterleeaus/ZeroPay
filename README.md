@@ -4,7 +4,7 @@
   <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
 </p>
 
-<h1 align="center">ZeroPay</h1>
+<h1 align="center">ZeroPay Payment Orchestration</h1>
 
 <p align="center"><strong>Payments without the percentage tax.</strong></p>
 
