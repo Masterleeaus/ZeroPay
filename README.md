@@ -22,6 +22,13 @@ The platform coordinates the payment lifecycle across mobile, web, PWA, API and 
   <img src="Images/DA3C56B7-DC73-4558-8EB9-569319206B48.png" alt="ZeroPay zero-fee-first payment platform overview" width="900">
 </p>
 
+## Product architecture and engineering highlights
+
+A payment-orchestration platform that puts direct account-to-account and cash options alongside conventional gateways in one payment lifecycle.
+
+- **Architecture:** Payment sessions normalize QR entry, PayID/Osko instructions, bank-transfer matching, cash records, cryptocurrency adapters, gateway checkout, notifications, and reconciliation.
+- **Distinctive engineering:** The distinctive architecture separates the customer payment experience from the rail used to settle it, while keeping card gateways available where needed. Fees and availability remain provider-dependent.
+
 ## The ZeroPay model
 
 ```text
