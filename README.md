@@ -1,3 +1,5 @@
+![ZeroPay Payment Orchestration — PAYID · BANK TRANSFER · CASH · OPTIONAL CARD](docs/images/portfolio-banner.svg)
+
 <p align="center">
   <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
 </p>
