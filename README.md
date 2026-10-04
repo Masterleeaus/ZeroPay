@@ -1,4 +1,4 @@
-![ZeroPay Payment Orchestration — PAYID · BANK TRANSFER · CASH · OPTIONAL CARD](docs/images/portfolio-banner.svg)
+![ZeroPay Payment Orchestration - PAYID � BANK TRANSFER � CASH � OPTIONAL CARD](docs/images/portfolio-banner.svg)
 
 <p align="center">
   <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
@@ -10,7 +10,7 @@
 
 ZeroPay is a payment orchestration platform built around a simple idea: **help sellers get paid through payment rails that can avoid conventional card-processing fees wherever possible.**
 
-Instead of making Stripe-style percentage fees the default path for every transaction, ZeroPay puts direct and low-cost payment methods first — including **PayID, Osko-enabled bank payments, direct bank transfer, cash and cryptocurrency** — while retaining conventional payment gateways as optional fallbacks when they are useful.
+Instead of making Stripe-style percentage fees the default path for every transaction, ZeroPay puts direct and low-cost payment methods first - including **PayID, Osko-enabled bank payments, direct bank transfer, cash and cryptocurrency** - while retaining conventional payment gateways as optional fallbacks when they are useful.
 
 For a seller, the difference is structural. ZeroPay is designed to route customers toward payment methods where the seller can receive the full payment rather than automatically surrendering a percentage of every sale to a card processor.
 
@@ -180,6 +180,12 @@ These provide a foundation for intelligent payment operations such as:
 
 The underlying transaction state remains explicit and inspectable rather than being hidden behind an AI layer.
 
+### AI implementation status
+
+The repository contains a concrete module-agent contract, not a claim of a finished autonomous payment operator. [`Agents/ModuleAgent/agent.manifest.json`](Modules/ZeroPayModule/Agents/ModuleAgent/agent.manifest.json) declares grounded, citation-aware lookup capabilities for payment sessions, transactions, gateway status and deposit matching. [`AI/Actions/action-map.json`](Modules/ZeroPayModule/AI/Actions/action-map.json), [`AI/Guardrails/guardrails.json`](Modules/ZeroPayModule/AI/Guardrails/guardrails.json) and the control/channel manifests connect those tools to tenant scope, permission checks, audit logging, redaction and confirmation for writes.
+
+There is an unresolved integration decision in the current source: [`module.json`](Modules/ZeroPayModule/module.json) points at the `ModuleAgent`, while [`manifests/module-agent.json`](Modules/ZeroPayModule/manifests/module-agent.json) and [`AI/Voice/voice.manifest.json`](Modules/ZeroPayModule/AI/Voice/voice.manifest.json) still default or route to `demo.agent`. [`Agents/DemoAgent/`](Modules/ZeroPayModule/Agents/DemoAgent/) is explicitly marked as a scaffold with an empty evaluation suite. It is retained for provenance and must be replaced or reconciled with the module agent before any production-readiness claim.
+
 ## Operations and control
 
 Backend capabilities include:
@@ -237,13 +243,13 @@ ZeroPay
 
 ```text
 ZeroPay/
-├── Modules/
-│   └── ZeroPayModule/     # Payment domain, APIs, adapters and operations
-├── Mobile/                # Canonical Flutter Android/iOS application
-├── PWA/                   # Progressive web application
-├── Web/                   # Web-facing surface
-├── mobile/                # Alternate historical mobile tree pending reconciliation
-└── .github/workflows/     # Backend and Flutter CI
+��� Modules/
+�   ��� ZeroPayModule/     # Payment domain, APIs, adapters and operations
+��� Mobile/                # Canonical Flutter Android/iOS application
+��� PWA/                   # Progressive web application
+��� Web/                   # Web-facing surface
+��� mobile/                # Alternate historical mobile tree pending reconciliation
+��� .github/workflows/     # Backend and Flutter CI
 ```
 
 ## ZeroPayModule
@@ -268,6 +274,36 @@ Exceptions/
 
 This keeps orchestration, payment adapters, domain contracts, persistence, automation and operational intelligence independently maintainable.
 
+Useful source locations:
+
+- `Actions/`, `Services/PaymentSessionService.php` and `Models/` - session lifecycle, transaction state and tenant-scoped persistence.
+- `Adapters/` and `Services/GatewayRegistry.php` - PayID, bank transfer, cash, crypto, PayPal and Stripe gateway boundaries.
+- `Services/BankTransferMatchingService.php` - direct-payment reconciliation and unmatched-deposit handling.
+- `Agents/ModuleAgent/`, `AI/Actions/`, `AI/Guardrails/` and `AI/Control/` - grounded agent tools, policy boundaries and channel control.
+- `Tests/Feature/` and `Tests/Unit/` - module installation, session APIs, tenancy, QR payloads, gateway adapters and bank matching.
+
+## Focused module verification
+
+The module has its own Composer and PHPUnit configuration:
+
+```bash
+cd Modules/ZeroPayModule
+composer install
+vendor/bin/pint --test
+vendor/bin/phpunit --testdox Tests/
+```
+
+The repository also includes Flutter CI for the canonical `Mobile/` tree:
+
+```bash
+cd Mobile
+flutter pub get
+flutter analyze
+flutter build apk --debug
+```
+
+These commands require the host/runtime dependencies. The checked-in manifests and tests are evidence of module contracts and intended integration; they are not evidence that external gateways, TitanCore/TitanAgents runtime wiring, banking rails or mobile release signing have been exercised here.
+
 ## Mobile development
 
 The canonical Flutter application is under `Mobile/`.
@@ -287,15 +323,19 @@ flutter build ios --release
 
 ## Engineering principles
 
-1. **Zero-fee-first** — prefer rails that can avoid percentage processing costs for the seller.
-2. **Direct payments are first-class** — PayID, bank transfer, cash and crypto are not secondary manual fallbacks.
-3. **Provider independence** — the business should not be structurally bound to one processor.
-4. **Explicit transaction state** — payment transitions remain observable and auditable.
-5. **Automated reconciliation** — direct payments should not require uncontrolled spreadsheet matching.
-6. **Multiple rails, one payment model** — the business operates on payment sessions rather than provider-specific workflows.
-7. **Multi-surface access** — native mobile, PWA, web, API and operator interfaces share the payment domain.
-8. **Optional conventional processing** — card processors remain available when they add value rather than being mandatory.
-9. **Automation without obscurity** — intelligent automation can assist operations without hiding the underlying payment state.
+1. **Zero-fee-first** - prefer rails that can avoid percentage processing costs for the seller.
+2. **Direct payments are first-class** - PayID, bank transfer, cash and crypto are not secondary manual fallbacks.
+3. **Provider independence** - the business should not be structurally bound to one processor.
+4. **Explicit transaction state** - payment transitions remain observable and auditable.
+5. **Automated reconciliation** - direct payments should not require uncontrolled spreadsheet matching.
+6. **Multiple rails, one payment model** - the business operates on payment sessions rather than provider-specific workflows.
+7. **Multi-surface access** - native mobile, PWA, web, API and operator interfaces share the payment domain.
+8. **Optional conventional processing** - card processors remain available when they add value rather than being mandatory.
+9. **Automation without obscurity** - intelligent automation can assist operations without hiding the underlying payment state.
+
+## Known repository boundaries
+
+`Mobile/` is the canonical Flutter tree used by CI. A second lower-case `mobile/` tree is present in history and collides with it on case-insensitive Windows filesystems; it is intentionally not deleted until its provenance and references are reconciled. The same caution applies to the legacy web scaffolding under `Web/`. These are cleanup recommendations, not proof that the trees are unused.
 
 ## Technology
 
@@ -322,3 +362,4 @@ Production deployment requires environment-specific banking/payment-provider con
 ### ZeroPay's core idea
 
 **Don't charge the seller a percentage merely because software helped the customer pay.**
+
