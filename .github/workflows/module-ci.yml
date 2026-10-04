@@ -15,12 +15,8 @@ permissions:
 
 jobs:
   lint-and-validate:
-    name: PHP Lint & Module Structure
+    name: PHP Lint, Dependency Boundary & Module Structure
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: Modules/ZeroPayModule
 
     steps:
       - name: Checkout repository
@@ -30,23 +26,43 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          tools: composer:v2
+          tools: composer:2.10.3
           coverage: none
+
+      - name: Require committed module lock
+        shell: bash
+        run: |
+          test -s Modules/ZeroPayModule/composer.lock             || (echo "Modules/ZeroPayModule/composer.lock is required" && exit 1)
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: Modules/ZeroPayModule/vendor
-          key: composer-${{ hashFiles('Modules/ZeroPayModule/composer.json', 'Modules/ZeroPayModule/composer.lock') }}
-          restore-keys: composer-
+          key: composer-${{ runner.os }}-${{ hashFiles('Modules/ZeroPayModule/composer.json', 'Modules/ZeroPayModule/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
 
-      - name: Install Composer dependencies
+      - name: Validate library dependency boundary
+        working-directory: Modules/ZeroPayModule
+        run: composer validate --strict --no-check-publish
+
+      - name: Install locked Composer dependencies
+        working-directory: Modules/ZeroPayModule
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Run provider-independent agent contract check
+        run: php Modules/ZeroPayModule/Tests/Contract/run_agent_contract_checks.php
+
+      - name: PHP syntax check for maintained module source
+        shell: bash
+        run: |
+          find Modules/ZeroPayModule             -path '*/vendor' -prune -o             -type f -name '*.php' -print0             | xargs -0 -r -n1 php -l
+
       - name: Check code style with Laravel Pint
+        working-directory: Modules/ZeroPayModule
         run: ./vendor/bin/pint --test
 
       - name: Validate module.json structure
+        working-directory: Modules/ZeroPayModule
         run: |
           echo "Checking module.json exists..."
           test -f module.json || (echo "module.json not found" && exit 1)
@@ -60,5 +76,5 @@ jobs:
           echo "module.json structure is valid."
 
       - name: Run PHPUnit tests
+        working-directory: Modules/ZeroPayModule
         run: ./vendor/bin/phpunit --testdox Tests/
-
