@@ -1,6 +1,6 @@
 # ZeroPay Mobile App
 
-A Flutter mobile application for ZeroPay — a QR-based payment platform.
+A Flutter mobile application for ZeroPay - a QR-based payment platform. The canonical source and CI path is `Mobile/`; the historical duplicate is retained separately as `mobile-legacy/`.
 
 ## Requirements
 
@@ -41,9 +41,9 @@ flutter build ios --release
 
 ## Configuration
 
-- Update `lib/backend/utils/api_endpoint.dart` with the ZeroPay backend URL.
-- Replace `android/app/google-services.json` and `ios/Runner/GoogleService-Info.plist` with your Firebase project credentials.
-- Update Pusher Beams instance ID in the app config with your ZeroPay Pusher instance.
+- Update `lib/backend/services/api_endpoint.dart` with the ZeroPay backend URL before release.
+- The public canonical tree does not include Android `google-services.json`; provide Firebase platform configuration through a private/local build setup only when the deployment enables Firebase services.
+- Update the Pusher Beams instance ID in the app config with your ZeroPay Pusher instance, and keep provider credentials out of the repository.
 
 ## Resources
 
