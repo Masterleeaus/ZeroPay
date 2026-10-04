@@ -8,9 +8,61 @@
 
 <p align="center"><strong>Payment orchestration for businesses that want direct rails first and processor choice when it matters.</strong></p>
 
+## Overview
+
 ZeroPay gives sellers one payment model for PayID and bank transfer, cash, cryptocurrency adapters, and optional card gateways. It turns each payment into a traceable session with a clear lifecycle, reconciliation path, operator controls, and customer-facing surfaces across mobile, web, PWA, and API.
 
-## The product
+
+## Measured evidence
+
+ZeroPay has two useful verification layers: domain/module tests and a provider-free AI/payment contract runner.
+
+The contract runner checks that:
+
+- the canonical `zeropay.module.agent` is the default routed agent;
+- the demo scaffold remains isolated and hidden;
+- mapped tools are tenant-scoped;
+- write tools require confirmation;
+- the Filament, control and voice manifests all resolve to the canonical module agent;
+- grounded fixture answers preserve source references;
+- an unconfirmed payment-session write is rejected;
+- a confirmed write reaches the fixture provider;
+- payment-session fixture state preserves gateway, amount and currency.
+
+Reproduce without banking or AI-provider credentials:
+
+```bash
+php Modules/ZeroPayModule/Tests/Contract/run_agent_contract_checks.php
+```
+
+The module also defines focused PHPUnit coverage for installation, tenancy, session APIs, QR payloads, adapters, bank matching, actions and Filament behavior. These checks establish code contracts; they do **not** prove real settlement, gateway approval or banking-rail operation.
+
+## What is new
+
+The technical signature is **rail-independent payment-session orchestration with explicit reconciliation and operator exception handling**.
+
+```text
+Customer / seller intent
+      ↓
+Payment session
+      ↓
+Rail adapter
+ ┌────┼───────────────┐
+PayID bank cash crypto optional card
+ └────┼───────────────┘
+      ↓
+Transaction lifecycle
+      ↓
+Matching / reconciliation
+      ↓
+Evidence + operator review
+```
+
+The AI layer is deliberately secondary to the payment domain. It can inspect grounded session, transaction, gateway and matching state, but confirmation, tenant scope and the payment services remain the authority for consequential writes.
+
+**Positioning boundary:** ZeroPay is **zero-fee-first**, not a guarantee that every bank, network, gateway or transaction is free.
+
+## Product model
 
 Payment processing often forces a business to choose between a single provider and a fragmented set of manual alternatives. ZeroPay treats the payment rail as an implementation choice behind one operational domain:
 
@@ -21,7 +73,7 @@ Payment processing often forces a business to choose between a single provider a
 
 The product is **zero-fee-first**, not fee-free by guarantee: providers, banks, networks, and transaction types can still charge fees. The engineering goal is to keep direct rails viable without making a percentage-based card processor the only architecture.
 
-## Why the architecture is distinctive
+## Architecture
 
 <p align="center">
   <img src="docs/images/zeropay-architecture.svg" alt="ZeroPay flow from customer and seller surfaces through payment sessions, direct and optional gateway adapters, reconciliation, evidence, and operator control" width="100%" />
@@ -45,7 +97,7 @@ Transaction lifecycle + matching + evidence + events
 
 That boundary keeps provider-specific calls out of the core transaction model. It also gives an operator a useful exception path when a direct transfer cannot be matched automatically.
 
-## Implemented capabilities
+## Verified capabilities
 
 ### Payment domain
 
