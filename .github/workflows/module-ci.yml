@@ -52,10 +52,10 @@ jobs:
       - name: Run provider-independent agent contract check
         run: php Modules/ZeroPayModule/Tests/Contract/run_agent_contract_checks.php
 
-      - name: PHP syntax check
+      - name: PHP syntax check for maintained module source
         shell: bash
         run: |
-          find Modules/ZeroPayModule -type f -name '*.php' -print0             | xargs -0 -n1 php -l
+          find Modules/ZeroPayModule             -path '*/vendor' -prune -o             -type f -name '*.php' -print0             | xargs -0 -r -n1 php -l
 
       - name: Check code style with Laravel Pint
         working-directory: Modules/ZeroPayModule
