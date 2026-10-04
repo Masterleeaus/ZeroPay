@@ -1,21 +1,25 @@
-![ZeroPay Payment Orchestration - PAYID - BANK TRANSFER - CASH - OPTIONAL CARD](docs/images/zeropay-banner.svg)
+<div align="center">
 
-<p align="center">
-  <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
-</p>
+# Titan Pay
 
-<h1 align="center">ZeroPay</h1>
+**Direct-rail-first payment orchestration for the Titan suite.**
 
-<p align="center"><strong>Payment orchestration for businesses that want direct rails first and processor choice when it matters.</strong></p>
+**Current product name:** Titan Pay · **Repository slug:** `ZeroPay` (retained for compatibility)
+
+PayID · Bank Transfer · Cash · Optional Card Gateways
+
+</div>
+
+> Branding note: legacy `ZeroPay` image/module filenames remain in the repository so code and historical links are not broken. Customer-facing naming should use **Titan Pay**.
 
 ## Overview
 
-ZeroPay gives sellers one payment model for PayID and bank transfer, cash, cryptocurrency adapters, and optional card gateways. It turns each payment into a traceable session with a clear lifecycle, reconciliation path, operator controls, and customer-facing surfaces across mobile, web, PWA, and API.
+Titan Pay gives sellers one payment model for PayID and bank transfer, cash, cryptocurrency adapters, and optional card gateways. It turns each payment into a traceable session with a clear lifecycle, reconciliation path, operator controls, and customer-facing surfaces across mobile, web, PWA, and API.
 
 
 ## Measured evidence
 
-ZeroPay has two useful verification layers: domain/module tests and a provider-free AI/payment contract runner.
+Titan Pay has two useful verification layers: domain/module tests and a provider-free AI/payment contract runner.
 
 The contract runner checks that:
 
