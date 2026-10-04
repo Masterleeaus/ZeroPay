@@ -1,4 +1,4 @@
-![ZeroPay Payment Orchestration - PAYID - BANK TRANSFER - CASH - OPTIONAL CARD](docs/images/portfolio-banner.svg)
+![ZeroPay Payment Orchestration - PAYID - BANK TRANSFER - CASH - OPTIONAL CARD](docs/images/zeropay-banner.svg)
 
 <p align="center">
   <img src="Images/2E35512A-6345-4BD1-BBFB-1A4FE862C204.png" alt="ZeroPay logo" width="320">
@@ -22,6 +22,10 @@ Payment processing often forces a business to choose between a single provider a
 The product is **zero-fee-first**, not fee-free by guarantee: providers, banks, networks, and transaction types can still charge fees. The engineering goal is to keep direct rails viable without making a percentage-based card processor the only architecture.
 
 ## Why the architecture is distinctive
+
+<p align="center">
+  <img src="docs/images/zeropay-architecture.svg" alt="ZeroPay flow from customer and seller surfaces through payment sessions, direct and optional gateway adapters, reconciliation, evidence, and operator control" width="100%" />
+</p>
 
 ZeroPay separates the customer payment experience from the rail used to settle it. A payment session carries the business context; adapters and services handle the rail-specific behavior; events and reconciliation preserve what happened.
 
