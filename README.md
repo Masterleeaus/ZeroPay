@@ -104,7 +104,7 @@ vendor/bin/pint --test
 vendor/bin/phpunit --testdox Tests/
 ```
 
-The maintained application roots use committed lockfiles and frozen installs. See [`DEPENDENCY_POLICY.md`](DEPENDENCY_POLICY.md) for the root-by-root policy and toolchain versions. The repository also checks the agent contract and dependency boundaries without provider credentials.
+PWA/ and Web/00_App_Core's PHP application currently have committed lockfiles and frozen install commands. The policy records the separate Web frontend and module dependency gaps explicitly; see [`DEPENDENCY_POLICY.md`](DEPENDENCY_POLICY.md) for the verified root-by-root status. The repository also checks the agent contract and dependency boundaries without provider credentials.
 
 ## Quickstart
 
