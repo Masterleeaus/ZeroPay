@@ -15,7 +15,7 @@ $assert = static function (bool $condition, string $message) use (&$checks): voi
 };
 
 $loadJson = static function (string $relativePath) use ($root): array {
-    $path = $root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+    $path = $root.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
 
     if (! is_file($path)) {
         throw new RuntimeException("Missing {$relativePath}");
@@ -75,7 +75,7 @@ $approvedSources = $dataset['approved_sources'] ?? [];
 $assert(($dataset['status'] ?? null) === 'approved', 'dataset manifest is approved');
 $assert(count($approvedSources) > 0, 'approved knowledge sources are present');
 foreach ($approvedSources as $source) {
-    $sourcePath = $root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $source['path']);
+    $sourcePath = $root.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source['path']);
     $assert(($source['approved'] ?? null) === true, "{$source['path']} is marked approved");
     $assert(is_file($sourcePath), "{$source['path']} exists");
 }
