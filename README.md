@@ -142,9 +142,8 @@ Environment configuration, database provisioning, provider credentials, and sign
 
 ZeroPay is active development software. The checked-in code and tests demonstrate the domain contracts, adapters, manifests, and intended integration seams; they do not by themselves prove live banking settlement, external gateway approval, Titan runtime wiring, mobile release signing, or production operations. Provider credentials and webhook configuration must be supplied by the deploying environment.
 
-No repository-level `LICENSE` or `NOTICE` file was verified in this checkout. Confirm the applicable legal and attribution terms before redistribution or deployment.
+No repository-level `LICENSE` or `NOTICE` file was verified in this checkout. See [`PROVENANCE.md`](PROVENANCE.md) for the source-boundary and license-evidence map; confirm the applicable legal and attribution terms before redistribution or deployment.
 
 ## Technology
 
 PHP and Laravel-style modular services, Filament, Flutter/Dart, React/Vite/TypeScript, REST APIs, webhooks, event-driven processing, and GitHub Actions CI.
-
