@@ -1,10 +1,14 @@
 plugins {
     id "com.android.application"
-    // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
-    // END: FlutterFire Configuration
+    // FlutterFire Configuration is applied below only when google-services.json is present.
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+}
+
+if (file("google-services.json").isFile()
+        || file("src/debug/google-services.json").isFile()
+        || file("src/release/google-services.json").isFile()) {
+    apply plugin: "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -30,6 +34,15 @@ def keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
+def releaseSigningConfigured = [
+    'keyAlias',
+    'keyPassword',
+    'storeFile',
+    'storePassword',
+].every { key ->
+    keystoreProperties.getProperty(key)?.trim()
+}
+
 android {
     namespace "io.zeropay.app"
     compileSdk 34
@@ -57,17 +70,18 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias'];
-            keyPassword keystoreProperties['keyPassword'];
-            storeFile file(keystoreProperties['storeFile']);
-            storePassword keystoreProperties['storePassword'];
+            if (releaseSigningConfigured) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
-        
     }
     buildTypes {
         release {
-            // signingConfig signingConfigs.release
-            signingConfig signingConfigs.debug
+            // Production signing is explicit when key.properties is complete; clean CI falls back to debug signing.
+            signingConfig releaseSigningConfigured ? signingConfigs.release : signingConfigs.debug
         }
     }
 }
