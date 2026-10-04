@@ -1,0 +1,45 @@
+name: ZeroPay Web Frontend CI
+
+on:
+  push:
+    paths:
+      - 'Web/00_App_Core/**'
+      - '.nvmrc'
+      - '.github/workflows/web-frontend-ci.yml'
+  pull_request:
+    paths:
+      - 'Web/00_App_Core/**'
+      - '.nvmrc'
+      - '.github/workflows/web-frontend-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  web-frontend:
+    name: Web Frontend npm CI & Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Web/00_App_Core
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pinned Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: Web/00_App_Core/package-lock.json
+
+      - name: Install locked npm dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Web/00_App_Core assets
+        run: npm run build
+
+      - name: Confirm npm lockfile unchanged
+        run: git diff --exit-code -- package-lock.json
