@@ -43,6 +43,7 @@ flutter build ios --release
 
 - Update `lib/backend/services/api_endpoint.dart` with the ZeroPay backend URL before release.
 - The public canonical tree does not include Android `google-services.json`; provide Firebase platform configuration through a private/local build setup only when the deployment enables Firebase services.
+- Android debug builds do not require `key.properties`. Production release signing uses `Mobile/android/key.properties` with `keyAlias`, `keyPassword`, `storeFile`, and `storePassword`; when that file is absent or incomplete, the release variant intentionally falls back to debug signing so clean CI/debug APK builds do not evaluate `file(null)`.
 - Update the Pusher Beams instance ID in the app config with your ZeroPay Pusher instance, and keep provider credentials out of the repository.
 
 ## Resources
@@ -50,4 +51,3 @@ flutter build ios --release
 - [Flutter documentation](https://docs.flutter.dev/)
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
