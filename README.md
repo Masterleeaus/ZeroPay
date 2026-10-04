@@ -335,7 +335,7 @@ flutter build ios --release
 
 ## Known repository boundaries
 
-`Mobile/` is the canonical Flutter tree used by CI. A second lower-case `mobile/` tree is present in history and collides with it on case-insensitive Windows filesystems; it is intentionally not deleted until its provenance and references are reconciled. The same caution applies to the legacy web scaffolding under `Web/`. These are cleanup recommendations, not proof that the trees are unused.
+`Mobile/` is the canonical Flutter tree used by CI. The former lower-case `mobile/` tree is retained as `mobile-legacy/` for provenance and comparison. Keeping it under a distinct name removes the case-insensitive Windows collision without discarding its files. The same caution applies to the legacy web scaffolding under `Web/`. These are cleanup recommendations, not proof that the trees are unused.
 
 ## Technology
 
