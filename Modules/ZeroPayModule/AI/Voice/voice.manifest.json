@@ -3,7 +3,7 @@
   "wake_name": "Zero",
   "user_facing_ai": "Zero",
   "supports_module_context": true,
-  "routes_to_default_agent": "demo.agent",
+  "routes_to_default_agent": "zeropay.module.agent",
   "confirmation_required_for": ["delete", "overwrite", "send", "external_post", "payment", "contract_send"],
   "tts_enabled": false
 }
