@@ -19,3 +19,18 @@ See:
 - `Docs/FILAMENT_ONE_PAGE_STANDARD.md`
 - `AI/Control/control.manifest.json`
 - `PWA/pwa.manifest.json`
+
+
+## Agent routing and provider-independent verification
+
+The canonical internal agent is `zeropay.module.agent`, declared by `Agents/ModuleAgent/agent.manifest.json` and selected by the module, control and voice manifests. `Agents/DemoAgent/` remains an isolated example scaffold for the explicitly named demo control panel; it is not the default route and its empty evaluation suite is not production evidence.
+
+From the repository root, run the host-independent contract check with PHP:
+
+```bash
+php Modules/ZeroPayModule/Tests/Contract/run_agent_contract_checks.php
+```
+
+The check validates manifest alignment, tenant/confirmation guardrails, approved knowledge paths and a fixture-only agent/payment response contract. It does not call TitanAgents, payment gateways or banking rails.
+
+No repository-level `LICENSE` or `NOTICE` file was verified in this checkout. Do not infer redistribution terms from the module structure; confirm the applicable legal/provenance terms before publication or deployment.

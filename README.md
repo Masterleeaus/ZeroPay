@@ -184,7 +184,15 @@ The underlying transaction state remains explicit and inspectable rather than be
 
 The repository contains a concrete module-agent contract, not a claim of a finished autonomous payment operator. [`Agents/ModuleAgent/agent.manifest.json`](Modules/ZeroPayModule/Agents/ModuleAgent/agent.manifest.json) declares grounded, citation-aware lookup capabilities for payment sessions, transactions, gateway status and deposit matching. [`AI/Actions/action-map.json`](Modules/ZeroPayModule/AI/Actions/action-map.json), [`AI/Guardrails/guardrails.json`](Modules/ZeroPayModule/AI/Guardrails/guardrails.json) and the control/channel manifests connect those tools to tenant scope, permission checks, audit logging, redaction and confirmation for writes.
 
-There is an unresolved integration decision in the current source: [`module.json`](Modules/ZeroPayModule/module.json) points at the `ModuleAgent`, while [`manifests/module-agent.json`](Modules/ZeroPayModule/manifests/module-agent.json) and [`AI/Voice/voice.manifest.json`](Modules/ZeroPayModule/AI/Voice/voice.manifest.json) still default or route to `demo.agent`. [`Agents/DemoAgent/`](Modules/ZeroPayModule/Agents/DemoAgent/) is explicitly marked as a scaffold with an empty evaluation suite. It is retained for provenance and must be replaced or reconciled with the module agent before any production-readiness claim.
+The canonical route is explicit: [`module.json`](Modules/ZeroPayModule/module.json), [`manifests/module-agent.json`](Modules/ZeroPayModule/manifests/module-agent.json), [`AI/Control/control.manifest.json`](Modules/ZeroPayModule/AI/Control/control.manifest.json), [`AI/Voice/voice.manifest.json`](Modules/ZeroPayModule/AI/Voice/voice.manifest.json) and the Filament module page select `zeropay.module.agent` backed by [`Agents/ModuleAgent/agent.manifest.json`](Modules/ZeroPayModule/Agents/ModuleAgent/agent.manifest.json). [`Agents/DemoAgent/`](Modules/ZeroPayModule/Agents/DemoAgent/) remains an isolated scaffold for the explicitly named demo control panel; its empty evaluation suite is not production evidence.
+
+The provider-independent contract check is:
+
+```bash
+php Modules/ZeroPayModule/Tests/Contract/run_agent_contract_checks.php
+```
+
+It validates routing, tenant/confirmation guardrails, approved knowledge paths and fixture-only agent/payment response shapes. It does not call TitanAgents, payment gateways or banking rails.
 
 ## Operations and control
 
@@ -336,6 +344,8 @@ flutter build ios --release
 ## Known repository boundaries
 
 `Mobile/` is the canonical Flutter tree used by CI. The former lower-case `mobile/` tree is retained as `mobile-legacy/` for provenance and comparison. Keeping it under a distinct name removes the case-insensitive Windows collision without discarding its files. The same caution applies to the legacy web scaffolding under `Web/`. These are cleanup recommendations, not proof that the trees are unused.
+
+No repository-level `LICENSE` or `NOTICE` file was verified in this checkout. Do not infer redistribution terms from the source layout; confirm the applicable legal/provenance terms before publication or deployment.
 
 ## Technology
 
