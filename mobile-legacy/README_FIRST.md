@@ -1,6 +1,6 @@
-# ZeroPay Mobile App
+# ZeroPay Mobile App - legacy tree
 
-This is the full clean editable ZeroPay mobile app base.
+This is a retained historical ZeroPay mobile tree. The canonical current app is `Mobile/`.
 
 What was done:
 - removed Mac junk files (`__MACOSX`, `._*`)

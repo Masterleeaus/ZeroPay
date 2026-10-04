@@ -1,4 +1,4 @@
-# ZeroPay Mobile App
+> **Legacy tree:** This directory is retained as `mobile-legacy/` for provenance and comparison. The canonical current Flutter app and CI path is `Mobile/`; do not start new feature work here.\n\n# ZeroPay Mobile App
 
 A Flutter mobile application for ZeroPay — a QR-based payment platform.
 
