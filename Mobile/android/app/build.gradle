@@ -1,10 +1,14 @@
 plugins {
     id "com.android.application"
-    // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
-    // END: FlutterFire Configuration
+    // FlutterFire Configuration is applied below only when google-services.json is present.
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+}
+
+if (file("google-services.json").isFile()
+        || file("src/debug/google-services.json").isFile()
+        || file("src/release/google-services.json").isFile()) {
+    apply plugin: "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
