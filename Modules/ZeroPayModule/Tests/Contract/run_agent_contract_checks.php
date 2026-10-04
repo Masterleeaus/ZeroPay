@@ -8,7 +8,7 @@ $checks = 0;
 $assert = static function (bool $condition, string $message) use (&$checks): void {
     $checks++;
 
-    if (! $condition) {
+    if ($condition === false) {
         fwrite(STDERR, "FAIL: {$message}\n");
         exit(1);
     }
@@ -17,13 +17,13 @@ $assert = static function (bool $condition, string $message) use (&$checks): voi
 $loadJson = static function (string $relativePath) use ($root): array {
     $path = $root.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
 
-    if (! is_file($path)) {
+    if (is_file($path) === false) {
         throw new RuntimeException("Missing {$relativePath}");
     }
 
     $value = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
 
-    if (! is_array($value)) {
+    if (is_array($value) === false) {
         throw new RuntimeException("Expected object JSON at {$relativePath}");
     }
 
@@ -84,7 +84,7 @@ $assert(count($evaluation['cases'] ?? []) >= 2, 'module-agent evaluation suite h
 $assert(($evaluation['cases'][1]['expected_guardrail'] ?? null) === 'human_confirm_for_write_actions', 'evaluation covers write confirmation');
 
 // Provider-independent fixture: it exercises the response contract without calling TitanAgents or a payment gateway.
-$fixtureProvider = new class
+final class ZeroPayContractFixtureProvider
 {
     public array $calls = [];
 
@@ -114,7 +114,9 @@ $fixtureProvider = new class
             ? ['provider' => 'fixture', 'status' => 'accepted']
             : ['provider' => 'fixture', 'status' => 'confirmation_required'];
     }
-};
+}
+
+$fixtureProvider = new ZeroPayContractFixtureProvider;
 
 $answer = $fixtureProvider->forModule('zeropay-module')->ask(['input' => 'What sources should this module agent use?']);
 $assert(($answer['provider'] ?? null) === 'fixture', 'agent answer uses provider fixture');
