@@ -140,4 +140,3 @@ $assert($paymentFixture['gateway'] === 'bank_transfer', 'fixture payment session
 $assert($paymentFixture['amount'] === 12.50 && $paymentFixture['currency'] === 'AUD', 'fixture payment session preserves amount and currency');
 
 fwrite(STDOUT, "PASS: {$checks} ZeroPay agent/payment contract checks\n");
-
